@@ -14,9 +14,11 @@
 IDXGISwapChain* swapchain; // 指向交換連結口的指針
 ID3D11Device* dev; // 指向Direct3D裝置介面的指針
 ID3D11DeviceContext* devcon; // 指向Direct3D裝置上下文的指針
+ID3D11RenderTargetView* backbuffer;
 
 // 函數原型
 void InitD3D(HWND hWnd); // 設定並初始化Direct3D
+void RenderFrame(void);
 void CleanD3D(void); // 關閉Direct3D並釋放內存
 
 //  宣告WindowProc
@@ -71,6 +73,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
 
+    // set up and initialize Direct3D
+    InitD3D(hWnd);
     // 進入主要迴圈:
     
 // 這個結構體包含Windows事件訊息
@@ -95,11 +99,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容
-            // ...
-            // ...
+            RenderFrame();
+
         }
 
     }
+
+    // clean up DirectX and COM
+    CleanD3D();
+
     // return this part of the WM_QUIT message to Windows
     return msg.wParam;
 }
@@ -151,6 +159,41 @@ void InitD3D(HWND hWnd)
         &dev,
         NULL,
         &devcon);
+
+    // get the address of the back buffer
+    ID3D11Texture2D* pBackBuffer;
+    swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+
+    // use the back buffer address to create the render target
+    dev->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
+    pBackBuffer->Release();
+
+    // set the render target as the back buffer
+    devcon->OMSetRenderTargets(1, &backbuffer, NULL);
+
+
+    // Set the viewport
+    D3D11_VIEWPORT viewport;
+    ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    viewport.Width = 800;
+    viewport.Height = 600;
+
+    devcon->RSSetViewports(1, &viewport);
+}
+
+// 這是用於渲染單一幀的函數
+void RenderFrame(void)
+{
+    // 將後緩衝區清除為深藍色
+    devcon->ClearRenderTargetView(backbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
+
+    // 在這裡進行後緩衝區上的3D渲染
+
+    // 切換後緩衝區與前緩衝區
+    swapchain->Present(0, 0);
 }
 
 // 這個函數是為了清理Direct3D和COM
@@ -160,4 +203,7 @@ void CleanD3D()
     swapchain->Release();
     dev->Release();
     devcon->Release();
+
+    backbuffer->Release();
+
 }
