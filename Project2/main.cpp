@@ -5,11 +5,17 @@
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dx10.h>
+#include <commdlg.h>        //讀取檔案
+#include <d2d1.h>
+#include <wincodec.h>
+
 
 // 包含Direct3D庫文件
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dx11.lib")
 #pragma comment (lib, "d3dx10.lib")
+#pragma comment (lib, "d2d1.lib")
+#pragma comment (lib, "windowscodecs.lib")
 
 
 // 定義螢幕解析度
@@ -18,7 +24,7 @@
 
 
 
-// 全域聲明Direct初始化
+// 全域聲明,Direct初始化
 HWND hWnd;
 IDXGISwapChain* swapchain; // 指向交換連結口的指針
 ID3D11Device* dev; // 指向Direct3D裝置介面的指針
@@ -36,6 +42,16 @@ ID3D11Texture2D* depthStencilBuffer ;
 ID3D11DepthStencilView* depthStencilView ;
 ID3D11DepthStencilState* depthStencilState ;
 
+//複製圖片
+ID2D1Factory* pD2DFactory = NULL;
+ID2D1HwndRenderTarget* pRT = NULL;
+ID2D1Bitmap* pBitmap = NULL;
+IWICBitmapDecoder* pDecoder = NULL;
+IWICBitmapFrameDecode* pSource = NULL;
+IWICStream* pStream = NULL;
+IWICFormatConverter* pConverter = NULL;
+D2D1_POINT_2F clickPoint = { 0 };
+HRESULT InitD2D(HWND hwnd);
 
 struct VERTEX { FLOAT X, Y, Z; D3DXCOLOR Color; };//定義單一頂點的結構體
 
@@ -45,6 +61,10 @@ void RenderFrame(void);
 void CleanD3D(void); // 關閉Direct3D並釋放內存
 void InitGraphics(void);    // 建立要渲染的形狀
 void InitPipeline(void);    // 載入並準備著色器
+void OpenFile(void);
+void DrawBitmap();
+void OnClick(int mouseX, int mouseY);
+void Render();
 
 //  按鈕宣告
 HWND Load_Button;
@@ -112,6 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
 
     // set up and initialize Direct3D
+    InitD2D(hWnd);
     InitD3D(hWnd);
     // 進入主要迴圈:
     
@@ -137,7 +158,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容
-            //RenderFrame();
+            //RenderFrame(); //3D繪圖
 
         }
 
@@ -165,6 +186,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         {
             // 在 WM_CREATE 消息中創建按鈕
             // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
+            // 透過重繪事件,會先繪製背景再繪製按鈕
             Load_Button = CreateWindow(
                 L"BUTTON",             // 按鈕控制項的類別名稱
                 L"Load",               // 按鈕上顯示的文字
@@ -175,7 +197,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL), // 模組句柄
                 NULL                   // 指定為 NULL
             );
-            SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             Clean_Button = CreateWindow(
                 L"BUTTON",             // 按鈕控制項的類別名稱
                 L"Clean",              // 按鈕上顯示的文字
@@ -186,7 +207,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL), // 模組句柄
                 NULL                   // 指定為 NULL
             );
-            SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            //SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); //使按鈕置頂
+            //SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             //if (Load_Button != NULL)
             //{
             //    //SetWindowLongPtr(hButton, GWLP_USERDATA, (LONG_PTR)SubclassProc);
@@ -202,7 +224,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 switch (LOWORD(wParam))
                 {
                 case 1:
-                    MessageBox(hWnd, L"Load Clicked!", L"Load Click", MB_OK);
+                    OpenFile();
                     break;
 
                 case 2:
@@ -211,9 +233,36 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }
             }
             break;
+        case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hWnd, &ps);
+
+            // 繪製圖片
+            DrawBitmap();
+
+            EndPaint(hWnd, &ps);
+        }break;
         // this message is read when the window is closed
+        case WM_LBUTTONDOWN:
+            // 处理左键点击事件
+            {
+                int xPos = GET_X_LPARAM(lParam);
+                int yPos = GET_Y_LPARAM(lParam);
+                OnClick(xPos, yPos);
+                //DrawBitmap();
+
+            }break;
+
+
         case WM_DESTROY:
             {
+                if(pRT!=NULL)
+                    pRT->Release();
+                if (pD2DFactory != NULL)
+                    pD2DFactory->Release();
+                if (pBitmap != NULL)
+                    pBitmap->Release();
                 // close the application entirely
                 PostQuitMessage(0);
                 return 0;
@@ -396,7 +445,7 @@ void InitGraphics()
     // 將頂點複製到緩衝區中
     D3D11_MAPPED_SUBRESOURCE ms;
     devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // 映射緩衝區
-    memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // 複製數據
+    //memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // 複製數據
     devcon->Unmap(pVBuffer, NULL);                                      // 取消映射緩衝區
     
     D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -409,7 +458,6 @@ void InitGraphics()
     devcon->OMSetDepthStencilState(depthStencilState, 1);
 
 }
-
 
 // 函數載入並準備著色器
 void InitPipeline()
@@ -445,4 +493,162 @@ void InitPipeline()
 
     dev->CreateInputLayout(ied, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &pLayout);
     devcon->IASetInputLayout(pLayout);
+}
+
+
+
+
+//以上為DirectX 3D
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+
+
+HRESULT InitD2D(HWND hwnd)
+{
+    // 創建 D2D 工廠
+    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
+
+    if (SUCCEEDED(hr))
+    {
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+
+        // 創建 D2D 渲染目標
+        hr = pD2DFactory->CreateHwndRenderTarget(
+            D2D1::RenderTargetProperties(),
+            D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
+            &pRT
+        );
+    }
+
+    return hr;
+}
+HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory* pIWICFactory, LPCWSTR uri, UINT destinationWidth, UINT destinationHeight, ID2D1Bitmap** ppBitmap)
+{
+    // 初始化 WIC
+    IWICBitmapDecoder* pDecoder = NULL;
+    IWICBitmapFrameDecode* pSource = NULL;
+    IWICStream* pStream = NULL;
+    IWICFormatConverter* pConverter = NULL;
+
+    HRESULT hr = pIWICFactory->CreateDecoderFromFilename(
+        uri,
+        NULL,
+        GENERIC_READ,
+        WICDecodeMetadataCacheOnLoad,
+        &pDecoder
+    );
+
+    if (SUCCEEDED(hr))
+    {
+        hr = pDecoder->GetFrame(0, &pSource);
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // 初始化 WIC 轉換器
+        hr = pIWICFactory->CreateFormatConverter(&pConverter);
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // 設定轉換器屬性
+        hr = pConverter->Initialize(
+            pSource,
+            GUID_WICPixelFormat32bppPBGRA,
+            WICBitmapDitherTypeNone,
+            NULL,
+            0.0,
+            WICBitmapPaletteTypeMedianCut
+        );
+    }
+
+    if (SUCCEEDED(hr))
+    {
+        // 創建 D2D 位圖
+        hr = pRenderTarget->CreateBitmapFromWicBitmap(
+            pConverter,
+            NULL,
+            ppBitmap
+        );
+    }
+
+    // 釋放 WIC 資源
+    if (pDecoder != NULL)
+        pDecoder->Release();
+    if (pSource != NULL)
+        pSource->Release();
+    if (pStream != NULL)
+        pStream->Release();
+    if (pConverter != NULL)
+        pConverter->Release();
+
+    return hr;
+}
+
+void OpenFile()
+{
+    OPENFILENAME ofn;
+    wchar_t szFile[MAX_PATH] = L"";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;  // 父視窗的 handle
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
+    ofn.lpstrFilter = L"All Files\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+    if (GetOpenFileName(&ofn) == TRUE)
+    {
+        // 在 szFile 中包含選取的檔案的路徑
+        // 現在你可以讀取並處理這個檔案
+        IWICImagingFactory* pIWICFactory = NULL;
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
+        pIWICFactory->Release();
+    }
+}
+
+
+void DrawBitmap()
+{
+    if (pRT && pBitmap)
+    {
+        D2D1_SIZE_U size = pBitmap->GetPixelSize();
+        UINT width = size.width;
+        UINT height = size.height;
+        pRT->BeginDraw();
+        pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
+        pRT->EndDraw();
+    }
+}
+
+// 釋放 Direct2D 資源
+template <class T>  //此無法使用,改為個別release
+void SafeRelease(T** ppInterfaceToRelease)
+{
+    if (*ppInterfaceToRelease != NULL)
+    {
+        (*ppInterfaceToRelease)->Release();
+        *ppInterfaceToRelease = NULL;
+    }
+}
+
+void OnClick(int mouseX, int mouseY)
+{
+    // 更新點擊位置
+    clickPoint.x = static_cast<FLOAT>(mouseX);
+    clickPoint.y = static_cast<FLOAT>(mouseY);
+    // 通知系統進行重繪
+    InvalidateRect(hWnd, NULL, TRUE);
+
 }
