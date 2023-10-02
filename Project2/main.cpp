@@ -15,16 +15,28 @@
 #define SCREEN_WIDTH  800
 #define SCREEN_HEIGHT 600
 
-// 全域聲明
+
+
+// 全域聲明Direct初始化
 IDXGISwapChain* swapchain; // 指向交換連結口的指針
 ID3D11Device* dev; // 指向Direct3D裝置介面的指針
 ID3D11DeviceContext* devcon; // 指向Direct3D裝置上下文的指針
 ID3D11RenderTargetView* backbuffer;
 
+//繪圖相關
+ID3D11InputLayout* pLayout;            // 指向輸入佈局的指針
+ID3D11VertexShader* pVS;               // 指向頂點著色器的指針
+ID3D11PixelShader* pPS;                // 指向像素著色器的指針
+ID3D11Buffer* pVBuffer;                // 指向頂點緩衝區的指針
+
+struct VERTEX { FLOAT X, Y, Z; D3DXCOLOR Color; };//定義單一頂點的結構體
+
 // 函數原型
 void InitD3D(HWND hWnd); // 設定並初始化Direct3D
 void RenderFrame(void);
 void CleanD3D(void); // 關閉Direct3D並釋放內存
+void InitGraphics(void);    // 建立要渲染的形狀
+void InitPipeline(void);    // 載入並準備著色器
 
 //  宣告WindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
@@ -150,23 +162,24 @@ void InitD3D(HWND hWnd)
     scd.BufferDesc.Height = SCREEN_HEIGHT;               // 設定後緩衝區高度
     scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;   // 交換鏈如何使用
     scd.OutputWindow = hWnd;                             // 要使用的視窗
-    scd.SampleDesc.Count = 1;                            // 多重取樣的數量
-    scd.SampleDesc.Quality = 0;                          // multisample quality level
+    scd.SampleDesc.Count = 4;                            // 多重取樣的數量
+//    scd.SampleDesc.Quality = 0;                          // 多樣本品質水平
     scd.Windowed = TRUE; // 視窗全螢幕模式
+    scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;    // 允許全螢幕切換
 
     // 使用scd結構中的資訊來建立裝置、裝置上下文和交換鏈
     D3D11CreateDeviceAndSwapChain(NULL,
-        D3D_DRIVER_TYPE_HARDWARE,
-        NULL,
-        NULL,
-        NULL,
-        NULL,
-        D3D11_SDK_VERSION,
-        &scd,
-        &swapchain,
-        &dev,
-        NULL,
-        &devcon);
+                                  D3D_DRIVER_TYPE_HARDWARE,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  NULL,
+                                  D3D11_SDK_VERSION,
+                                  &scd,
+                                  &swapchain,
+                                  &dev,
+                                  NULL,
+                                  &devcon);
 
     // get the address of the back buffer
     ID3D11Texture2D* pBackBuffer;
@@ -186,10 +199,13 @@ void InitD3D(HWND hWnd)
 
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    viewport.Width = 800;
-    viewport.Height = 600;
+    viewport.Width = SCREEN_WIDTH;
+    viewport.Height = SCREEN_HEIGHT;
 
     devcon->RSSetViewports(1, &viewport);
+
+    InitPipeline();
+    InitGraphics();
 }
 
 // 這是用於渲染單一幀的函數
@@ -199,7 +215,16 @@ void RenderFrame(void)
     devcon->ClearRenderTargetView(backbuffer, D3DXCOLOR(0.0f, 0.2f, 0.4f, 1.0f));
 
     // 在這裡進行後緩衝區上的3D渲染
+    // 選擇要顯示的頂點緩衝區
+    UINT stride = sizeof(VERTEX);
+    UINT offset = 0;
+    devcon->IASetVertexBuffers(0, 1, &pVBuffer, &stride, &offset);
 
+    // 選擇我們正在使用的原始類型
+    devcon->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    // 將頂點緩衝區繪製到後台緩衝區
+    devcon->Draw(3, 0);
     // 切換後緩衝區與前緩衝區
     swapchain->Present(0, 0);
 }
@@ -208,10 +233,74 @@ void RenderFrame(void)
 void CleanD3D()
 {
     // 關閉並釋放所有的COM對象
+    //Direct初始
     swapchain->Release();
     dev->Release();
     devcon->Release();
-
+    //緩衝區
     backbuffer->Release();
+    //頂點以及像素著色器
+    pLayout->Release();
+    pVS->Release();
+    pPS->Release();
+    pVBuffer->Release();
+}
 
+// this is the function that creates the shape to render
+void InitGraphics()
+{
+    // create a triangle using the VERTEX struct
+    VERTEX OurVertices[] =
+    {
+        {0.0f, 0.5f, 0.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)},
+        {0.45f, -0.5, 0.0f, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f)},
+        {-0.45f, -0.5f, 0.0f, D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f)}
+    };
+
+
+    // create the vertex buffer
+    D3D11_BUFFER_DESC bd;
+    ZeroMemory(&bd, sizeof(bd));
+
+    bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
+    bd.ByteWidth = sizeof(VERTEX) * 3;             // size is the VERTEX struct * 3
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
+    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+
+    dev->CreateBuffer(&bd, NULL, &pVBuffer);       // create the buffer
+
+
+    // copy the vertices into the buffer
+    D3D11_MAPPED_SUBRESOURCE ms;
+    devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
+    memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // copy the data
+    devcon->Unmap(pVBuffer, NULL);                                      // unmap the buffer
+}
+
+
+// this function loads and prepares the shaders
+void InitPipeline()
+{
+    // load and compile the two shaders
+    ID3D10Blob* VS, * PS;
+    D3DX11CompileFromFile(L"shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, 0, 0);
+    D3DX11CompileFromFile(L"shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, 0, 0);
+
+    // encapsulate both shaders into shader objects
+    dev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &pVS);
+    dev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &pPS);
+
+    // set the shader objects
+    devcon->VSSetShader(pVS, 0, 0);
+    devcon->PSSetShader(pPS, 0, 0);
+
+    // create the input layout object
+    D3D11_INPUT_ELEMENT_DESC ied[] =
+    {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+    };
+
+    dev->CreateInputLayout(ied, 2, VS->GetBufferPointer(), VS->GetBufferSize(), &pLayout);
+    devcon->IASetInputLayout(pLayout);
 }
