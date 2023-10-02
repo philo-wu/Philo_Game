@@ -1,6 +1,7 @@
 ﻿// 包含基本的Windows頭檔和Direct3D頭文件
 #include <windows.h>
 #include <windowsx.h>
+#include <CommCtrl.h>
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dx10.h>
@@ -18,6 +19,7 @@
 
 
 // 全域聲明Direct初始化
+HWND hWnd;
 IDXGISwapChain* swapchain; // 指向交換連結口的指針
 ID3D11Device* dev; // 指向Direct3D裝置介面的指針
 ID3D11DeviceContext* devcon; // 指向Direct3D裝置上下文的指針
@@ -29,6 +31,12 @@ ID3D11VertexShader* pVS;               // 指向頂點著色器的指針
 ID3D11PixelShader* pPS;                // 指向像素著色器的指針
 ID3D11Buffer* pVBuffer;                // 指向頂點緩衝區的指針
 
+//測試深度繪圖
+ID3D11Texture2D* depthStencilBuffer ;
+ID3D11DepthStencilView* depthStencilView ;
+ID3D11DepthStencilState* depthStencilState ;
+
+
 struct VERTEX { FLOAT X, Y, Z; D3DXCOLOR Color; };//定義單一頂點的結構體
 
 // 函數原型
@@ -38,20 +46,22 @@ void CleanD3D(void); // 關閉Direct3D並釋放內存
 void InitGraphics(void);    // 建立要渲染的形狀
 void InitPipeline(void);    // 載入並準備著色器
 
+//  按鈕宣告
+HWND Load_Button;
+HWND Clean_Button;
 //  宣告WindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
                          UINT message,
                          WPARAM wParam,
                          LPARAM lParam);
 
-
+//入口點
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine,
     int nCmdShow)
 {
     // the handle for the window, filled by a function
-    HWND hWnd;
     // 這個結構體用來保存視窗類別相關的訊息
     WNDCLASSEX wc;
 
@@ -75,18 +85,29 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 // 建立窗口，並將傳回的結果作為句柄
     hWnd = CreateWindowEx(NULL,
-        L"WindowClass1", // 視窗類別的名字
-        L"Our First Windowed Program", // 視窗的標題
-        WS_OVERLAPPEDWINDOW, // 視窗的樣式
-        300, // 視窗的x座標
-        300, // 視窗的y座標
-        wr.right - wr.left, // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
-        wr.bottom - wr.top, // 視窗的高度
-        NULL, // 沒有父窗口，設定為NULL
-        NULL, // 不使用選單，設定為NULL
-        hInstance, // 應用程式句柄
-        NULL); // 與多個視窗一起使用，設定為NULL
+        L"WindowClass1",                 // 視窗類別的名字
+        L"Our First Windowed Program",   // 視窗的標題
+        WS_OVERLAPPEDWINDOW,             // 視窗的樣式
+        300,                             // 視窗的x座標
+        300,                             // 視窗的y座標
+        wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
+        wr.bottom - wr.top,              // 視窗的高度
+        NULL,                            // 沒有父窗口，設定為NULL
+        NULL,                            // 不使用選單，設定為NULL
+        hInstance,                       // 應用程式句柄
+        NULL);                           // 與多個視窗一起使用，設定為NULL
 
+    //也可以在這裡創建按鈕
+    //HWND hwndButton = CreateWindow(
+    //    L"BUTTON",             // 按鈕控制項的類別名稱
+    //    L"Click Me",           // 按鈕上顯示的文字
+    //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+    //    10, 10, 100, 30,       // 按鈕位置和大小 (x, y, width, height)
+    //    hWnd,                  // 父窗口句柄
+    //    (HMENU)1,              // 控制項 ID (可以用於識別按鈕)
+    //    GetModuleHandle(NULL), // 模組句柄
+    //    NULL                   // 指定為 NULL
+    //);
 // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
 
@@ -116,7 +137,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容
-            RenderFrame();
+            //RenderFrame();
 
         }
 
@@ -128,12 +149,68 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // return this part of the WM_QUIT message to Windows
     return msg.wParam;
 }
-// this is the main message handler for the program
+//按鈕點擊事件
+void OnButtonClick(HWND hWnd)
+{
+    MessageBox(hWnd, L"Button Clicked!", L"Button Click", MB_OK);
+}
+
+// 訊息處理函數
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     // sort through and find what code to run for the message given
     switch(message)
     {
+        case WM_CREATE:
+        {
+            // 在 WM_CREATE 消息中創建按鈕
+            // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
+            Load_Button = CreateWindow(
+                L"BUTTON",             // 按鈕控制項的類別名稱
+                L"Load",               // 按鈕上顯示的文字
+                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+                10, 10, 100, 30,        // 按鈕位置和大小 (x, y, width, height)
+                hWnd,                  // 父窗口句柄
+                (HMENU)1,              // 控制項 ID (可以用於識別按鈕)
+                GetModuleHandle(NULL), // 模組句柄
+                NULL                   // 指定為 NULL
+            );
+            SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            Clean_Button = CreateWindow(
+                L"BUTTON",             // 按鈕控制項的類別名稱
+                L"Clean",              // 按鈕上顯示的文字
+                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+                120, 10, 100, 30,        // 按鈕位置和大小 (x, y, width, height)
+                hWnd,                  // 父窗口句柄
+                (HMENU)2,              // 控制項 ID (可以用於識別按鈕)
+                GetModuleHandle(NULL), // 模組句柄
+                NULL                   // 指定為 NULL
+            );
+            SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            //if (Load_Button != NULL)
+            //{
+            //    //SetWindowLongPtr(hButton, GWLP_USERDATA, (LONG_PTR)SubclassProc);
+            //    //SubclassWindow(hButton, SubclassProc, 0, 0);
+            //}
+            break;
+        }
+        case WM_COMMAND:
+            // 檢查按鈕事件
+            if (HIWORD(wParam) == BN_CLICKED )
+            {
+                //檢查按鈕身分
+                switch (LOWORD(wParam))
+                {
+                case 1:
+                    MessageBox(hWnd, L"Load Clicked!", L"Load Click", MB_OK);
+                    break;
+
+                case 2:
+                    MessageBox(hWnd, L"Clean Clicked!", L"Clean Click", MB_OK);
+                    break;
+                }
+            }
+            break;
         // this message is read when the window is closed
         case WM_DESTROY:
             {
@@ -151,6 +228,7 @@ void InitD3D(HWND hWnd)
 {
     // 建立一個結構體來保存有關交換鏈的信息
     DXGI_SWAP_CHAIN_DESC scd;
+
 
     // 清空這個結構體以供使用
     ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -204,6 +282,23 @@ void InitD3D(HWND hWnd)
 
     devcon->RSSetViewports(1, &viewport);
 
+    D3D11_TEXTURE2D_DESC depthStencilDesc;
+    depthStencilDesc.Width = SCREEN_WIDTH;
+    depthStencilDesc.Height = SCREEN_HEIGHT;
+    depthStencilDesc.MipLevels = 1;
+    depthStencilDesc.ArraySize = 1;
+    depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthStencilDesc.SampleDesc.Count = 1;
+    depthStencilDesc.SampleDesc.Quality = 0;
+    depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthStencilDesc.CPUAccessFlags = 0;
+    depthStencilDesc.MiscFlags = 0;
+
+    dev->CreateTexture2D(&depthStencilDesc, NULL, &depthStencilBuffer);
+    dev->CreateDepthStencilView(depthStencilBuffer, NULL, &depthStencilView);
+    devcon->OMSetRenderTargets(1, &backbuffer, depthStencilView);
+
     InitPipeline();
     InitGraphics();
 }
@@ -227,6 +322,31 @@ void RenderFrame(void)
     devcon->Draw(3, 0);
     // 切換後緩衝區與前緩衝區
     swapchain->Present(0, 0);
+    //深度繪圖
+    devcon->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+    //在此繪製按鈕可以顯示,但會過度浪費效能
+    //Load_Button = CreateWindow(
+    //    L"BUTTON",             // 按鈕控制項的類別名稱
+    //    L"Load",               // 按鈕上顯示的文字
+    //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+    //    10, 10, 100, 30,        // 按鈕位置和大小 (x, y, width, height)
+    //    hWnd,                  // 父窗口句柄
+    //    (HMENU)1,              // 控制項 ID (可以用於識別按鈕)
+    //    GetModuleHandle(NULL), // 模組句柄
+    //    NULL                   // 指定為 NULL
+    //);
+    //SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    //Clean_Button = CreateWindow(
+    //    L"BUTTON",             // 按鈕控制項的類別名稱
+    //    L"Clean",              // 按鈕上顯示的文字
+    //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+    //    120, 10, 100, 30,        // 按鈕位置和大小 (x, y, width, height)
+    //    hWnd,                  // 父窗口句柄
+    //    (HMENU)2,              // 控制項 ID (可以用於識別按鈕)
+    //    GetModuleHandle(NULL), // 模組句柄
+    //    NULL                   // 指定為 NULL
+    //);
 }
 
 // 這個函數是為了清理Direct3D和COM
@@ -240,16 +360,19 @@ void CleanD3D()
     //緩衝區
     backbuffer->Release();
     //頂點以及像素著色器
-    pLayout->Release();
-    pVS->Release();
-    pPS->Release();
-    pVBuffer->Release();
+    //pLayout->Release();
+    //pVS->Release();
+    //pPS->Release();
+    //pVBuffer->Release();
+    //depthStencilBuffer->Release();
+    //depthStencilState->Release();
+
 }
 
-// this is the function that creates the shape to render
+// 這是創建要渲染的形狀的函數
 void InitGraphics()
 {
-    // create a triangle using the VERTEX struct
+    // 使用 VERTEX 結構建立一個三角形
     VERTEX OurVertices[] =
     {
         {0.0f, 0.5f, 0.0f, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f)},
@@ -258,43 +381,62 @@ void InitGraphics()
     };
 
 
-    // create the vertex buffer
+    //建立頂點緩衝區
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
 
-    bd.Usage = D3D11_USAGE_DYNAMIC;                // write access access by CPU and GPU
-    bd.ByteWidth = sizeof(VERTEX) * 3;             // size is the VERTEX struct * 3
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;       // use as a vertex buffer
-    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;    // allow CPU to write in buffer
+    bd.Usage = D3D11_USAGE_DYNAMIC;                  // CPU和GPU的寫入存取權限
+    bd.ByteWidth = sizeof(VERTEX) * 3;               // size是VERTEX結構的大小* 3
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;         // 用作頂點緩衝區
+    bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;      // 允許CPU寫入緩衝區
 
-    dev->CreateBuffer(&bd, NULL, &pVBuffer);       // create the buffer
+    dev->CreateBuffer(&bd, NULL, &pVBuffer);       // 建立緩衝區
 
 
-    // copy the vertices into the buffer
+    // 將頂點複製到緩衝區中
     D3D11_MAPPED_SUBRESOURCE ms;
-    devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // map the buffer
-    memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // copy the data
-    devcon->Unmap(pVBuffer, NULL);                                      // unmap the buffer
+    devcon->Map(pVBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms);    // 映射緩衝區
+    memcpy(ms.pData, OurVertices, sizeof(OurVertices));                 // 複製數據
+    devcon->Unmap(pVBuffer, NULL);                                      // 取消映射緩衝區
+    
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+    ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+    depthStencilDesc.DepthEnable = TRUE;
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+    dev->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+    devcon->OMSetDepthStencilState(depthStencilState, 1);
+
 }
 
 
-// this function loads and prepares the shaders
+// 函數載入並準備著色器
 void InitPipeline()
 {
-    // load and compile the two shaders
+
+    D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+    ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+    depthStencilDesc.DepthEnable = TRUE;
+    depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+    dev->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+    devcon->OMSetDepthStencilState(depthStencilState, 1);
+    // 載入並編譯兩個著色器
     ID3D10Blob* VS, * PS;
     D3DX11CompileFromFile(L"shaders.shader", 0, 0, "VShader", "vs_4_0", 0, 0, 0, &VS, 0, 0);
     D3DX11CompileFromFile(L"shaders.shader", 0, 0, "PShader", "ps_4_0", 0, 0, 0, &PS, 0, 0);
 
-    // encapsulate both shaders into shader objects
+    // 將兩個著色器封裝到著色器物件中
     dev->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &pVS);
     dev->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &pPS);
 
-    // set the shader objects
+    //設定著色器對象
     devcon->VSSetShader(pVS, 0, 0);
     devcon->PSSetShader(pPS, 0, 0);
 
-    // create the input layout object
+    // 建立輸入佈局對象
     D3D11_INPUT_ELEMENT_DESC ied[] =
     {
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
