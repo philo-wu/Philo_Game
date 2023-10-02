@@ -10,6 +10,11 @@
 #pragma comment (lib, "d3dx11.lib")
 #pragma comment (lib, "d3dx10.lib")
 
+
+// 定義螢幕解析度
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
+
 // 全域聲明
 IDXGISwapChain* swapchain; // 指向交換連結口的指針
 ID3D11Device* dev; // 指向Direct3D裝置介面的指針
@@ -140,10 +145,13 @@ void InitD3D(HWND hWnd)
 
     // 填寫交換鏈描述結構
     scd.BufferCount = 1; // 一個後緩衝區
-    scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // 使用32位元色
-    scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; // 交換鏈如何使用
-    scd.OutputWindow = hWnd; // 要使用的視窗
-    scd.SampleDesc.Count = 4; // 多重取樣的數量
+    scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 使用32位元色
+    scd.BufferDesc.Width = SCREEN_WIDTH;                 // 設定後緩衝區寬度
+    scd.BufferDesc.Height = SCREEN_HEIGHT;               // 設定後緩衝區高度
+    scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;   // 交換鏈如何使用
+    scd.OutputWindow = hWnd;                             // 要使用的視窗
+    scd.SampleDesc.Count = 1;                            // 多重取樣的數量
+    scd.SampleDesc.Quality = 0;                          // multisample quality level
     scd.Windowed = TRUE; // 視窗全螢幕模式
 
     // 使用scd結構中的資訊來建立裝置、裝置上下文和交換鏈
