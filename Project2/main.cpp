@@ -63,8 +63,8 @@ void InitGraphics(void);    // 建立要渲染的形狀
 void InitPipeline(void);    // 載入並準備著色器
 void OpenFile(void);
 void DrawBitmap();
+void ClearDraw();
 void OnClick(int mouseX, int mouseY);
-void Render();
 
 //  按鈕宣告
 HWND Load_Button;
@@ -157,7 +157,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         }
         else
         {
-            // 遊戲內容
+            // 遊戲內容 //為不停重新繪製的地方
             //RenderFrame(); //3D繪圖
 
         }
@@ -166,7 +166,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // clean up DirectX and COM
     CleanD3D();
-
+    // TODO: CleanD2D
     // return this part of the WM_QUIT message to Windows
     return msg.wParam;
 }
@@ -187,6 +187,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 在 WM_CREATE 消息中創建按鈕
             // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
             // 透過重繪事件,會先繪製背景再繪製按鈕
+
+
             Load_Button = CreateWindow(
                 L"BUTTON",             // 按鈕控制項的類別名稱
                 L"Load",               // 按鈕上顯示的文字
@@ -229,6 +231,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                 case 2:
                     MessageBox(hWnd, L"Clean Clicked!", L"Clean Click", MB_OK);
+                    ClearDraw();
                     break;
                 }
             }
@@ -237,21 +240,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-
             // 繪製圖片
             DrawBitmap();
-
             EndPaint(hWnd, &ps);
         }break;
         // this message is read when the window is closed
         case WM_LBUTTONDOWN:
-            // 处理左键点击事件
+            // 處理滑鼠左鍵
             {
                 int xPos = GET_X_LPARAM(lParam);
                 int yPos = GET_Y_LPARAM(lParam);
                 OnClick(xPos, yPos);
-                //DrawBitmap();
-
             }break;
 
 
@@ -545,16 +544,8 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
     if (SUCCEEDED(hr))
     {
         hr = pDecoder->GetFrame(0, &pSource);
-    }
-
-    if (SUCCEEDED(hr))
-    {
         // 初始化 WIC 轉換器
         hr = pIWICFactory->CreateFormatConverter(&pConverter);
-    }
-
-    if (SUCCEEDED(hr))
-    {
         // 設定轉換器屬性
         hr = pConverter->Initialize(
             pSource,
@@ -564,10 +555,6 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
             0.0,
             WICBitmapPaletteTypeMedianCut
         );
-    }
-
-    if (SUCCEEDED(hr))
-    {
         // 創建 D2D 位圖
         hr = pRenderTarget->CreateBitmapFromWicBitmap(
             pConverter,
@@ -606,7 +593,7 @@ void OpenFile()
     ofn.nMaxFileTitle = 0;
     ofn.lpstrInitialDir = NULL;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
+    //TODO:判斷副檔名
     if (GetOpenFileName(&ofn) == TRUE)
     {
         // 在 szFile 中包含選取的檔案的路徑
@@ -631,7 +618,16 @@ void DrawBitmap()
         pRT->EndDraw();
     }
 }
-
+void ClearDraw()
+{
+    pRT->BeginDraw();
+    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景，你可以使用其他颜色
+    if (pBitmap)
+        pBitmap= nullptr;
+    // 绘制其他内容...
+    pRT->EndDraw();
+    InvalidateRect(hWnd, NULL, TRUE);
+}
 // 釋放 Direct2D 資源
 template <class T>  //此無法使用,改為個別release
 void SafeRelease(T** ppInterfaceToRelease)
