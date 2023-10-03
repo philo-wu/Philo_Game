@@ -11,9 +11,10 @@
 
 
 // 包含Direct3D庫文件
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "d3dx11.lib")
-#pragma comment (lib, "d3dx10.lib")
+//#pragma comment (lib, "d3d11.lib")
+//#pragma comment (lib, "d3dx11.lib")
+//#pragma comment (lib, "d3dx10.lib")
+// 包含Direct2D庫文件
 #pragma comment (lib, "d2d1.lib")
 #pragma comment (lib, "windowscodecs.lib")
 
