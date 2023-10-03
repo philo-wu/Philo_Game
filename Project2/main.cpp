@@ -3,8 +3,8 @@
 #include <windowsx.h>
 #include <CommCtrl.h>
 #include <d3d11.h>
-#include <d3dx11.h>
-#include <d3dx10.h>
+//#include <d3dx11.h>
+//#include <d3dx10.h>
 #include <commdlg.h>        //讀取檔案
 #include <d2d1.h>
 #include <wincodec.h>
@@ -36,7 +36,7 @@ ID3D11InputLayout* pLayout;            // 指向輸入佈局的指針
 ID3D11VertexShader* pVS;               // 指向頂點著色器的指針
 ID3D11PixelShader* pPS;                // 指向像素著色器的指針
 ID3D11Buffer* pVBuffer;                // 指向頂點緩衝區的指針
-
+/* //因無使用3D繪圖, 關閉
 // 測試深度繪圖 
 // 深度繪圖
 // 原因是 已創造的按鈕在3D繪圖後會被覆蓋,仍存在但不會顯示,
@@ -44,6 +44,9 @@ ID3D11Buffer* pVBuffer;                // 指向頂點緩衝區的指針
 ID3D11Texture2D* depthStencilBuffer ;  // 緩衝區
 ID3D11DepthStencilView* depthStencilView ;
 ID3D11DepthStencilState* depthStencilState ;
+
+struct VERTEX { FLOAT X, Y, Z; D3DXCOLOR Color; };//定義單一頂點的結構體
+*/
 
 // 複製圖片
 ID2D1Factory* pD2DFactory ;
@@ -56,7 +59,6 @@ IWICFormatConverter* pConverter ;
 D2D1_POINT_2F clickPoint = { 0 };
 HRESULT InitD2D(HWND hwnd);
 
-struct VERTEX { FLOAT X, Y, Z; D3DXCOLOR Color; };//定義單一頂點的結構體
 
 // 函數原型
 void InitD3D(HWND hWnd); // 設定並初始化Direct3D
@@ -136,7 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 設定並初始化 Direct
     InitD2D(hWnd);
-    InitD3D(hWnd);
+ //   InitD3D(hWnd);
     // 進入主要迴圈:
     
 // 這個結構體包含Windows事件訊息
@@ -168,7 +170,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     }
 
     // 清理 DirectX 和 COM
-    CleanD3D();
+ //   CleanD3D();
     // TODO: CleanD2D
     // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
@@ -270,6 +272,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     // 處理 switch 語句未攔截訊息
     return DefWindowProc (hWnd, message, wParam, lParam);
 }
+
+/*
 // 初始化並準備Direct3D以供使用
 void InitD3D(HWND hWnd)
 {
@@ -504,7 +508,7 @@ void InitPipeline()
 }
 
 
-
+*/
 
 //以上為DirectX 3D
 ////////////////////////////////////////////////////////////////
