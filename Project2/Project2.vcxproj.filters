@@ -23,6 +23,21 @@
     <ClInclude Include="mian.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="Food.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Snake.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct2D.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Direct3D.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">
