@@ -626,6 +626,7 @@ void DrawBitmap()
         UINT width = size.width;
         UINT height = size.height;
         pRT->BeginDraw();
+        pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
         pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
         pRT->EndDraw();
     }
