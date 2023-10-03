@@ -81,7 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     LPSTR lpCmdLine,
     int nCmdShow)
 {
-    // the handle for the window, filled by a function
+    // 視窗句柄，由函數填充
     // 這個結構體用來保存視窗類別相關的訊息
     WNDCLASSEX wc;
 
@@ -97,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
     wc.lpszClassName = L"WindowClass1";
 
-    // register the window class
+    // 註冊視窗
     RegisterClassEx(&wc);
 
     RECT wr = { 0, 0, 500, 400 };    // 设置尺寸，而不是位置
@@ -131,7 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
 
-    // set up and initialize Direct3D
+    // 設定並初始化 Direct
     InitD2D(hWnd);
     InitD3D(hWnd);
     // 進入主要迴圈:
@@ -164,10 +164,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     }
 
-    // clean up DirectX and COM
+    // 清理 DirectX 和 COM
     CleanD3D();
     // TODO: CleanD2D
-    // return this part of the WM_QUIT message to Windows
+    // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
 }
 //按鈕點擊事件
@@ -179,7 +179,7 @@ void OnButtonClick(HWND hWnd)
 // 訊息處理函數
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    // sort through and find what code to run for the message given
+    // 排序並找到針對給定訊息運行哪些程式碼
     switch(message)
     {
         case WM_CREATE:
@@ -209,13 +209,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL), // 模組句柄
                 NULL                   // 指定為 NULL
             );
+            // 使用2D繪圖 並觸發WM_PAINT後,按鈕即可正常顯示,故先不使用置頂設置
+            // 猜測若使用置頂,但無觸發WM_PAINT,仍會發生按鈕被覆蓋的問題
             //SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); //使按鈕置頂
             //SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-            //if (Load_Button != NULL)
-            //{
-            //    //SetWindowLongPtr(hButton, GWLP_USERDATA, (LONG_PTR)SubclassProc);
-            //    //SubclassWindow(hButton, SubclassProc, 0, 0);
-            //}
             break;
         }
         case WM_COMMAND:
@@ -244,7 +241,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             DrawBitmap();
             EndPaint(hWnd, &ps);
         }break;
-        // this message is read when the window is closed
         case WM_LBUTTONDOWN:
             // 處理滑鼠左鍵
             {
@@ -253,7 +249,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 OnClick(xPos, yPos);
             }break;
 
-
+            // 當視窗關閉時會讀取此訊息
         case WM_DESTROY:
             {
                 if(pRT!=NULL)
@@ -262,13 +258,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     pD2DFactory->Release();
                 if (pBitmap != NULL)
                     pBitmap->Release();
-                // close the application entirely
+                // 完全關閉應用程式
                 PostQuitMessage(0);
                 return 0;
             } break;
     }
 
-    // Handle any messages the switch statement didn't
+    // 處理 switch 語句未攔截訊息
     return DefWindowProc (hWnd, message, wParam, lParam);
 }
 // 這個函數初始化並準備Direct3D以供使用
@@ -621,10 +617,9 @@ void DrawBitmap()
 void ClearDraw()
 {
     pRT->BeginDraw();
-    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景，你可以使用其他颜色
+    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
     if (pBitmap)
         pBitmap= nullptr;
-    // 绘制其他内容...
     pRT->EndDraw();
     InvalidateRect(hWnd, NULL, TRUE);
 }
