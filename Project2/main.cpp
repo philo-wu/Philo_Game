@@ -31,25 +31,28 @@ ID3D11Device* dev; // 指向Direct3D裝置介面的指針
 ID3D11DeviceContext* devcon; // 指向Direct3D裝置上下文的指針
 ID3D11RenderTargetView* backbuffer;
 
-//繪圖相關
+// 繪圖相關
 ID3D11InputLayout* pLayout;            // 指向輸入佈局的指針
 ID3D11VertexShader* pVS;               // 指向頂點著色器的指針
 ID3D11PixelShader* pPS;                // 指向像素著色器的指針
 ID3D11Buffer* pVBuffer;                // 指向頂點緩衝區的指針
 
-//測試深度繪圖
-ID3D11Texture2D* depthStencilBuffer ;
+// 測試深度繪圖 
+// 深度繪圖
+// 原因是 已創造的按鈕在3D繪圖後會被覆蓋,仍存在但不會顯示,
+// 可能是沒有再次呼叫WM_PAINT,但由於已使用2D繪圖完成目的,故3D繪圖以及深度繪圖暫不使用.
+ID3D11Texture2D* depthStencilBuffer ;  // 緩衝區
 ID3D11DepthStencilView* depthStencilView ;
 ID3D11DepthStencilState* depthStencilState ;
 
-//複製圖片
-ID2D1Factory* pD2DFactory = NULL;
-ID2D1HwndRenderTarget* pRT = NULL;
-ID2D1Bitmap* pBitmap = NULL;
-IWICBitmapDecoder* pDecoder = NULL;
-IWICBitmapFrameDecode* pSource = NULL;
-IWICStream* pStream = NULL;
-IWICFormatConverter* pConverter = NULL;
+// 複製圖片
+ID2D1Factory* pD2DFactory ;
+ID2D1HwndRenderTarget* pRT ;
+ID2D1Bitmap* pBitmap ;
+IWICBitmapDecoder* pDecoder ;
+IWICBitmapFrameDecode* pSource ;
+IWICStream* pStream ;
+IWICFormatConverter* pConverter ;
 D2D1_POINT_2F clickPoint = { 0 };
 HRESULT InitD2D(HWND hwnd);
 
@@ -267,7 +270,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     // 處理 switch 語句未攔截訊息
     return DefWindowProc (hWnd, message, wParam, lParam);
 }
-// 這個函數初始化並準備Direct3D以供使用
+// 初始化並準備Direct3D以供使用
 void InitD3D(HWND hWnd)
 {
     // 建立一個結構體來保存有關交換鏈的信息
@@ -303,19 +306,19 @@ void InitD3D(HWND hWnd)
                                   NULL,
                                   &devcon);
 
-    // get the address of the back buffer
+    // 取得後台緩衝區的位址
     ID3D11Texture2D* pBackBuffer;
     swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
-    // use the back buffer address to create the render target
+    // 使用後台緩衝區位址建立渲染目標
     dev->CreateRenderTargetView(pBackBuffer, NULL, &backbuffer);
     pBackBuffer->Release();
 
-    // set the render target as the back buffer
+    // 將渲染目標設定為後台緩衝區
     devcon->OMSetRenderTargets(1, &backbuffer, NULL);
 
 
-    // Set the viewport
+    // 設定視口
     D3D11_VIEWPORT viewport;
     ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
@@ -347,7 +350,7 @@ void InitD3D(HWND hWnd)
     InitGraphics();
 }
 
-// 這是用於渲染單一幀的函數
+//渲染單一幀
 void RenderFrame(void)
 {
     // 將後緩衝區清除為深藍色
@@ -366,7 +369,7 @@ void RenderFrame(void)
     devcon->Draw(3, 0);
     // 切換後緩衝區與前緩衝區
     swapchain->Present(0, 0);
-    //深度繪圖
+    // 深度繪圖
     devcon->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     //在此繪製按鈕可以顯示,但會過度浪費效能
@@ -393,27 +396,37 @@ void RenderFrame(void)
     //);
 }
 
-// 這個函數是為了清理Direct3D和COM
+// 清理Direct3D和COM
 void CleanD3D()
 {
     // 關閉並釋放所有的COM對象
     //Direct初始
-    swapchain->Release();
-    dev->Release();
-    devcon->Release();
+    if (swapchain)
+        swapchain->Release();
+    if (dev)
+        dev->Release();
+    if (devcon)
+        devcon->Release();
     //緩衝區
-    backbuffer->Release();
+    if (backbuffer)
+        backbuffer->Release();
     //頂點以及像素著色器
-    //pLayout->Release();
-    //pVS->Release();
-    //pPS->Release();
-    //pVBuffer->Release();
-    //depthStencilBuffer->Release();
-    //depthStencilState->Release();
+    if (pLayout)
+        pLayout->Release();
+    if (pVS)
+        pVS->Release();
+    if (pPS)
+        pPS->Release();
+    if (pVBuffer)
+        pVBuffer->Release();
+    if (depthStencilBuffer)
+        depthStencilBuffer->Release();
+    if (depthStencilState)
+        depthStencilState->Release();
 
 }
 
-// 這是創建要渲染的形狀的函數
+// 創建要渲染形狀
 void InitGraphics()
 {
     // 使用 VERTEX 結構建立一個三角形
@@ -454,7 +467,7 @@ void InitGraphics()
 
 }
 
-// 函數載入並準備著色器
+// 載入並準備著色器
 void InitPipeline()
 {
 
@@ -592,8 +605,6 @@ void OpenFile()
     //TODO:判斷副檔名
     if (GetOpenFileName(&ofn) == TRUE)
     {
-        // 在 szFile 中包含選取的檔案的路徑
-        // 現在你可以讀取並處理這個檔案
         IWICImagingFactory* pIWICFactory = NULL;
         CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
         LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
