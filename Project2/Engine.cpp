@@ -10,7 +10,7 @@ Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrus
     food = new Food();
     food->Reset(snake);
 
-    playing = true;
+    playing = false;
     keyPressed = false;
 
     score = 5;
@@ -26,7 +26,7 @@ Engine::~Engine()
 
 HRESULT Engine::InitializeD2D(HWND m_hwnd)
 {
-    // Initializes Direct2D, to draw with
+    // 初始化 Direct2D
     D2D1_SIZE_U size = D2D1::SizeU(SCREEN_WIDTH, SCREEN_HEIGHT);
     D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
     m_pDirect2dFactory->CreateHwndRenderTarget(
@@ -91,7 +91,6 @@ void Engine::Reset()
     {
         snake->Reset();
         food->Reset(snake);
-        playing = true;
         score = 5;
     }
 }
@@ -136,11 +135,17 @@ HRESULT Engine::Draw()
 
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
+    //繪製圍牆
+    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
+    ID2D1SolidColorBrush* pBlackBrush;
+    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
+    m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+
     // Draw score
     D2D1_RECT_F rectangle2 = D2D1::RectF(0, 0, SCREEN_WIDTH, 200);
 
     WCHAR scoreStr[64];
-    swprintf_s(scoreStr, L"Score: %d            Top Score: %d     ", score, highScore);
+    swprintf_s(scoreStr, L"分數: %d            最高分數: %d               ", score, highScore);
     m_pRenderTarget->DrawText(
         scoreStr,
         35,
@@ -155,4 +160,12 @@ HRESULT Engine::Draw()
     hr = m_pRenderTarget->EndDraw();
 
     return S_OK;
+}
+
+void Engine::ClearDraw(HWND hWnd)
+{
+    m_pRenderTarget->BeginDraw();
+    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
+    m_pRenderTarget->EndDraw();
+    InvalidateRect(hWnd, NULL, TRUE);
 }

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="資源檔\Images">
+      <UniqueIdentifier>{9b824741-5f66-45c5-bbf3-a2544724e457}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -25,6 +28,9 @@
       <Filter>來源檔案</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog_Difficulty.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,6 +56,15 @@
     <ClInclude Include="Engine.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Diglog_Difficulty.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">
@@ -57,17 +72,22 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Food.png">
-      <Filter>資源檔</Filter>
+    <Image Include="Images\Food.png">
+      <Filter>資源檔\Images</Filter>
     </Image>
-    <Image Include="Snake_Body.png">
-      <Filter>資源檔</Filter>
+    <Image Include="Images\Snake_Body.png">
+      <Filter>資源檔\Images</Filter>
     </Image>
-    <Image Include="Snake_Head.png">
-      <Filter>資源檔</Filter>
+    <Image Include="Images\Snake_Head.png">
+      <Filter>資源檔\Images</Filter>
     </Image>
-    <Image Include="Snake_Tail.png">
-      <Filter>資源檔</Filter>
+    <Image Include="Images\Snake_Tail.png">
+      <Filter>資源檔\Images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Philo_Snake1.rc">
+      <Filter>資源檔</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,8 @@
 #include <tchar.h>
 #include <wchar.h>
 #include <math.h>
+#include <vector>
+
 
 #include <dwrite.h>
 #include <ctime>
@@ -20,6 +22,7 @@
 #include <sstream>
 #include <chrono>
 
+#include "Common.h"
 template<class Interface>
 // ÄÀ©ñ¸ê·½
 inline void SafeRelease(Interface** ppInterfaceToRelease)
@@ -31,3 +34,4 @@ inline void SafeRelease(Interface** ppInterfaceToRelease)
         (*ppInterfaceToRelease) = NULL;
     }
 }
+

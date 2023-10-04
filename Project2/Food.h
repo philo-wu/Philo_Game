@@ -17,4 +17,5 @@ public:
 private:
 
 	ID2D1SolidColorBrush* m_pBlueBrush;
+	ID2D1Bitmap* FoodBitmap;
 };

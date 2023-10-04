@@ -1,20 +1,46 @@
 ﻿
 #include "mian.h"
+#include "resource.h"
 
 
 // 定義螢幕解析度
-#define SCREEN_WIDTH  800
-#define SCREEN_HEIGHT 600
-#define ID_CUSTOM_COMMAND 1001
-#define WM_CUSTOM_GAMEEND WM_USER + 1
 
+
+//HINSTANCE HINSTANCE1;
+//INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//{
+//    switch (uMsg)
+//    {
+//    case WM_INITDIALOG:
+//        // 初始化對話框
+//        return (INT_PTR)TRUE;
+//
+//    case WM_COMMAND:
+//        // 處理命令消息，例如按鈕點擊
+//        switch (LOWORD(wParam))
+//        {
+//        case IDOK:
+//            // OK 按鈕被點擊
+//            EndDialog(hwndDlg, IDOK);
+//            return (INT_PTR)TRUE;
+//
+//        case IDCANCEL:
+//            // 取消按鈕被點擊
+//            EndDialog(hwndDlg, IDCANCEL);
+//            return (INT_PTR)TRUE;
+//        }
+//        break;
+//    }
+//
+//    return (INT_PTR)FALSE;
+//}
 
 
 //入口點
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine,
-    int nCmdShow)
+    int nCmdShow)   
 {
     // 視窗句柄，由函數填充
     // 這個結構體用來保存視窗類別相關的訊息
@@ -22,7 +48,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 清空視窗類別以供使用
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
-
     // 在結構體中填寫所需的視窗類別信息
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -34,25 +59,26 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 註冊視窗
     RegisterClassEx(&wc);
-
     //根據客戶端取得視窗大小並做處理
+    //HINSTANCE1 = hInstance;
     RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // 设置尺寸，而不是位置
     AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
 
     // 建立窗口，並將傳回的結果作為句柄
-    hWnd = CreateWindowEx(NULL,
+    hWnd = CreateWindowEx(
+        NULL,
         L"WindowClass1",                 // 視窗類別的名字
         L"Our First Windowed Program",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
         300,                             // 視窗的x座標
-        300,                             // 視窗的y座標
+        100,                             // 視窗的y座標
         wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
         wr.bottom - wr.top,              // 視窗的高度
         NULL,                            // 沒有父窗口，設定為NULL
         NULL,                            // 不使用選單，設定為NULL
         hInstance,                       // 應用程式句柄
         NULL);                           // 與多個視窗一起使用，設定為NULL
-
+    
     //也可以在這裡創建按
     // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
@@ -81,15 +107,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
         begin = end;
 
         // 顯示 FPS
-        framesTime += elapsed_secs;
-        frames++;
-        if (framesTime > 1) {
-            WCHAR fpsText[32];
-            swprintf(fpsText, 32, L"Game: %d FPS", frames);
-            SetWindowText(hWnd, fpsText);
-            frames = 0;
-            framesTime = 0;
-        }
+        //framesTime += elapsed_secs;
+        //frames++;
+        //if (framesTime > 1) {
+        //    WCHAR fpsText[32];
+        //    swprintf(fpsText, 32, L"Game: %d FPS", frames);
+        //    SetWindowText(hWnd, fpsText);
+        //    frames = 0;
+        //    framesTime = 0;
+        //}
 
         // 检查队列中是否有消息正在等待
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -107,14 +133,21 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
-            // RenderFrame(); //3D繪圖
-            // TODO: Logic
-            // TODO: Draw
-            // Game logic
-            //engine->Logic(elapsed_secs);
+            if(engine->playing)
+            { 
+                // Game logic
+                engine->Logic(elapsed_secs);
 
-            //// Drawing
-            //engine->Draw();
+                // Drawing
+                engine->Draw();
+                if (!engine->playing)
+                {
+                    SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
+                    engine->Reset();
+                    engine->ClearDraw(hWnd);
+                }
+            }
+
         }
 
     }
@@ -138,12 +171,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 在 WM_CREATE 消息中創建按鈕
             // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
             // 透過重繪事件,會先繪製背景再繪製按鈕
-
+             
             Start_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"開始遊戲",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10, 10, 100, 30,                        // 按鈕位置和大小 (x, y, width, height)
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
+                BUTTON_WIDTH, BUTTON_HEIGHT,
+                                                        // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
                 (HMENU)1,                               // 控制項 ID (可以用於識別按鈕)
                 GetModuleHandle(NULL),                  // 模組句柄
@@ -153,7 +188,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"難度選擇",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                120, 10, 100, 30,                       // 按鈕位置和大小 (x, y, width, height)
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -40,
+                BUTTON_WIDTH, BUTTON_HEIGHT,
+                                                        // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
                 (HMENU)2,                               // 控制項 ID (可以用於識別按鈕)
                 GetModuleHandle(NULL),                  // 模組句柄
@@ -163,7 +200,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"歷史分數",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                230, 10, 100, 30,                       // 按鈕位置和大小 (x, y, width, height)
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 ,
+                BUTTON_WIDTH, BUTTON_HEIGHT,
+                                                        // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
                 (HMENU)3,                               // 控制項 ID (可以用於識別按鈕)
                 GetModuleHandle(NULL),                  // 模組句柄
@@ -173,16 +212,32 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"離開遊戲",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                340, 10, 100, 30,                       // 按鈕位置和大小 (x, y, width, height)
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 +40,
+                BUTTON_WIDTH, BUTTON_HEIGHT,
+                                                        // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
                 (HMENU)4,                               // 控制項 ID (可以用於識別按鈕)
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
+            //hwndScrollBar = CreateWindowEx(
+            //    NULL,                                        // window styles
+            //    TRACKBAR_CLASS,                               // 視窗類別的名字
+            //    L"難易度選擇",                               // 視窗的標題
+            //    WS_CHILD | WS_VISIBLE | TBS_HORZ,         // 視窗的樣式
+            //    10, 10, 200, 30,                          // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                     // Parent window
+            //    (HMENU)2001,                                 // Unique ID
+            //    GetModuleHandle(NULL),                    // Instance handle
+            //    NULL                                      // Additional application data
+            //);
+            //ShowWindow(hwndScrollBar, SW_HIDE);
+
             // 使用2D繪圖 並觸發WM_PAINT後,按鈕即可正常顯示,故先不使用置頂設置
             // 猜測若使用置頂,但無觸發WM_PAINT,仍會發生按鈕被覆蓋的問題
             //SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); //使按鈕置頂
             //SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
 
             break;
         }
@@ -196,10 +251,25 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case 1: //TODO:: 開始遊戲
                     ShowButton(0);
                     //OnPaint(hWnd);
+                    engine->playing = 1;
                     break;
 
                 case 2: //TODO:: 難度選擇
                     MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
+                    //hwndScrollBar = CreateWindowEx(
+                    //    NULL,                                        // window styles
+                    //    L"難易度選擇",                               // 視窗類別的名字
+                    //    L"難易度選擇",                               // 視窗的標題
+                    //    WS_CHILD | WS_VISIBLE | TBS_HORZ,         // 視窗的樣式
+                    //    10, 10, 200, 30,                          // 按鈕位置和大小 (x, y, width, height)
+                    //    hWnd,                                     // Parent window
+                    //    (HMENU)2001,                                 // Unique ID
+                    //    GetModuleHandle(NULL),                    // Instance handle
+                    //    NULL                                      // Additional application data
+                    //);
+                    //ShowWindow(hwndScrollBar, SW_SHOW);
+                    //DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOGBAR), hWnd, DialogProc);
+
                     break;
 
                 case 3: //TODO:: 最高分數
@@ -234,11 +304,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         //        int yPos = GET_Y_LPARAM(lParam);
         //        OnClick(xPos, yPos);
         //    }break;
-
+        case WM_KEYDOWN:
+        {
+            engine->KeyUp(wParam);
+        }
+        break;
 
         case WM_CUSTOM_GAMEEND:
             // 處理遊戲結束
-            MessageBox(hWnd, L"遊戲結束 \n得分為X", L"結算", MB_OK);
+            engine->playing = 0;
+            WCHAR scoreStr[64];
+            swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
+            MessageBox(hWnd, scoreStr, L"結算", MB_OK);
             ShowButton(1);
             //ClearDraw();
             break;
@@ -246,12 +323,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         // 當視窗關閉時會讀取此訊息
         case WM_DESTROY:
             {
-                //if(pRT!=NULL)
-                //    pRT->Release();
-                //if (pD2DFactory != NULL)
-                //    pD2DFactory->Release();
-                //if (pBitmap != NULL)
-                //    pBitmap->Release();
                 // 完全關閉應用程式
                 PostQuitMessage(0);
                 return 0;
@@ -269,57 +340,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 ////////////////////////////////////////////////////////////////
 
 
-// 讀取檔案並轉換成圖片
-HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory* pIWICFactory, LPCWSTR uri, UINT destinationWidth, UINT destinationHeight, ID2D1Bitmap** ppBitmap)
-{
-    // 初始化 WIC
-    IWICBitmapDecoder* pDecoder = NULL;
-    IWICBitmapFrameDecode* pSource = NULL;
-    IWICStream* pStream = NULL;
-    IWICFormatConverter* pConverter = NULL;
-
-    HRESULT hr = pIWICFactory->CreateDecoderFromFilename(
-        uri,
-        NULL,
-        GENERIC_READ,
-        WICDecodeMetadataCacheOnLoad,
-        &pDecoder
-    );
-
-    if (SUCCEEDED(hr))
-    {
-        hr = pDecoder->GetFrame(0, &pSource);
-        // 初始化 WIC 轉換器
-        hr = pIWICFactory->CreateFormatConverter(&pConverter);
-        // 設定轉換器屬性
-        hr = pConverter->Initialize(
-            pSource,
-            GUID_WICPixelFormat32bppPBGRA,
-            WICBitmapDitherTypeNone,
-            NULL,
-            0.0,
-            WICBitmapPaletteTypeMedianCut
-        );
-        // 創建 D2D 位圖
-        hr = pRenderTarget->CreateBitmapFromWicBitmap(
-            pConverter,
-            NULL,
-            ppBitmap
-        );
-    }
-
-    // 釋放 WIC 資源
-    if (pDecoder != NULL)
-        pDecoder->Release();
-    if (pSource != NULL)
-        pSource->Release();
-    if (pStream != NULL)
-        pStream->Release();
-    if (pConverter != NULL)
-        pConverter->Release();
-
-    return hr;
-}
 
 // 開啟檔案
 //void OpenFile()
@@ -344,7 +364,7 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
 //    {
 //        IWICImagingFactory* pIWICFactory = NULL;
 //        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-//        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
+        //LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
 //        pIWICFactory->Release();
 //    }
 //}
@@ -363,16 +383,7 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
 //    }
 //}
 //
-//void ClearDraw()
-//{
-//    pRT->BeginDraw();
-//    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
-//    if (pBitmap)
-//        pBitmap= nullptr;
-//    pRT->EndDraw();
-//    InvalidateRect(hWnd, NULL, TRUE);
-//}
-//
+// 
 //void OnClick(int mouseX, int mouseY)
 //{
 //    // 更新點擊位置
@@ -383,24 +394,6 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
 //
 //}
 //
-//void OnPaint(HWND hWnd)
-//{
-//    PAINTSTRUCT ps;
-//    HDC hdc = BeginPaint(hWnd, &ps);
-//
-//    // 使用Direct2D繪製四邊形
-//    pRT->BeginDraw();
-//    pRT->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-//
-//    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH-3, SCREEN_HEIGHT-3);
-//    ID2D1SolidColorBrush* pBlackBrush;
-//    pRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
-//    pRT->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-//
-//    pRT->EndDraw();
-//
-//    EndPaint(hWnd, &ps);
-//}
 void ShowButton(bool show)
 {
     if(show)
@@ -418,3 +411,4 @@ void ShowButton(bool show)
         ShowWindow(End_Button, SW_HIDE);
     }
 }
+

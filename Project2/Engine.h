@@ -3,10 +3,7 @@
 #include "Food.h"
 #include "Snake.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define FRAME_SLEEP 100
-#define CELL_SIZE 20
+
 
 class Engine
 {
@@ -18,7 +15,11 @@ public:
 	void KeyUp(WPARAM wParam);
 	void Reset();
 	void Logic(double elapsedTime);
+	void ClearDraw(HWND hWnd);
+	int getscore() { return score; };
+
 	HRESULT Draw();
+	bool playing = 0;
 
 private:
 	ID2D1Factory* m_pDirect2dFactory ;
@@ -29,11 +30,10 @@ private:
 	ID2D1SolidColorBrush* m_pWhiteBrush;
 
 	Snake* snake;
-	Food* food;
+	Food* food;	
 
 	int score;
 	int highScore;
 
-	bool playing;
 	bool keyPressed;
 };

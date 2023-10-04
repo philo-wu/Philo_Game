@@ -146,28 +146,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dialog_Difficulty.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Food.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Diglog_Difficulty.h" />
     <ClInclude Include="Direct3D.h" />
     <ClInclude Include="Direct2D.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Food.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="mian.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Snake.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Food.png" />
-    <Image Include="Snake_Body.png" />
-    <Image Include="Snake_Head.png" />
-    <Image Include="Snake_Tail.png" />
+    <Image Include="Images\Food.png" />
+    <Image Include="Images\Snake_Body.png" />
+    <Image Include="Images\Snake_Head.png" />
+    <Image Include="Images\Snake_Tail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Philo_Snake1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

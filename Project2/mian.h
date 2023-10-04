@@ -41,6 +41,7 @@
 
 // 全域聲明
 HWND hWnd; // 只將W大寫避免錯誤呼叫
+bool GameRunning = 0;
 //  按鈕宣告
 HWND Load_Button;
 HWND Clean_Button;
@@ -48,6 +49,7 @@ HWND Start_Button;
 HWND Difficulty_Button;
 HWND Score_Button;
 HWND End_Button;
+HWND hwndScrollBar;
 
 // 遊戲引擎
      Engine* engine;
