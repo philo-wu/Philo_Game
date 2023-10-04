@@ -9,7 +9,7 @@ public:
 	~Food();
 
 	void Initialize(ID2D1HwndRenderTarget* m_pRenderTarget);
-	void Reset(Snake* snake);
+	void Reset(Snake* snake ,bool isFoodOnBorderChecked);
 	void Draw(ID2D1HwndRenderTarget* m_pRenderTarget);
 
 	POINT position;

@@ -30,9 +30,6 @@
     <ClCompile Include="Engine.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="Dialog_Difficulty.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mian.h">
@@ -60,9 +57,6 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="Diglog_Difficulty.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

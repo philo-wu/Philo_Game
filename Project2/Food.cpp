@@ -30,17 +30,54 @@ void Food::Initialize(ID2D1HwndRenderTarget* m_pRenderTarget)
 
 }
 
-void Food::Reset(Snake* snake)
+void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 {
 	srand((unsigned)time(NULL));
 	std::vector<std::pair<int, int>> validPositions;
 	// 使用vector紀錄未被使用過的位子,並從其中生成新的食物
-	for (int x = 1; x < SCREEN_WIDTH / CELL_SIZE - 1; ++x)
+	//for (int x = 1; x < SCREEN_WIDTH / CELL_SIZE - 1; ++x)
+	//{
+	//	for (int y = 1; y < SCREEN_HEIGHT / CELL_SIZE - 1; ++y)
+	//	{
+	//		bool isOccupied = false;
+
+	//		for (int i = 0; i < snake->length; ++i)
+	//		{
+	//			if (snake->position[i].x == x && snake->position[i].y == y)
+	//			{
+	//				isOccupied = true;
+	//				break;
+	//			}
+	//		}
+
+	//		if (!isOccupied)
+	//		{
+	//			validPositions.push_back(std::make_pair(x, y));
+	//		}
+	//	}
+	//}
+
+	for (int y = 0; y < SCREEN_HEIGHT / CELL_SIZE; ++y)
 	{
-		for (int y = 1; y < SCREEN_HEIGHT / CELL_SIZE - 1; ++y)
+		// 檢查是否在邊界
+		if (!isFoodOnBorderChecked)
+		{
+			if (y == 0 || y == SCREEN_HEIGHT / CELL_SIZE - 1)
+			{
+				continue;  // 跳過邊界上的位置
+			}
+		}
+
+		for (int x = 0; x < SCREEN_WIDTH / CELL_SIZE; ++x)
 		{
 			bool isOccupied = false;
-
+			if (!isFoodOnBorderChecked)
+			{
+				if (x == 0 || x == SCREEN_WIDTH / CELL_SIZE - 1)
+				{
+					continue;  // 跳過邊界上的位置
+				}
+			}
 			for (int i = 0; i < snake->length; ++i)
 			{
 				if (snake->position[i].x == x && snake->position[i].y == y)
@@ -56,7 +93,6 @@ void Food::Reset(Snake* snake)
 			}
 		}
 	}
-
 	if (!validPositions.empty())
 	{
 		// 隨機選擇一個合適的位子

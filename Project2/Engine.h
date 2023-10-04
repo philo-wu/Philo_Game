@@ -20,6 +20,9 @@ public:
 
 	HRESULT Draw();
 	bool playing = 0;
+	int difficulty = 5;
+	int UpdateFrameSleep(int difficulty);
+	bool isFoodOnBorderChecked = 0;
 
 private:
 	ID2D1Factory* m_pDirect2dFactory ;

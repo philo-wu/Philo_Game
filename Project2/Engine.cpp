@@ -8,7 +8,7 @@ Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrus
 {
     snake = new Snake();
     food = new Food();
-    food->Reset(snake);
+    food->Reset(snake , isFoodOnBorderChecked );
 
     playing = false;
     keyPressed = false;
@@ -90,7 +90,7 @@ void Engine::Reset()
     if (!playing)
     {
         snake->Reset();
-        food->Reset(snake);
+        food->Reset(snake, isFoodOnBorderChecked );
         score = 5;
     }
 }
@@ -104,7 +104,7 @@ void Engine::Logic(double elapsedTime)
 
         if (snake->CheckFoodCollision(food->position.x, food->position.y))
         {
-            food->Reset(snake);
+            food->Reset(snake, isFoodOnBorderChecked);
             snake->Grow();
             score++;
             if (score > highScore)
@@ -118,8 +118,9 @@ void Engine::Logic(double elapsedTime)
 
         keyPressed = false;
     }
-
-    Sleep(FRAME_SLEEP);
+    int frame_sleep = 200;
+    frame_sleep = UpdateFrameSleep(difficulty);
+    Sleep(frame_sleep);
 }
 
 HRESULT Engine::Draw()
@@ -169,3 +170,42 @@ void Engine::ClearDraw(HWND hWnd)
     m_pRenderTarget->EndDraw();
     InvalidateRect(hWnd, NULL, TRUE);
 }
+
+int Engine::UpdateFrameSleep(int difficulty)
+{
+    int result ;
+    switch (difficulty)
+    {
+    case 1:
+        result = 200;  // 螟1硉程篊
+        break;
+    case 2:
+        result = 175;
+        break;
+    case 3:
+        result = 150;
+        break;
+    case 4:
+        result = 125;
+        break;
+    case 5:
+        result = 100;  // 螟5い单硉
+        break;
+    case 6:
+        result = 75;
+        break;
+    case 7:
+        result = 50;
+        break;
+    case 8:
+        result = 25;
+        break;
+    case 9:
+        result = 10;   // 螟9硉程е
+        break;
+    default:
+        result = 100;  // 箇砞い单硉
+        break;
+    }
+    return result;
+};

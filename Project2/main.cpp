@@ -6,34 +6,53 @@
 // 定義螢幕解析度
 
 
-//HINSTANCE HINSTANCE1;
-//INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-//{
-//    switch (uMsg)
-//    {
-//    case WM_INITDIALOG:
-//        // 初始化對話框
-//        return (INT_PTR)TRUE;
-//
-//    case WM_COMMAND:
-//        // 處理命令消息，例如按鈕點擊
-//        switch (LOWORD(wParam))
-//        {
-//        case IDOK:
-//            // OK 按鈕被點擊
-//            EndDialog(hwndDlg, IDOK);
-//            return (INT_PTR)TRUE;
-//
-//        case IDCANCEL:
-//            // 取消按鈕被點擊
-//            EndDialog(hwndDlg, IDCANCEL);
-//            return (INT_PTR)TRUE;
-//        }
-//        break;
-//    }
-//
-//    return (INT_PTR)FALSE;
-//}
+HINSTANCE HINSTANCE1;
+INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    DWORD dwID = wParam;
+
+    switch (uMsg) {
+    case WM_INITDIALOG:
+
+        // 設定滑塊範圍
+        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
+        // 設定滑塊初始值
+        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
+
+        // 設定 "食物生成於邊界" 勾選框的初始狀態
+        if(engine->isFoodOnBorderChecked)
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
+        else
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
+
+        return TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDOK:
+            // 使用者按下了確定按鈕
+            {
+                // 取得設定頁面的資料
+                int sliderValue = SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_GETPOS, 0, 0);
+                BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
+                // 將資料存入引擎
+                engine->difficulty = sliderValue;
+                engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
+
+                EndDialog(hwndDlg, IDOK);
+            }   
+            break;
+
+        case IDCANCEL:
+            // 使用者按下了取消按鈕
+            EndDialog(hwndDlg, IDCANCEL);
+            break;
+        }
+        break;
+    }
+    return FALSE;
+}
 
 
 //入口點
@@ -42,6 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     LPSTR lpCmdLine,
     int nCmdShow)   
 {
+
     // 視窗句柄，由函數填充
     // 這個結構體用來保存視窗類別相關的訊息
     WNDCLASSEX wc;
@@ -60,7 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 註冊視窗
     RegisterClassEx(&wc);
     //根據客戶端取得視窗大小並做處理
-    //HINSTANCE1 = hInstance;
+    HINSTANCE1 = hInstance;
     RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // 设置尺寸，而不是位置
     AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
 
@@ -68,7 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     hWnd = CreateWindowEx(
         NULL,
         L"WindowClass1",                 // 視窗類別的名字
-        L"Our First Windowed Program",   // 視窗的標題
+        L"Philo_Snake",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
         300,                             // 視窗的x座標
         100,                             // 視窗的y座標
@@ -78,8 +98,29 @@ int WINAPI WinMain(HINSTANCE hInstance,
         NULL,                            // 不使用選單，設定為NULL
         hInstance,                       // 應用程式句柄
         NULL);                           // 與多個視窗一起使用，設定為NULL
-    
-    //也可以在這裡創建按
+
+    // 主選單的字體及大小
+    HFONT hFont = CreateFont(
+        28,                                     // 字體的高度
+        0,                                      // 字體的寬度
+        0,                                      // 字體的旋轉角度
+        0,                                      // 字體的斜體角度
+        FW_NORMAL,                              // 字體的粗細度
+        FALSE,                                  // 是否是斜體字體
+        FALSE,                                  // 是否是下劃線字體
+        FALSE,                                  // 是否是刪除線字體
+        DEFAULT_CHARSET,                        // 字符集
+        OUT_OUTLINE_PRECIS,                     // 輸出精度
+        CLIP_DEFAULT_PRECIS,                    // 剪裁精度
+        ANTIALIASED_QUALITY,                    // 邊緣平滑度
+        DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
+        L"Verdana"                              // 字體名
+    );
+    SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Difficulty_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Score_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(End_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+
     // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
@@ -171,12 +212,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 在 WM_CREATE 消息中創建按鈕
             // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
             // 透過重繪事件,會先繪製背景再繪製按鈕
-             
+            // 設定字體
+
             Start_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"開始遊戲",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -160,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -188,7 +230,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"難度選擇",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -40,
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -212,7 +254,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"離開遊戲",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 +40,
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 +80,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -255,11 +297,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     break;
 
                 case 2: //TODO:: 難度選擇
-                    MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
+                    //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
                     //hwndScrollBar = CreateWindowEx(
                     //    NULL,                                        // window styles
-                    //    L"難易度選擇",                               // 視窗類別的名字
-                    //    L"難易度選擇",                               // 視窗的標題
+                    //    L"易度選擇",                               // 視窗類別的名字
+                    //    L"易度選擇",                               // 視窗的標題
                     //    WS_CHILD | WS_VISIBLE | TBS_HORZ,         // 視窗的樣式
                     //    10, 10, 200, 30,                          // 按鈕位置和大小 (x, y, width, height)
                     //    hWnd,                                     // Parent window
@@ -268,7 +310,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     //    NULL                                      // Additional application data
                     //);
                     //ShowWindow(hwndScrollBar, SW_SHOW);
-                    //DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOGBAR), hWnd, DialogProc);
+
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_MAIN), NULL, DialogProc);
 
                     break;
 
@@ -292,8 +335,23 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // 繪製圖片
-            //DrawBitmap();
+
+            HFONT hFont = CreateFont(72, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+                OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+            SelectObject(hdc, hFont);
+            SetTextColor(hdc, RGB(0, 0, 0));
+            SetBkColor(hdc, RGB(240, 240, 240));
+
+            WCHAR Str[64];
+            swprintf_s(Str, L"%s", L"小精靈吃漢堡");
+            TextOut(hdc, 310, 100, Str, wcslen(Str));
+
+            // 釋放字體資源
+            DeleteObject(hFont);
+
+            // 使用 DrawText 繪製文本
+            //DrawText(hdc, L"小精靈吃漢堡", -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
             EndPaint(hWnd, &ps);
         }break;
         //貪吃蛇不使用
