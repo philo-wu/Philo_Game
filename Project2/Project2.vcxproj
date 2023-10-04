@@ -146,11 +146,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Food.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Snake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct3D.h" />
     <ClInclude Include="Direct2D.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="Food.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="mian.h" />
@@ -158,6 +162,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Food.png" />
+    <Image Include="Snake_Body.png" />
+    <Image Include="Snake_Head.png" />
+    <Image Include="Snake_Tail.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

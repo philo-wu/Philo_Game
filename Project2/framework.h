@@ -6,3 +6,28 @@
 #include <commdlg.h>        //讀取檔案
 #include <wincodec.h>
 
+
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include <tchar.h>
+#include <wchar.h>
+#include <math.h>
+
+#include <dwrite.h>
+#include <ctime>
+#include <string>
+#include <sstream>
+#include <chrono>
+
+template<class Interface>
+// 釋放資源
+inline void SafeRelease(Interface** ppInterfaceToRelease)
+{
+    if (*ppInterfaceToRelease != NULL)
+    {
+        (*ppInterfaceToRelease)->Release();
+
+        (*ppInterfaceToRelease) = NULL;
+    }
+}

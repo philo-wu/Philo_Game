@@ -18,6 +18,15 @@
     <ClCompile Include="main.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Food.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Snake.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mian.h">
@@ -38,10 +47,27 @@
     <ClInclude Include="Direct3D.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">
       <Filter>資源檔</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Food.png">
+      <Filter>資源檔</Filter>
+    </Image>
+    <Image Include="Snake_Body.png">
+      <Filter>資源檔</Filter>
+    </Image>
+    <Image Include="Snake_Head.png">
+      <Filter>資源檔</Filter>
+    </Image>
+    <Image Include="Snake_Tail.png">
+      <Filter>資源檔</Filter>
+    </Image>
   </ItemGroup>
 </Project>

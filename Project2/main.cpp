@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // 设置尺寸，而不是位置
     AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
 
-// 建立窗口，並將傳回的結果作為句柄
+    // 建立窗口，並將傳回的結果作為句柄
     hWnd = CreateWindowEx(NULL,
         L"WindowClass1",                 // 視窗類別的名字
         L"Our First Windowed Program",   // 視窗的標題
@@ -53,32 +53,44 @@ int WINAPI WinMain(HINSTANCE hInstance,
         hInstance,                       // 應用程式句柄
         NULL);                           // 與多個視窗一起使用，設定為NULL
 
-    //也可以在這裡創建按鈕
-    //HWND hwndButton = CreateWindow(
-    //    L"BUTTON",             // 按鈕控制項的類別名稱
-    //    L"Click Me",           // 按鈕上顯示的文字
-    //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-    //    10, 10, 100, 30,       // 按鈕位置和大小 (x, y, width, height)
-    //    hWnd,                  // 父窗口句柄
-    //    (HMENU)1,              // 控制項 ID (可以用於識別按鈕)
-    //    GetModuleHandle(NULL), // 模組句柄
-    //    NULL                   // 指定為 NULL
-    //);
-// 顯示視窗
+    //也可以在這裡創建按
+    // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
-
     // 設定並初始化 Direct
-    InitD2D(hWnd);
- //   InitD3D(hWnd);
- 
+    engine = new Engine();
+
+    engine->InitializeD2D(hWnd);
+    //InitD2D(hWnd);
+
+    //   InitD3D(hWnd);
     // 進入主要迴圈:
     
-// 這個結構體包含Windows事件訊息
+    // 這個結構體包含Windows事件訊息
     MSG msg = { 0 };
+    // 計時器
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    int frames = 0;
+    double framesTime = 0;
 
     // 訊息迴圈
     while (TRUE)
     {
+        end = std::chrono::steady_clock::now();
+        double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
+        begin = end;
+
+        // 顯示 FPS
+        framesTime += elapsed_secs;
+        frames++;
+        if (framesTime > 1) {
+            WCHAR fpsText[32];
+            swprintf(fpsText, 32, L"Game: %d FPS", frames);
+            SetWindowText(hWnd, fpsText);
+            frames = 0;
+            framesTime = 0;
+        }
+
         // 检查队列中是否有消息正在等待
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
@@ -96,7 +108,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
         {
             // 遊戲內容 //為不停重新繪製的地方
             // RenderFrame(); //3D繪圖
+            // TODO: Logic
+            // TODO: Draw
+            // Game logic
+            //engine->Logic(elapsed_secs);
 
+            //// Drawing
+            //engine->Draw();
         }
 
     }
@@ -107,11 +125,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
     
     // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
-}
-// 按鈕點擊事件
-void OnButtonClick(HWND hWnd)
-{
-    MessageBox(hWnd, L"Button Clicked!", L"Button Click", MB_OK);
 }
 
 // 訊息處理函數
@@ -182,7 +195,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 {
                 case 1: //TODO:: 開始遊戲
                     ShowButton(0);
-                    OnPaint(hWnd);
+                    //OnPaint(hWnd);
                     break;
 
                 case 2: //TODO:: 難度選擇
@@ -210,7 +223,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // 繪製圖片
-            DrawBitmap();
+            //DrawBitmap();
             EndPaint(hWnd, &ps);
         }break;
         //貪吃蛇不使用
@@ -227,18 +240,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 處理遊戲結束
             MessageBox(hWnd, L"遊戲結束 \n得分為X", L"結算", MB_OK);
             ShowButton(1);
-            ClearDraw();
+            //ClearDraw();
             break;
 
         // 當視窗關閉時會讀取此訊息
         case WM_DESTROY:
             {
-                if(pRT!=NULL)
-                    pRT->Release();
-                if (pD2DFactory != NULL)
-                    pD2DFactory->Release();
-                if (pBitmap != NULL)
-                    pBitmap->Release();
+                //if(pRT!=NULL)
+                //    pRT->Release();
+                //if (pD2DFactory != NULL)
+                //    pD2DFactory->Release();
+                //if (pBitmap != NULL)
+                //    pBitmap->Release();
                 // 完全關閉應用程式
                 PostQuitMessage(0);
                 return 0;
@@ -309,95 +322,85 @@ HRESULT LoadBitmapFromFile(ID2D1RenderTarget* pRenderTarget, IWICImagingFactory*
 }
 
 // 開啟檔案
-void OpenFile()
-{
-    OPENFILENAME ofn;
-    wchar_t szFile[MAX_PATH] = L"";
-
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = hWnd;  // 父視窗的 handle
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-    ofn.lpstrFilter = L"All Files\0*.*\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-    // TODO:判斷副檔名
-    if (GetOpenFileName(&ofn) == TRUE)
-    {
-        IWICImagingFactory* pIWICFactory = NULL;
-        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
-        pIWICFactory->Release();
-    }
-}
-
-// 繪圖
-void DrawBitmap()
-{
-    if (pRT && pBitmap)
-    {
-        D2D1_SIZE_U size = pBitmap->GetPixelSize();
-        UINT width = size.width;
-        UINT height = size.height;
-        pRT->BeginDraw();
-        pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
-        pRT->EndDraw();
-    }
-}
-
-void ClearDraw()
-{
-    pRT->BeginDraw();
-    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
-    if (pBitmap)
-        pBitmap= nullptr;
-    pRT->EndDraw();
-    InvalidateRect(hWnd, NULL, TRUE);
-}
-// 釋放 Direct2D 資源
-template <class T>  //此無法使用,改為個別release
-void SafeRelease(T** ppInterfaceToRelease)
-{
-    if (*ppInterfaceToRelease != NULL)
-    {
-        (*ppInterfaceToRelease)->Release();
-        *ppInterfaceToRelease = NULL;
-    }
-}
-
-void OnClick(int mouseX, int mouseY)
-{
-    // 更新點擊位置
-    clickPoint.x = static_cast<FLOAT>(mouseX);
-    clickPoint.y = static_cast<FLOAT>(mouseY);
-    // 通知系統進行重繪
-    InvalidateRect(hWnd, NULL, TRUE);
-
-}
-
-void OnPaint(HWND hWnd)
-{
-    PAINTSTRUCT ps;
-    HDC hdc = BeginPaint(hWnd, &ps);
-
-    // 使用Direct2D繪製四邊形
-    pRT->BeginDraw();
-    pRT->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH-3, SCREEN_HEIGHT-3);
-    ID2D1SolidColorBrush* pBlackBrush;
-    pRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
-    pRT->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-
-    pRT->EndDraw();
-
-    EndPaint(hWnd, &ps);
-}
+//void OpenFile()
+//{
+//    OPENFILENAME ofn;
+//    wchar_t szFile[MAX_PATH] = L"";
+//
+//    ZeroMemory(&ofn, sizeof(ofn));
+//    ofn.lStructSize = sizeof(ofn);
+//    ofn.hwndOwner = hWnd;  // 父視窗的 handle
+//    ofn.lpstrFile = szFile;
+//    ofn.lpstrFile[0] = '\0';
+//    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
+//    ofn.lpstrFilter = L"All Files\0*.*\0";
+//    ofn.nFilterIndex = 1;
+//    ofn.lpstrFileTitle = NULL;
+//    ofn.nMaxFileTitle = 0;
+//    ofn.lpstrInitialDir = NULL;
+//    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+//    // TODO:判斷副檔名
+//    if (GetOpenFileName(&ofn) == TRUE)
+//    {
+//        IWICImagingFactory* pIWICFactory = NULL;
+//        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+//        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
+//        pIWICFactory->Release();
+//    }
+//}
+//
+//// 繪圖
+//void DrawBitmap()
+//{
+//    if (pRT && pBitmap)
+//    {
+//        D2D1_SIZE_U size = pBitmap->GetPixelSize();
+//        UINT width = size.width;
+//        UINT height = size.height;
+//        pRT->BeginDraw();
+//        pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
+//        pRT->EndDraw();
+//    }
+//}
+//
+//void ClearDraw()
+//{
+//    pRT->BeginDraw();
+//    pRT->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
+//    if (pBitmap)
+//        pBitmap= nullptr;
+//    pRT->EndDraw();
+//    InvalidateRect(hWnd, NULL, TRUE);
+//}
+//
+//void OnClick(int mouseX, int mouseY)
+//{
+//    // 更新點擊位置
+//    clickPoint.x = static_cast<FLOAT>(mouseX);
+//    clickPoint.y = static_cast<FLOAT>(mouseY);
+//    // 通知系統進行重繪
+//    InvalidateRect(hWnd, NULL, TRUE);
+//
+//}
+//
+//void OnPaint(HWND hWnd)
+//{
+//    PAINTSTRUCT ps;
+//    HDC hdc = BeginPaint(hWnd, &ps);
+//
+//    // 使用Direct2D繪製四邊形
+//    pRT->BeginDraw();
+//    pRT->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+//
+//    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH-3, SCREEN_HEIGHT-3);
+//    ID2D1SolidColorBrush* pBlackBrush;
+//    pRT->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
+//    pRT->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+//
+//    pRT->EndDraw();
+//
+//    EndPaint(hWnd, &ps);
+//}
 void ShowButton(bool show)
 {
     if(show)
