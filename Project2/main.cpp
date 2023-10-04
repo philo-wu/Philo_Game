@@ -1,13 +1,14 @@
 ﻿
 #include "mian.h"
 #include "resource.h"
+#include "nlohmann/json.hpp"
 
 
 // 定義螢幕解析度
 
 
 HINSTANCE HINSTANCE1;
-INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
 
@@ -44,6 +45,108 @@ INT_PTR CALLBACK DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
             }   
             break;
 
+        case IDCANCEL:
+            // 使用者按下了取消按鈕
+            EndDialog(hwndDlg, IDCANCEL);
+            break;
+        }
+        break;
+    }
+    return FALSE;
+}
+INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    DWORD dwID = wParam;
+
+    switch (uMsg) {
+    case WM_INITDIALOG:
+        {
+            // 設定滑塊範圍
+            HWND hListView = GetDlgItem(hwndDlg, IDC_LIST4);
+            DWORD dwStyle = GetWindowLong(hListView, GWL_STYLE);
+            SetWindowLong(hListView, GWL_STYLE, dwStyle | LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP);
+
+            // 添加三列標題
+            LVCOLUMN lvColumn = { 0 };
+            lvColumn.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+            // 第一列：姓名
+            const wchar_t* myConstString = L"姓名";
+            wchar_t* myNonConstString = const_cast<wchar_t*>(myConstString);
+            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
+            lvColumn.iSubItem = 0;
+            lvColumn.cx = 150;  // 設定列寬度
+            ListView_InsertColumn(hListView, 0, &lvColumn);
+
+            // 第二列：分數
+            myConstString = L"分數";
+            myNonConstString = const_cast<wchar_t*>(myConstString);
+            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
+            lvColumn.iSubItem = 1;
+            lvColumn.cx = 150;
+            ListView_InsertColumn(hListView, 1, &lvColumn);
+
+            // 第三列：難度
+            myConstString = L"難度";
+            myNonConstString = const_cast<wchar_t*>(myConstString);
+            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
+            lvColumn.iSubItem = 2;
+            lvColumn.cx = 90;
+            ListView_InsertColumn(hListView, 2, &lvColumn);
+
+
+
+            std::ifstream file("C:\\Users\\philo.wu\\Documents\\GitHub\\Philo_Snake\\Project2\\Ranklist.json", std::ifstream::binary);
+            if (file.is_open()) 
+            {
+                json j;
+                file >> j;
+
+                // 處理解析後的資料
+                for (const auto& entry : j["Ranklist"]) {
+                    std::string name = entry["name"];
+                    int score = entry["score"];
+                    int difficulty = entry["difficulty"];
+
+                    // 在這裡處理中文編碼問題
+                    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+                    std::wstring nameText = converter.from_bytes(name);
+
+                    LVITEM lvi;
+                    lvi.mask = LVIF_TEXT;
+                    lvi.pszText = const_cast<wchar_t*>(nameText.c_str());
+                    lvi.iItem = ListView_GetItemCount(hListView);  // 新增項目的索引
+                    lvi.iSubItem = 0;
+                    ListView_InsertItem(hListView, &lvi);
+
+                    // 設置分數
+                    std::wstring scoreText = std::to_wstring(score);
+                    ListView_SetItemText(hListView, lvi.iItem, 1, const_cast<wchar_t*>(scoreText.c_str()));
+
+                    // 設置難度
+                    std::wstring difficultyText = std::to_wstring(difficulty);
+                    ListView_SetItemText(hListView, lvi.iItem, 2, const_cast<wchar_t*>(difficultyText.c_str()));
+
+                }
+
+                file.close();
+            }
+            else 
+            {
+                //std::cout << "Failed to open JSON file" << std::endl;
+            }
+        }
+        break;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDOK:
+            // 使用者按下了確定按鈕
+        {
+            EndDialog(hwndDlg, IDOK);
+        }
+        break;
         case IDCANCEL:
             // 使用者按下了取消按鈕
             EndDialog(hwndDlg, IDCANCEL);
@@ -174,6 +277,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
+
             if(engine->playing)
             { 
                 // Game logic
@@ -240,7 +344,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             Score_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"歷史分數",                            // 按鈕上顯示的文字
+                L"排行榜",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
                 SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 ,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
@@ -290,33 +394,21 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 //檢查按鈕身分
                 switch (LOWORD(wParam))
                 {
-                case 1: //TODO:: 開始遊戲
+                case 1: // 開始遊戲
                     ShowButton(0);
                     //OnPaint(hWnd);
                     engine->playing = 1;
                     break;
 
-                case 2: //TODO:: 難度選擇
-                    //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
-                    //hwndScrollBar = CreateWindowEx(
-                    //    NULL,                                        // window styles
-                    //    L"易度選擇",                               // 視窗類別的名字
-                    //    L"易度選擇",                               // 視窗的標題
-                    //    WS_CHILD | WS_VISIBLE | TBS_HORZ,         // 視窗的樣式
-                    //    10, 10, 200, 30,                          // 按鈕位置和大小 (x, y, width, height)
-                    //    hWnd,                                     // Parent window
-                    //    (HMENU)2001,                                 // Unique ID
-                    //    GetModuleHandle(NULL),                    // Instance handle
-                    //    NULL                                      // Additional application data
-                    //);
-                    //ShowWindow(hwndScrollBar, SW_SHOW);
-
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_MAIN), NULL, DialogProc);
+                case 2: // 難度選擇
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_DIFFICULTY), NULL, Dialog_Difficulty_Proc);
 
                     break;
 
                 case 3: //TODO:: 最高分數
-                    MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
+                    //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
+
                     break;
 
                 case 4: //離開遊戲
@@ -349,8 +441,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 釋放字體資源
             DeleteObject(hFont);
 
-            // 使用 DrawText 繪製文本
-            //DrawText(hdc, L"小精靈吃漢堡", -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
             EndPaint(hWnd, &ps);
         }break;
@@ -376,6 +466,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             MessageBox(hWnd, scoreStr, L"結算", MB_OK);
             ShowButton(1);
             //ClearDraw();
+            break;
+
+        case WM_CUSTOM_GAMEWIN:
+
             break;
 
         // 當視窗關閉時會讀取此訊息

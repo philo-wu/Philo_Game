@@ -3,8 +3,8 @@
 #include "Direct2D.h"
 
 // 視窗相關
-#define SCREEN_WIDTH  300
-#define SCREEN_HEIGHT 300
+#define SCREEN_WIDTH  1024  
+#define SCREEN_HEIGHT 768
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  200
 #define BUTTON_HEIGHT 50
@@ -15,6 +15,7 @@
 // 事件或指令相關
 #define ID_CUSTOM_COMMAND 1001
 #define WM_CUSTOM_GAMEEND WM_USER + 1
+#define WM_CUSTOM_GAMEWIN WM_USER + 2
 
 class Common
 {

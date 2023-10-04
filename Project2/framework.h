@@ -5,6 +5,7 @@
 #include <CommCtrl.h>
 #include <commdlg.h>        //讀取檔案
 #include <wincodec.h>
+#include <locale>
 
 
 #include <stdlib.h>
@@ -14,6 +15,7 @@
 #include <wchar.h>
 #include <math.h>
 #include <vector>
+#include <codecvt>
 
 
 #include <dwrite.h>
@@ -23,6 +25,11 @@
 #include <chrono>
 
 #include "Common.h"
+#include "nlohmann/json.hpp"
+#include <fstream>
+
+using json = nlohmann::json;
+
 template<class Interface>
 // 釋放資源
 inline void SafeRelease(Interface** ppInterfaceToRelease)

@@ -1,0 +1,19 @@
+{
+  "Ranklist": [
+    {
+      "name": "小明",
+      "score": 10,
+      "difficulty": 5
+    },
+    {
+      "name": "小黃",
+      "score": 7,
+      "difficulty": 7
+    },
+    {
+      "name": "小白",
+      "score": 8,
+      "difficulty": 3
+    }
+  ]
+}
