@@ -18,10 +18,10 @@ public:
 	void ClearDraw(HWND hWnd);
 	int getscore() { return score; };
 
-	HRESULT Draw();
+	HRESULT Draw(double FPS);
 	bool playing = 0;
 	int difficulty = 5;
-	int UpdateFrameSleep(int difficulty);
+	double UpdateFrameSleep(int difficulty);
 	bool isFoodOnBorderChecked = 0;
 
 private:

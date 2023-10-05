@@ -4,8 +4,6 @@
 #include "nlohmann/json.hpp"
 
 
-// 定義螢幕解析度
-
 
 HINSTANCE HINSTANCE1;
 INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -39,6 +37,7 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
                 BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
                 // 將資料存入引擎
                 engine->difficulty = sliderValue;
+                targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
                 engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
 
                 EndDialog(hwndDlg, IDOK);
@@ -302,7 +301,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     int frames = 0;
     double framesTime = 0;
-
+    double FPS = 0;
     // 訊息迴圈
     while (TRUE)
     {
@@ -310,16 +309,38 @@ int WINAPI WinMain(HINSTANCE hInstance,
         double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
         begin = end;
 
-        // 顯示 FPS
-        //framesTime += elapsed_secs;
-        //frames++;
-        //if (framesTime > 1) {
-        //    WCHAR fpsText[32];
-        //    swprintf(fpsText, 32, L"Game: %d FPS", frames);
-        //    SetWindowText(hWnd, fpsText);
-        //    frames = 0;
-        //    framesTime = 0;
-        //}
+        accumulatedTime += elapsed_secs;
+        //顯示 FPS
+        //暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
+        framesTime += elapsed_secs;
+        frames++;
+        if
+            (framesTime > 1) {
+            //WCHAR fpsText[32];
+            //swprintf(fpsText, 32, L"Game: %d FPS", frames);
+            //SetWindowText(hWnd, fpsText);
+            FPS = frames;
+            frames = 0;
+            framesTime = 0;
+        }
+        while (accumulatedTime >= targetFrameTime)
+        {
+
+
+            // Game logic
+            if (engine->playing)
+            {
+                engine->Logic(targetFrameTime);
+                if (!engine->playing)
+                {
+                    SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
+                    engine->Reset();
+                    engine->ClearDraw(hWnd);
+                }
+            }
+
+            accumulatedTime -= targetFrameTime;
+        }
 
         // 检查队列中是否有消息正在等待
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -337,24 +358,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
-
-            if(engine->playing)
-            { 
-                // Game logic
-                engine->Logic(elapsed_secs);
-
+            if (engine->playing)
+            {
                 // Drawing
-                engine->Draw();
-                if (!engine->playing)
-                {
-                    SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
-                    engine->Reset();
-                    engine->ClearDraw(hWnd);
-                }
+                engine->Draw(FPS);
             }
-
         }
-
     }
 
     // 清理 DirectX 和 COM

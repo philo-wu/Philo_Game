@@ -53,7 +53,7 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
         &m_pTextFormat
     );
 
-    m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+    //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
     m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
@@ -123,12 +123,12 @@ void Engine::Logic(double elapsedTime)
 
         keyPressed = false;
     }
-    int frame_sleep = 200;
-    frame_sleep = UpdateFrameSleep(difficulty);
-    Sleep(frame_sleep);
+    //int frame_sleep = 200;
+    //frame_sleep = UpdateFrameSleep(difficulty);
+    //Sleep(frame_sleep);
 }
 
-HRESULT Engine::Draw()
+HRESULT Engine::Draw(double FPS)
 {
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
@@ -148,10 +148,11 @@ HRESULT Engine::Draw()
     m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
 
     // Draw score
-    D2D1_RECT_F rectangle2 = D2D1::RectF(0, 0, SCREEN_WIDTH, 200);
-
+    D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
+    D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
+    int FPS1 = FPS;
     WCHAR scoreStr[64];
-    swprintf_s(scoreStr, L"だ计: %d            程蔼だ计: %d               ", score, highScore);
+    swprintf_s(scoreStr, L"だ计: %d            程蔼だ计: %d              ", score, highScore);
     m_pRenderTarget->DrawText(
         scoreStr,
         35,
@@ -159,7 +160,15 @@ HRESULT Engine::Draw()
         rectangle2,
         m_pWhiteBrush
     );
-
+    swprintf_s(scoreStr, L"FPS : %d                           ",FPS1);
+    //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+    m_pRenderTarget->DrawText(
+        scoreStr,
+        35,
+        m_pTextFormat,
+        rectangle3,
+        m_pWhiteBrush
+    );
     snake->Draw(m_pRenderTarget);
     food->Draw(m_pRenderTarget);
 
@@ -176,41 +185,41 @@ void Engine::ClearDraw(HWND hWnd)
     InvalidateRect(hWnd, NULL, TRUE);
 }
 
-int Engine::UpdateFrameSleep(int difficulty)
+double Engine::UpdateFrameSleep(int difficulty)
 {
-    int result ;
+    double result ;
     switch (difficulty)
     {
     case 1:
-        result = 200;  // 螟1硉程篊
+        result = 3;  // 螟1硉程篊
         break;
     case 2:
-        result = 175;
+        result = 4;
         break;
     case 3:
-        result = 150;
+        result = 5;
         break;
     case 4:
-        result = 125;
+        result = 6;
         break;
     case 5:
-        result = 100;  // 螟5い单硉
+        result = 8;  // 螟5い单硉
         break;
     case 6:
-        result = 75;
+        result = 20;
         break;
     case 7:
-        result = 50;
+        result = 40;
         break;
     case 8:
-        result = 25;
+        result = 50;
         break;
     case 9:
-        result = 10;   // 螟9硉程е
+        result = 60;   // 螟9硉程е
         break;
     default:
-        result = 100;  // 箇砞い单硉
+        result = 8;  // 箇砞い单硉
         break;
     }
-    return result;
+    return 1 / result ;
 };
