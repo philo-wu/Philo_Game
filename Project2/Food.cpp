@@ -22,7 +22,7 @@ void Food::Initialize(ID2D1HwndRenderTarget* m_pRenderTarget)
 	
 	// 換成宣告圖片
 	// 無法使用參考路徑,先使用絕對路徑
-	LPCWSTR filePath = L"C:/Users/philo.wu/Documents/GitHub/Philo_Snake/Project2/Images/Food.png";
+	LPCWSTR filePath = L"./Images/Food.png";;
 	IWICImagingFactory* pIWICFactory = NULL;
 	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
 	Common:: LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, filePath, 0, 0, &FoodBitmap);
