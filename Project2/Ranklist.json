@@ -1,19 +1,24 @@
 {
-  "Ranklist": [
-    {
-      "name": "小明",
-      "score": 10,
-      "difficulty": 5
-    },
-    {
-      "name": "小黃",
-      "score": 7,
-      "difficulty": 7
-    },
-    {
-      "name": "小白",
-      "score": 8,
-      "difficulty": 3
-    }
-  ]
+    "Ranklist": [
+        {
+            "difficulty": 5,
+            "name": "小明",
+            "score": 10
+        },
+        {
+            "difficulty": 7,
+            "name": "小黃",
+            "score": 7
+        },
+        {
+            "difficulty": 3,
+            "name": "小白",
+            "score": 8
+        },
+        {
+            "difficulty": 5,
+            "name": "測試",
+            "score": 6
+        }
+    ]
 }

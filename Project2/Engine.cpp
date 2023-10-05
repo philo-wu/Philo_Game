@@ -115,6 +115,11 @@ void Engine::Logic(double elapsedTime)
         {
             playing = false;
         }
+        else if (food->GameWin)
+        {
+            playing = false;
+            //TODO:寫入勝利畫面
+        }
 
         keyPressed = false;
     }

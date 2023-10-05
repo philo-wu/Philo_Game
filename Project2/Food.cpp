@@ -95,6 +95,7 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 	}
 	if (!validPositions.empty())
 	{
+		GameWin = 0;
 		// 隨機選擇一個合適的位子
 		int randomIndex = rand() % validPositions.size();
 		position.x = validPositions[randomIndex].first;
@@ -103,6 +104,8 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 	else
 	{
 		// TODO:遊戲勝利
+		GameWin = 1;
+		// 在Engine讀取此變數
 	}
 
 	
