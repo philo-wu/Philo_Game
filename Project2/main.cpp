@@ -312,16 +312,19 @@ int WINAPI WinMain(HINSTANCE hInstance,
         accumulatedTime += elapsed_secs;
         //顯示 FPS
         //暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
-        framesTime += elapsed_secs;
-        frames++;
-        if
-            (framesTime > 1) {
-            //WCHAR fpsText[32];
-            //swprintf(fpsText, 32, L"Game: %d FPS", frames);
-            //SetWindowText(hWnd, fpsText);
-            FPS = frames;
-            frames = 0;
-            framesTime = 0;
+        if (engine->playing)
+        {
+            framesTime += elapsed_secs;
+            frames++;
+            if
+                (framesTime > 1) {
+                //WCHAR fpsText[32];
+                //swprintf(fpsText, 32, L"Game: %d FPS", frames);
+                //SetWindowText(hWnd, fpsText);
+                FPS = frames;
+                frames = 0;
+                framesTime = 0;
+            }
         }
         while (accumulatedTime >= targetFrameTime)
         {
