@@ -1,0 +1,11 @@
+
+*.pdb
+*.exe
+*.idb
+*.log
+*.tlog
+*.ilk
+*.recipe
+*.obj
+*.db
+.vs/Philo_Snake/v16/.suo
