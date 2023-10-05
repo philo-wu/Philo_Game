@@ -1,9 +1,8 @@
-﻿// 包含基本的Windows頭檔
-#include <windows.h>
-#include <windowsx.h>
-#include <CommCtrl.h>
-#include <commdlg.h>        //讀取檔案
-#include <wincodec.h>
+﻿
+#include "framework.h"
+// #include "libxl.h"
+
+#pragma comment(lib, "libxl.lib")
 
 // 定義螢幕解析度
 #define SCREEN_WIDTH  800
@@ -34,6 +33,22 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
     // 視窗句柄，由函數填充
     // 這個結構體用來保存視窗類別相關的訊息
+
+    // libxl::Book* book;
+    // book = xlCreateXMLBook();// xlCreateXMLBook() for xlsx
+    // if (book)
+    // {
+    //     libxl::Sheet* sheet = book->addSheet(L"Sheet1");
+    //     if (sheet)
+    //     {
+    //         sheet->writeStr(2, 1, L"Hello, World !");
+    //         sheet->writeNum(3, 1, 1000);
+    //     }
+    //     book->save(L"example.xls");
+    //     book->release();
+    // }
+    // return 0;
+
     WNDCLASSEX wc;
 
     // 清空視窗類別以供使用
@@ -70,7 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
-
+    bool flag = 0;
 
     // 進入主要迴圈:
     // 這個結構體包含Windows事件訊息
@@ -98,11 +113,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     }
     return msg.wParam;
-}
-//按鈕點擊事件
-void OnButtonClick(HWND hWnd)
-{
-    MessageBox(hWnd, L"Button Clicked!", L"Button Click", MB_OK);
 }
 
 // 訊息處理函數
@@ -202,5 +212,8 @@ void OpenFile()
 
     }
 }
+
+
+
 
 
