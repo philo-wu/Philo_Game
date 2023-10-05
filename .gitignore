@@ -10,3 +10,7 @@
 *.db
 .vs/Philo_Snake/v16/.suo
 *.res
+*.ipch
+*.db-wal
+*.db-shm
+*.opendb
