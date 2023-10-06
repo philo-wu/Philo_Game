@@ -23,6 +23,9 @@
     <ClInclude Include="mian.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders.shader">

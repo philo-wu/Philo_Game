@@ -1,8 +1,14 @@
 ﻿
 #include "framework.h"
+//#include <xlnt/xlnt.hpp>
+//#include <OpenXLSX.hpp>
+//using namespace OpenXLSX;
+#include <qfiledialog.h>
+#include <ActiveQt/qaxobject.h>
+
 // #include "libxl.h"
 
-#pragma comment(lib, "libxl.lib")
+//#pragma comment(lib, "libxl.lib")
 
 // 定義螢幕解析度
 #define SCREEN_WIDTH  800
@@ -14,7 +20,6 @@ HWND hWnd;
 
 // 函數原型
 void OpenFile(void);
-
 
 //  按鈕宣告
 HWND Load_Button;
@@ -34,20 +39,50 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 視窗句柄，由函數填充
     // 這個結構體用來保存視窗類別相關的訊息
 
-    // libxl::Book* book;
-    // book = xlCreateXMLBook();// xlCreateXMLBook() for xlsx
-    // if (book)
-    // {
-    //     libxl::Sheet* sheet = book->addSheet(L"Sheet1");
-    //     if (sheet)
-    //     {
-    //         sheet->writeStr(2, 1, L"Hello, World !");
-    //         sheet->writeNum(3, 1, 1000);
-    //     }
-    //     book->save(L"example.xls");
-    //     book->release();
-    // }
-    // return 0;
+    QString readFile = QFileDialog::getOpenFileName(NULL, QStringLiteral("选择Excel文件"), "", tr("Exel file(*.xls *.xlsx)"));
+    int row_count, col_count;
+    QStringList str;
+    if (!readFile.isEmpty())
+    {
+        QAxObject excel("Excel.Application");
+        excel.setProperty("Visible", false); //不显示Excel界面，如果为true会看到启动的Excel界面  
+        QAxObject* work_books = excel.querySubObject("WorkBooks");
+        work_books->dynamicCall("Open (const QString&)", readFile);//打开指定文件
+        QAxObject* work_book = excel.querySubObject("ActiveWorkBook");
+        QAxObject* work_sheets = work_book->querySubObject("Sheets");  //获取工作表，Sheets也可换用WorkSheets
+        int sheet_count = work_sheets->property("Count").toInt();  //获取工作表数目
+
+        if (sheet_count > 0)
+        {
+            QAxObject* work_sheet = work_book->querySubObject("Sheets(int)", 1); //表格sheet，参数 "1" 代表第1个sheet
+            QAxObject* used_range = work_sheet->querySubObject("UsedRange");
+            QAxObject* rows = used_range->querySubObject("Rows");
+            QAxObject* colums = used_range->querySubObject("Columns");
+            row_count = rows->property("Count").toInt();  //获取行数
+            col_count = colums->property("Count").toInt(); //获取列数
+            //QString txt = work_sheet->querySubObject("Cells(int,int)", i, 1)->property("Value").toString(); //获取单元格内容
+            for (int i = 1; i <= row_count; i++)
+            {
+                for (int j = 1; j <= col_count; j++)
+                {
+                    QString cell = work_sheet->querySubObject("Cells(int,int)", i, j)->property("Value").toString(); //获取表格内容
+                    str.append(cell);
+                    qDebug() << cell << endl;
+                }
+
+            }
+
+            work_book->dynamicCall("Close()", false);  //关闭文件
+            excel.dynamicCall("Quit()");  //退出
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "提示", "文件路径为空！");
+    }
+
+
+    return 0;
 
     WNDCLASSEX wc;
 
