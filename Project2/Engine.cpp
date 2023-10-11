@@ -130,6 +130,9 @@ void Engine::Logic(double elapsedTime)
 
 HRESULT Engine::Draw(double FPS)
 {
+
+    int FPS1 = 1 / FPS;
+
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
     HRESULT hr;
@@ -150,7 +153,6 @@ HRESULT Engine::Draw(double FPS)
     // Draw score
     D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
     D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
-    int FPS1 = FPS;
     WCHAR scoreStr[64];
     swprintf_s(scoreStr, L"分數: %d            最高分數: %d              ", score, highScore);
     m_pRenderTarget->DrawText(

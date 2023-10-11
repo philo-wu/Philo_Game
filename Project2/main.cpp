@@ -2,6 +2,7 @@
 #include "mian.h"
 #include "resource.h"
 #include "nlohmann/json.hpp"
+#include <thread>
 
 
 
@@ -185,7 +186,7 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             int newDifficulty = engine->difficulty;
 
             // 將資料存入JSON
-            std::ifstream file("C:\\Users\\philo.wu\\Documents\\GitHub\\Philo_Snake\\Project2\\Ranklist.json", std::ifstream::binary);
+            std::ifstream file(". / Ranklist.json", std::ifstream::binary);
             json jsonData;
             file >> jsonData;
             file.close();
@@ -198,7 +199,7 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             };
             jsonData["Ranklist"].push_back(newEntry);
 
-            std::ofstream outFile("C:\\Users\\philo.wu\\Documents\\GitHub\\Philo_Snake\\Project2\\Ranklist.json");
+            std::ofstream outFile("./Ranklist.json");
             outFile << jsonData.dump(4);  // 4 是縮排的數量
             outFile.close();
 
@@ -364,7 +365,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             if (engine->playing)
             {
                 // Drawing
-                engine->Draw(FPS);
+                engine->Draw(targetFrameTime);
             }
         }
     }
