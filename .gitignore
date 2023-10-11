@@ -17,4 +17,5 @@
 *.filters
 *.filters
 *.vsidx
-.vs/Philo_Snake/v17/.suo
+.vs/*
+debug/*

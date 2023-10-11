@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>832</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="label_title">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="mouseTracking">
+         <bool>false</bool>
+        </property>
+        <property name="tabletTracking">
+         <bool>false</bool>
+        </property>
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Qt_Excel_to_Json_Philo</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QPushButton" name="pushButton_select">
+          <property name="text">
+           <string>選擇檔案</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_show">
+          <property name="text">
+           <string>顯示</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_change">
+          <property name="text">
+           <string>轉檔</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QCheckBox" name="checkBox_JsontoEecel">
+          <property name="text">
+           <string>Json_to_Excel (未實作)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_ExceltoJson">
+          <property name="text">
+           <string>Excel_to_Json</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget_show">
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="autoScroll">
+       <bool>true</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>100</number>
+      </attribute>
+      <attribute name="horizontalHeaderHighlightSections">
+       <bool>true</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <row>
+       <property name="text">
+        <string>新增列</string>
+       </property>
+      </row>
+      <column>
+       <property name="text">
+        <string>序號</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>開關功能</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任務內容</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>獎勵</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任務條件</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任務參數1</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任務參數2</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>任務完成數量</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>832</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuQt_Excel_to_Json">
+    <property name="title">
+     <string>Qt_Excel_to_Json</string>
+    </property>
+   </widget>
+   <addaction name="menuQt_Excel_to_Json"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
