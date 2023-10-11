@@ -1,9 +1,6 @@
 #include "ExcelToJson/mainwindow.h"
 
-#include <QApplication>
-#include <QLocale>
-#include <QTranslator>
-#include <QTextCodec>
+
 
 
 

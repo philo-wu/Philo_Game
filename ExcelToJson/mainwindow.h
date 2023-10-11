@@ -10,6 +10,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QTranslator>
+#include <QTextCodec>
+#include <QApplication>
+#include <QLocale>
+#include <QTableWidget>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +28,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QString out_folderPath = "./Json/";
+    void loadExcelToTableWidget(QTableWidget* tableWidget, const QString& filePath);
+    void saveJson(QJsonDocument jsonDoc , QString filepath);
+    bool isValid(QString qstr, QString type);
 
 private slots:
 

@@ -43,6 +43,7 @@ public:
     QVBoxLayout *verticalLayout_2;
     QCheckBox *checkBox_JsontoEecel;
     QCheckBox *checkBox_ExceltoJson;
+    QLabel *label_out_folderPath;
     QTableWidget *tableWidget_show;
     QMenuBar *menubar;
     QMenu *menuQt_Excel_to_Json;
@@ -111,6 +112,11 @@ public:
 
         verticalLayout_2->addWidget(checkBox_ExceltoJson);
 
+        label_out_folderPath = new QLabel(centralwidget);
+        label_out_folderPath->setObjectName(QString::fromUtf8("label_out_folderPath"));
+
+        verticalLayout_2->addWidget(label_out_folderPath);
+
 
         horizontalLayout->addLayout(verticalLayout_2);
 
@@ -136,8 +142,8 @@ public:
         tableWidget_show->setHorizontalHeaderItem(6, __qtablewidgetitem6);
         QTableWidgetItem *__qtablewidgetitem7 = new QTableWidgetItem();
         tableWidget_show->setHorizontalHeaderItem(7, __qtablewidgetitem7);
-        if (tableWidget_show->rowCount() < 12)
-            tableWidget_show->setRowCount(12);
+        if (tableWidget_show->rowCount() < 4)
+            tableWidget_show->setRowCount(4);
         QTableWidgetItem *__qtablewidgetitem8 = new QTableWidgetItem();
         tableWidget_show->setVerticalHeaderItem(0, __qtablewidgetitem8);
         QTableWidgetItem *__qtablewidgetitem9 = new QTableWidgetItem();
@@ -146,36 +152,20 @@ public:
         tableWidget_show->setVerticalHeaderItem(2, __qtablewidgetitem10);
         QTableWidgetItem *__qtablewidgetitem11 = new QTableWidgetItem();
         tableWidget_show->setVerticalHeaderItem(3, __qtablewidgetitem11);
-        QTableWidgetItem *__qtablewidgetitem12 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(4, __qtablewidgetitem12);
-        QTableWidgetItem *__qtablewidgetitem13 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(5, __qtablewidgetitem13);
-        QTableWidgetItem *__qtablewidgetitem14 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(6, __qtablewidgetitem14);
-        QTableWidgetItem *__qtablewidgetitem15 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(7, __qtablewidgetitem15);
-        QTableWidgetItem *__qtablewidgetitem16 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(8, __qtablewidgetitem16);
-        QTableWidgetItem *__qtablewidgetitem17 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(9, __qtablewidgetitem17);
-        QTableWidgetItem *__qtablewidgetitem18 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(10, __qtablewidgetitem18);
-        QTableWidgetItem *__qtablewidgetitem19 = new QTableWidgetItem();
-        tableWidget_show->setVerticalHeaderItem(11, __qtablewidgetitem19);
         tableWidget_show->setObjectName(QString::fromUtf8("tableWidget_show"));
         tableWidget_show->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         tableWidget_show->setAutoScroll(true);
-        tableWidget_show->horizontalHeader()->setVisible(true);
+        tableWidget_show->horizontalHeader()->setVisible(false);
         tableWidget_show->horizontalHeader()->setDefaultSectionSize(100);
         tableWidget_show->horizontalHeader()->setHighlightSections(true);
-        tableWidget_show->verticalHeader()->setVisible(false);
+        tableWidget_show->verticalHeader()->setVisible(true);
 
         verticalLayout_3->addWidget(tableWidget_show);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 832, 20));
+        menubar->setGeometry(QRect(0, 0, 832, 21));
         menuQt_Excel_to_Json = new QMenu(menubar);
         menuQt_Excel_to_Json->setObjectName(QString::fromUtf8("menuQt_Excel_to_Json"));
         MainWindow->setMenuBar(menubar);
@@ -199,9 +189,10 @@ public:
         label_title->setText(QCoreApplication::translate("MainWindow", "Qt_Excel_to_Json_Philo", nullptr));
         pushButton_select->setText(QCoreApplication::translate("MainWindow", "\351\201\270\346\223\207\346\252\224\346\241\210", nullptr));
         pushButton_show->setText(QCoreApplication::translate("MainWindow", "\351\241\257\347\244\272", nullptr));
-        pushButton_change->setText(QCoreApplication::translate("MainWindow", "\350\275\211\346\252\224", nullptr));
-        checkBox_JsontoEecel->setText(QCoreApplication::translate("MainWindow", "Json_to_Excel (\346\234\252\345\257\246\344\275\234)", nullptr));
-        checkBox_ExceltoJson->setText(QCoreApplication::translate("MainWindow", "Excel_to_Json", nullptr));
+        pushButton_change->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221", nullptr));
+        checkBox_JsontoEecel->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
+        checkBox_ExceltoJson->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
+        label_out_folderPath->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221\351\240\220\350\250\255\347\202\272\345\260\210\346\241\210\344\270\213Json\350\263\207\346\226\231\345\244\276", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_show->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "\345\272\217\350\231\237", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget_show->horizontalHeaderItem(1);
@@ -219,29 +210,13 @@ public:
         QTableWidgetItem *___qtablewidgetitem7 = tableWidget_show->horizontalHeaderItem(7);
         ___qtablewidgetitem7->setText(QCoreApplication::translate("MainWindow", "\344\273\273\345\213\231\345\256\214\346\210\220\346\225\270\351\207\217", nullptr));
         QTableWidgetItem *___qtablewidgetitem8 = tableWidget_show->verticalHeaderItem(0);
-        ___qtablewidgetitem8->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
+        ___qtablewidgetitem8->setText(QCoreApplication::translate("MainWindow", "\344\270\255\346\226\207\345\220\215\347\250\261", nullptr));
         QTableWidgetItem *___qtablewidgetitem9 = tableWidget_show->verticalHeaderItem(1);
-        ___qtablewidgetitem9->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
+        ___qtablewidgetitem9->setText(QCoreApplication::translate("MainWindow", "\350\213\261\346\226\207\345\220\215\347\250\261", nullptr));
         QTableWidgetItem *___qtablewidgetitem10 = tableWidget_show->verticalHeaderItem(2);
-        ___qtablewidgetitem10->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
+        ___qtablewidgetitem10->setText(QCoreApplication::translate("MainWindow", "\350\263\207\346\226\231\345\236\213\345\210\245", nullptr));
         QTableWidgetItem *___qtablewidgetitem11 = tableWidget_show->verticalHeaderItem(3);
-        ___qtablewidgetitem11->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem12 = tableWidget_show->verticalHeaderItem(4);
-        ___qtablewidgetitem12->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem13 = tableWidget_show->verticalHeaderItem(5);
-        ___qtablewidgetitem13->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem14 = tableWidget_show->verticalHeaderItem(6);
-        ___qtablewidgetitem14->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem15 = tableWidget_show->verticalHeaderItem(7);
-        ___qtablewidgetitem15->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem16 = tableWidget_show->verticalHeaderItem(8);
-        ___qtablewidgetitem16->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem17 = tableWidget_show->verticalHeaderItem(9);
-        ___qtablewidgetitem17->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem18 = tableWidget_show->verticalHeaderItem(10);
-        ___qtablewidgetitem18->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
-        QTableWidgetItem *___qtablewidgetitem19 = tableWidget_show->verticalHeaderItem(11);
-        ___qtablewidgetitem19->setText(QCoreApplication::translate("MainWindow", "\346\226\260\345\242\236\345\210\227", nullptr));
+        ___qtablewidgetitem11->setText(QCoreApplication::translate("MainWindow", "\351\241\257\347\244\272\347\270\256\345\257\253", nullptr));
         menuQt_Excel_to_Json->setTitle(QCoreApplication::translate("MainWindow", "Qt_Excel_to_Json", nullptr));
         toolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
