@@ -1,8 +1,6 @@
 #include "framework.h"
 #include "Engine.h"
 
-#pragma comment(lib, "d2d1")
-#pragma comment(lib, "dwrite")
 
 Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrush(NULL)
 {
@@ -132,6 +130,7 @@ HRESULT Engine::Draw(double FPS)
 {
 
     int FPS1 = 1 / FPS;
+    auto frameStart = std::chrono::steady_clock::now();
 
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
@@ -176,6 +175,7 @@ HRESULT Engine::Draw(double FPS)
 
     hr = m_pRenderTarget->EndDraw();
 
+    auto frameEnd = std::chrono::steady_clock::now();
     return S_OK;
 }
 
