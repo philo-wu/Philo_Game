@@ -6,6 +6,7 @@
 #include <commdlg.h>        //Åª¨úÀÉ®×
 #include <wincodec.h>
 #include <locale>
+#include <iostream>
 
 
 #include <stdlib.h>

@@ -19,6 +19,11 @@
             "difficulty": 5,
             "name": "測試",
             "score": 6
+        },
+        {
+            "difficulty": 5,
+            "name": "2",
+            "score": 5
         }
     ]
 }

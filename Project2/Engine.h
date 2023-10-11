@@ -17,8 +17,10 @@ public:
 	void Logic(double elapsedTime);
 	void ClearDraw(HWND hWnd);
 	int getscore() { return score; };
+	int FPS = 0;
+	void fps_count();
 
-	HRESULT Draw(double FPS);
+	HRESULT Draw();
 	bool playing = 0;
 	int difficulty = 5;
 	double UpdateFrameSleep(int difficulty);

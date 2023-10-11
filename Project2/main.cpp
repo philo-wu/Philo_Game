@@ -177,31 +177,40 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             // 使用者按下了確定按鈕
         {
             // 取得玩家名稱
-            wchar_t buffer[100]; // 要存放資料的緩衝區
-            GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
-            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-            std::string newName = converter.to_bytes(buffer);
+            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
+            if (textLength == 0)
+            {
+                // 輸入為空
+                MessageBox(hWnd, L"未輸入玩家名稱", L"錯誤", MB_OK);
+                // 彈出結束畫面
+                SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
+            }
+            else
+            {
+                wchar_t buffer[100]; // 要存放資料的緩衝區
+                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                std::string newName = converter.to_bytes(buffer);
 
-            int newScore = engine->getscore();
-            int newDifficulty = engine->difficulty;
+                int newScore = engine->getscore();
+                int newDifficulty = engine->difficulty;
 
-            // 將資料存入JSON
-            std::ifstream file(". / Ranklist.json", std::ifstream::binary);
-            json jsonData;
-            file >> jsonData;
-            file.close();
+                std::ifstream file("./Ranklist.json", std::ifstream::binary);
+                json jsonData;
+                file >> jsonData;
+                file.close();
 
-
-            json newEntry = {
-                {"name", newName},
-                {"score", newScore},
-                {"difficulty", newDifficulty}
-            };
-            jsonData["Ranklist"].push_back(newEntry);
-
-            std::ofstream outFile("./Ranklist.json");
-            outFile << jsonData.dump(4);  // 4 是縮排的數量
-            outFile.close();
+                json newEntry = {
+                    {"name", newName},
+                    {"score", newScore},
+                    {"difficulty", newDifficulty}
+                };
+                jsonData["Ranklist"].push_back(newEntry);
+                std::ofstream outFile("./Ranklist.json");
+                outFile << jsonData.dump(4);  // 4 是縮排的數量
+                outFile.close();
+                
+            }
 
             EndDialog(hwndDlg, IDOK);
         }
@@ -365,7 +374,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             if (engine->playing)
             {
                 // Drawing
-                engine->Draw(targetFrameTime);
+                engine->Draw();
             }
         }
     }

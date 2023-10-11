@@ -1,4 +1,4 @@
-#include "framework.h"
+ï»¿#include "framework.h"
 #include "Engine.h"
 
 
@@ -24,7 +24,7 @@ Engine::~Engine()
 
 HRESULT Engine::InitializeD2D(HWND m_hwnd)
 {
-    // ªì©l¤Æ Direct2D
+    // åˆå§‹åŒ– Direct2D
     D2D1_SIZE_U size = D2D1::SizeU(SCREEN_WIDTH, SCREEN_HEIGHT);
     D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
     m_pDirect2dFactory->CreateHwndRenderTarget(
@@ -99,7 +99,7 @@ void Engine::Logic(double elapsedTime)
     if (playing)
     {
         snake->Advance();
-
+        fps_count();
         if (snake->CheckFoodCollision(food->position.x, food->position.y))
         {
             food->Reset(snake, isFoodOnBorderChecked);
@@ -116,7 +116,7 @@ void Engine::Logic(double elapsedTime)
         else if (food->GameWin)
         {
             playing = false;
-            //TODO:¼g¤J³Ó§Qµe­±
+            //TODO:å¯«å…¥å‹åˆ©ç•«é¢
         }
 
         keyPressed = false;
@@ -126,15 +126,14 @@ void Engine::Logic(double elapsedTime)
     //Sleep(frame_sleep);
 }
 
-HRESULT Engine::Draw(double FPS)
+HRESULT Engine::Draw()
 {
 
-    int FPS1 = 1 / FPS;
     auto frameStart = std::chrono::steady_clock::now();
 
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
-    HRESULT hr;
+    //HRESULT hr;
 
     m_pRenderTarget->BeginDraw();
 
@@ -143,7 +142,7 @@ HRESULT Engine::Draw(double FPS)
 
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-    //Ã¸»s³òÀğ
+    //ç¹ªè£½åœç‰†
     D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
     ID2D1SolidColorBrush* pBlackBrush;
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
@@ -153,7 +152,7 @@ HRESULT Engine::Draw(double FPS)
     D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
     D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
     WCHAR scoreStr[64];
-    swprintf_s(scoreStr, L"¤À¼Æ: %d            ³Ì°ª¤À¼Æ: %d              ", score, highScore);
+    swprintf_s(scoreStr, L"åˆ†æ•¸: %d            æœ€é«˜åˆ†æ•¸: %d              ", score, highScore);
     m_pRenderTarget->DrawText(
         scoreStr,
         35,
@@ -161,7 +160,7 @@ HRESULT Engine::Draw(double FPS)
         rectangle2,
         m_pWhiteBrush
     );
-    swprintf_s(scoreStr, L"FPS : %d                           ",FPS1);
+    swprintf_s(scoreStr, L"FPS : %d                           ",FPS);
     //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
     m_pRenderTarget->DrawText(
         scoreStr,
@@ -173,16 +172,16 @@ HRESULT Engine::Draw(double FPS)
     snake->Draw(m_pRenderTarget);
     food->Draw(m_pRenderTarget);
 
-    hr = m_pRenderTarget->EndDraw();
+    m_pRenderTarget->EndDraw();
 
-    auto frameEnd = std::chrono::steady_clock::now();
+    //auto frameEnd = std::chrono::steady_clock::now();
     return S_OK;
 }
 
 void Engine::ClearDraw(HWND hWnd)
 {
     m_pRenderTarget->BeginDraw();
-    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));  // ¥H¥Õ¦â²MªÅ­I´º
+    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));  // ä»¥ç™½è‰²æ¸…ç©ºèƒŒæ™¯
     m_pRenderTarget->EndDraw();
     InvalidateRect(hWnd, NULL, TRUE);
 }
@@ -193,7 +192,7 @@ double Engine::UpdateFrameSleep(int difficulty)
     switch (difficulty)
     {
     case 1:
-        result = 3;  // Ãø«×1¡A³t«×³ÌºC
+        result = 3;  // é›£åº¦1ï¼Œé€Ÿåº¦æœ€æ…¢
         break;
     case 2:
         result = 4;
@@ -205,7 +204,7 @@ double Engine::UpdateFrameSleep(int difficulty)
         result = 6;
         break;
     case 5:
-        result = 8;  // Ãø«×5¡A¤¤µ¥³t«×
+        result = 8;  // é›£åº¦5ï¼Œä¸­ç­‰é€Ÿåº¦
         break;
     case 6:
         result = 20;
@@ -217,11 +216,29 @@ double Engine::UpdateFrameSleep(int difficulty)
         result = 50;
         break;
     case 9:
-        result = 60;   // Ãø«×9¡A³t«×³Ì§Ö
+        result = 60;   // é›£åº¦9ï¼Œé€Ÿåº¦æœ€å¿«
         break;
     default:
-        result = 8;  // ¹w³]¬°¤¤µ¥³t«×
+        result = 8;  // é è¨­ç‚ºä¸­ç­‰é€Ÿåº¦
         break;
     }
     return 1 / result ;
 };
+void Engine::fps_count()
+{
+    static auto lastTime = std::chrono::system_clock::now(); // æ—¶é—´ç‚¹
+    static int frameCount = 0;
+
+    ++frameCount;
+
+    auto curTime = std::chrono::system_clock::now(); // å½“å‰æ—¶é—´ç‚¹
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - lastTime).count(); // æ¯«ç§’
+
+    if (elapsedTime > 1000) // å–å›ºå®šæ—¶é—´é—´éš”ä¸º1ç§’
+    {
+        FPS = frameCount;
+        frameCount = 0;
+        lastTime = curTime;
+    }
+}
+
