@@ -129,15 +129,27 @@ HRESULT Engine::Draw()
 
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-    //繪製圍牆
-    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
-    ID2D1SolidColorBrush* pBlackBrush;
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
-    m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+    //繪製功能列底色
+    D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
+    ID2D1SolidColorBrush* pWhiteBrush;
+    D2D1_RECT_F rectangle_white = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, 50);
+    m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
+    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+    m_pRenderTarget->FillRectangle(&rectangle_white, pWhiteBrush);
+
+
+    //繪製草地
+    D2D1_COLOR_F customColor = D2D1::ColorF(0.0f, 0.65f, 0.0f, 1.0f);
+    ID2D1SolidColorBrush* pGreenBrush;
+    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 50.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
+    m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
+    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+    m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
+
 
     // Draw score
-    D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
-    D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
+    //D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
+    //D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
     //WCHAR scoreStr[64];
     //swprintf_s(scoreStr, L"分數: %d            最高分數: %d              ", score, highScore);
     //m_pRenderTarget->DrawText(

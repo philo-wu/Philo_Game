@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Tree.h"
 
 class Engine
 {
@@ -16,6 +17,8 @@ public:
 	HRESULT Draw();
 	bool playing = 0;
 	bool isFoodOnBorderChecked = 0;
+
+
 
 private:
 	ID2D1Factory* m_pDirect2dFactory ;

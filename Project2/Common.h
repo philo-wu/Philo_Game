@@ -6,8 +6,8 @@
 #define SCREEN_WIDTH  1024  
 #define SCREEN_HEIGHT 768
 #define BUTTON_INTERVAL 30
-#define BUTTON_WIDTH  200
-#define BUTTON_HEIGHT 50
+#define BUTTON_WIDTH  100
+#define BUTTON_HEIGHT 30
 
 // ¹CÀ¸¬ÛÃö
 #define CELL_SIZE 20

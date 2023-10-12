@@ -52,9 +52,9 @@ HWND hwndScrollBar;
 //畫面更新
 double targetFrameTime = 1.0 / 8; // 目標每幀時間（這裡假設 為 8 FPS）
 double accumulatedTime = 0.0;
-int deltaTime = 0;
+bool dialog_isfruit;
 // 遊戲引擎
-     Engine* engine;
+Engine* engine;
 // 函數原型
 // void OpenFile(void);
 // void DrawBitmap();

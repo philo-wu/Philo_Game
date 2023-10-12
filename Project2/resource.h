@@ -3,16 +3,19 @@
 // ¥Ñ Philo_Snake1.rc ¨Ï¥Î
 //
 #define IDOK2                           2
+#define ID_LOADTREE                     3
+#define ID_LOADFRUIT                    4
+#define IDCANCEL3                       5
+#define IDCANCEL3                       5
+
 #define IDB_BITMAP1                     101
 #define IDD_DIFFICULTY                  105
 #define IDD_RANKLIST                    106
-#define IDD_GAMEEND                     107
+#define IDD_LOADTREE                    108
 #define IDC_SLIDER1                     1006
 #define IDC_CHECK1                      1007
 #define IDC_LIST4                       1012
 #define IDC_EDIT1                       1013
-#define IDC_STATIC_SCORE                1071
-#define IDC_STATIC_DIFFICULTY           1072
 
 // Next default values for new objects
 // 

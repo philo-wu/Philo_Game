@@ -7,24 +7,31 @@
 
 
 HINSTANCE HINSTANCE1;
-INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
 
     switch (uMsg) {
-    case WM_INITDIALOG:
+    case WM_INITDIALOG: {
+            if(dialog_isfruit) {
+                // 顯示水果圖片按鈕
+                ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
+            }
+            else {
+                // 隱藏水果圖片按鈕
+                ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_HIDE);
+            }
+            //// 設定滑塊範圍
+            //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
+            //// 設定滑塊初始值
+            //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
 
-        //// 設定滑塊範圍
-        //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
-        //// 設定滑塊初始值
-        //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
-
-        //// 設定 "食物生成於邊界" 勾選框的初始狀態
-        //if(engine->isFoodOnBorderChecked)
-        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
-        //else
-        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
-
+            //// 設定 "食物生成於邊界" 勾選框的初始狀態
+            //if(engine->isFoodOnBorderChecked)
+            //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
+            //else
+            //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
+        }
         return TRUE;
 
     case WM_COMMAND:
@@ -49,6 +56,20 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
             // 使用者按下了取消按鈕
             EndDialog(hwndDlg, IDCANCEL);
             break;
+        case ID_LOADTREE: // 選擇樹木
+        {
+        }
+        break;
+
+        case ID_LOADFRUIT: // 選擇水果
+        {
+        }
+        break;
+        }
+        break;
+    case WM_PAINT:
+        {
+
         }
         break;
     }
@@ -260,7 +281,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     hWnd = CreateWindowEx(
         NULL,
         L"WindowClass1",                 // 視窗類別的名字
-        L"種樹程式",   // 視窗的標題
+        L"種樹得樹",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
         300,                             // 視窗的x座標
         100,                             // 視窗的y座標
@@ -273,7 +294,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 主選單的字體及大小
     HFONT hFont = CreateFont(
-        28,                                     // 字體的高度
+        18,                                     // 字體的高度
         0,                                      // 字體的寬度
         0,                                      // 字體的旋轉角度
         0,                                      // 字體的斜體角度
@@ -288,6 +309,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
         DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
         L"Verdana"                              // 字體名
     );
+
+
     SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
     SendMessage(Difficulty_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
     SendMessage(Score_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
@@ -297,7 +320,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     engine = new Engine();
-
     engine->InitializeD2D(hWnd);
     //InitD2D(hWnd);
 
@@ -402,9 +424,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             Start_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"選擇圖片",                            // 按鈕上顯示的文字
+                L"選擇樹木",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -160,
+                10 + (BUTTON_WIDTH+10)*0, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -414,9 +436,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             Difficulty_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"難度選擇",                            // 按鈕上顯示的文字
+                L"選擇水果樹",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
+                10 + (BUTTON_WIDTH + 10) * 1, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -426,9 +448,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             Score_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"排行榜",                            // 按鈕上顯示的文字
+                L"儲存地圖",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 ,
+                10 + (BUTTON_WIDTH + 10) * 2, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -438,9 +460,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             End_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"離開遊戲",                            // 按鈕上顯示的文字
+                L"保留",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 +80,
+                10 + (BUTTON_WIDTH + 10) * 3, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -476,18 +498,21 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 //檢查按鈕身分
                 switch (LOWORD(wParam))
                 {
-                case 1: // 開始遊戲
-                    //ShowButton(0);
-                    //OnPaint(hWnd);
-                    //engine->playing = 1;
+                case 1: // 選擇樹木
+                    {
+                        dialog_isfruit = 0;
+                        DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
+                    }
                     break;
 
-                case 2: // 難度選擇
-                    //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_DIFFICULTY), NULL, Dialog_Difficulty_Proc);
-
+                case 2: // 選擇水果樹
+                    {
+                        dialog_isfruit = 1;
+                        DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
+                    }                    
                     break;
 
-                case 3: // 最高分數
+                case 3: // 儲存地圖
                     //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
                     //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
 
@@ -507,21 +532,25 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
         case WM_PAINT:
         {
+            // 主選單畫面
+
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
+            engine->Draw();
 
-            HFONT hFont = CreateFont(72, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
-                OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
-            SelectObject(hdc, hFont);
-            SetTextColor(hdc, RGB(0, 0, 0));
-            SetBkColor(hdc, RGB(240, 240, 240));
+            // 主選單標題
+            //HFONT hFont = CreateFont(72, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
+            //    OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
+            //SelectObject(hdc, hFont);
+            //SetTextColor(hdc, RGB(0, 0, 0));
+            //SetBkColor(hdc, RGB(240, 240, 240));
 
-            WCHAR Str[64];
-            swprintf_s(Str, L"%s", L"小精靈吃漢堡");
-            TextOut(hdc, 310, 100, Str, wcslen(Str));
+            //WCHAR Str[64];
+            //swprintf_s(Str, L"%s", L"小精靈吃漢堡");
+            //TextOut(hdc, 310, 100, Str, wcslen(Str));
 
-            // 釋放字體資源
-            DeleteObject(hFont);
+            //// 釋放字體資源
+            //DeleteObject(hFont);
 
 
             EndPaint(hWnd, &ps);
@@ -546,8 +575,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             //WCHAR scoreStr[64];
             //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
             //MessageBox(hWnd, scoreStr, L"結算", MB_OK);
-            DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_GAMEEND), NULL, Dialog_GameEnd_Proc);
-            ShowButton(1);
+            //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_GameEnd_Proc);
+            //ShowButton(1);
             //ClearDraw();
             break;
 
@@ -577,34 +606,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 
 // 開啟檔案
-//void OpenFile()
-//{
-//    OPENFILENAME ofn;
-//    wchar_t szFile[MAX_PATH] = L"";
-//
-//    ZeroMemory(&ofn, sizeof(ofn));
-//    ofn.lStructSize = sizeof(ofn);
-//    ofn.hwndOwner = hWnd;  // 父視窗的 handle
-//    ofn.lpstrFile = szFile;
-//    ofn.lpstrFile[0] = '\0';
-//    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-//    ofn.lpstrFilter = L"All Files\0*.*\0";
-//    ofn.nFilterIndex = 1;
-//    ofn.lpstrFileTitle = NULL;
-//    ofn.nMaxFileTitle = 0;
-//    ofn.lpstrInitialDir = NULL;
-//    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-//    // TODO:判斷副檔名
-//    if (GetOpenFileName(&ofn) == TRUE)
-//    {
-//        IWICImagingFactory* pIWICFactory = NULL;
-//        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-        //LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
-//        pIWICFactory->Release();
-//    }
-//}
-//
-//// 繪圖
+void OpenFile()
+{
+    OPENFILENAME ofn;
+    wchar_t szFile[MAX_PATH] = L"";
+
+    ZeroMemory(&ofn, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = hWnd;  // 父視窗的 handle
+    ofn.lpstrFile = szFile;
+    ofn.lpstrFile[0] = '\0';
+    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
+    ofn.lpstrFilter = L"All Files\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.lpstrFileTitle = NULL;
+    ofn.nMaxFileTitle = 0;
+    ofn.lpstrInitialDir = NULL;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+    // TODO:判斷副檔名
+    if (GetOpenFileName(&ofn) == TRUE)
+    {
+        IWICImagingFactory* pIWICFactory = NULL;
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
+        pIWICFactory->Release();
+    }
+}
+
+// 繪圖
 //void DrawBitmap()
 //{
 //    if (pRT && pBitmap)
