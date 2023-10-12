@@ -41,8 +41,12 @@ public:
     QPushButton *pushButton_show;
     QPushButton *pushButton_change;
     QVBoxLayout *verticalLayout_2;
-    QCheckBox *checkBox_JsontoEecel;
-    QCheckBox *checkBox_ExceltoJson;
+    QHBoxLayout *horizontalLayout_4;
+    QCheckBox *checkBox_istoClient;
+    QCheckBox *checkBox_istoServer;
+    QHBoxLayout *horizontalLayout_5;
+    QCheckBox *checkBox_2;
+    QCheckBox *checkBox;
     QLabel *label_out_folderPath;
     QTableWidget *tableWidget_show;
     QMenuBar *menubar;
@@ -102,15 +106,35 @@ public:
 
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        checkBox_JsontoEecel = new QCheckBox(centralwidget);
-        checkBox_JsontoEecel->setObjectName(QString::fromUtf8("checkBox_JsontoEecel"));
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        checkBox_istoClient = new QCheckBox(centralwidget);
+        checkBox_istoClient->setObjectName(QString::fromUtf8("checkBox_istoClient"));
 
-        verticalLayout_2->addWidget(checkBox_JsontoEecel);
+        horizontalLayout_4->addWidget(checkBox_istoClient);
 
-        checkBox_ExceltoJson = new QCheckBox(centralwidget);
-        checkBox_ExceltoJson->setObjectName(QString::fromUtf8("checkBox_ExceltoJson"));
+        checkBox_istoServer = new QCheckBox(centralwidget);
+        checkBox_istoServer->setObjectName(QString::fromUtf8("checkBox_istoServer"));
 
-        verticalLayout_2->addWidget(checkBox_ExceltoJson);
+        horizontalLayout_4->addWidget(checkBox_istoServer);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_4);
+
+        horizontalLayout_5 = new QHBoxLayout();
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
+        checkBox_2 = new QCheckBox(centralwidget);
+        checkBox_2->setObjectName(QString::fromUtf8("checkBox_2"));
+
+        horizontalLayout_5->addWidget(checkBox_2);
+
+        checkBox = new QCheckBox(centralwidget);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+
+        horizontalLayout_5->addWidget(checkBox);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_5);
 
         label_out_folderPath = new QLabel(centralwidget);
         label_out_folderPath->setObjectName(QString::fromUtf8("label_out_folderPath"));
@@ -165,7 +189,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 832, 21));
+        menubar->setGeometry(QRect(0, 0, 832, 20));
         menuQt_Excel_to_Json = new QMenu(menubar);
         menuQt_Excel_to_Json->setObjectName(QString::fromUtf8("menuQt_Excel_to_Json"));
         MainWindow->setMenuBar(menubar);
@@ -188,10 +212,12 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         label_title->setText(QCoreApplication::translate("MainWindow", "Qt_Excel_to_Json_Philo", nullptr));
         pushButton_select->setText(QCoreApplication::translate("MainWindow", "\351\201\270\346\223\207\346\252\224\346\241\210", nullptr));
-        pushButton_show->setText(QCoreApplication::translate("MainWindow", "\351\241\257\347\244\272", nullptr));
+        pushButton_show->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
         pushButton_change->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221", nullptr));
-        checkBox_JsontoEecel->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
-        checkBox_ExceltoJson->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
+        checkBox_istoClient->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272Client\347\253\257", nullptr));
+        checkBox_istoServer->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272Server\347\253\257", nullptr));
+        checkBox_2->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
+        checkBox->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
         label_out_folderPath->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221\351\240\220\350\250\255\347\202\272\345\260\210\346\241\210\344\270\213Json\350\263\207\346\226\231\345\244\276", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_show->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "\345\272\217\350\231\237", nullptr));

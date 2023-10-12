@@ -18,4 +18,3 @@
 *.filters
 *.vsidx
 .vs/*
-debug/*
