@@ -78,5 +78,31 @@ public:
 
         return hr;
     }
+    static void OpenFile(HWND hWnd,ID2D1RenderTarget* pRenderTarget, ID2D1Bitmap** ppBitmap)
+    {
+        OPENFILENAME ofn;
+        wchar_t szFile[MAX_PATH] = L"";
+
+        ZeroMemory(&ofn, sizeof(ofn));
+        ofn.lStructSize = sizeof(ofn);
+        ofn.hwndOwner = hWnd;  // ¤÷µøµ¡ªº handle
+        ofn.lpstrFile = szFile;
+        ofn.lpstrFile[0] = '\0';
+        ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
+        ofn.lpstrFilter = L"All Files\0*.*\0";
+        ofn.nFilterIndex = 1;
+        ofn.lpstrFileTitle = NULL;
+        ofn.nMaxFileTitle = 0;
+        ofn.lpstrInitialDir = NULL;
+        ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        // TODO:§PÂ_°ÆÀÉ¦W
+        if (GetOpenFileName(&ofn) == TRUE)
+        {
+            IWICImagingFactory* pIWICFactory = NULL;
+            CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap);
+            pIWICFactory->Release();
+        }
+    }
 
 };

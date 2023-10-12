@@ -12,66 +12,101 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     DWORD dwID = wParam;
 
     switch (uMsg) {
-    case WM_INITDIALOG: {
-            if(dialog_isfruit) {
-                // 顯示水果圖片按鈕
-                ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
-            }
-            else {
-                // 隱藏水果圖片按鈕
-                ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_HIDE);
-            }
-            //// 設定滑塊範圍
-            //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
-            //// 設定滑塊初始值
-            //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
-
-            //// 設定 "食物生成於邊界" 勾選框的初始狀態
-            //if(engine->isFoodOnBorderChecked)
-            //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
-            //else
-            //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
-        }
-        return TRUE;
-
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case IDOK:
-            // 使用者按下了確定按鈕
+        case WM_INITDIALOG: 
             {
-                //// 取得設定頁面的資料
-                //int sliderValue = SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_GETPOS, 0, 0);
-                //BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
-                //// 將資料存入引擎
-                //engine->difficulty = sliderValue;
-                //targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
-                //engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
+                HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
+                if (SUCCEEDED(hr))
+                {
+                    RECT rc;
+                    GetClientRect(hwndDlg, &rc);
+                    // 創建 D2D 渲染目標
+                    hr = pD2DFactory->CreateHwndRenderTarget(
+                        D2D1::RenderTargetProperties(),
+                        D2D1::HwndRenderTargetProperties(hwndDlg, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
+                        &Tree_RenderTarget
+                    );
+                }            
+                if(dialog_isfruit) {
+                    // 顯示水果圖片按鈕
+                    ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
+                }
+                else {
+                    // 隱藏水果圖片按鈕
+                    ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_HIDE);
+                }
+            }
+            return TRUE;
 
-                EndDialog(hwndDlg, IDOK);
-            }   
+        case WM_COMMAND:
+            switch (LOWORD(wParam))
+            {
+            case IDOK:
+                // 使用者按下了確定按鈕
+                {
+                    EndDialog(hwndDlg, IDOK);
+                }   
+                break;
+
+            case IDCANCEL:
+                // 使用者按下了取消按鈕
+                EndDialog(hwndDlg, IDCANCEL);
+                break;
+            case ID_LOADTREE: // 選擇樹木
+            {
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap);
+                SendMessage(hwndDlg, WM_PAINT, 0, 0);
+                //InvalidateRect(hwndDlg, NULL, TRUE);
+
+            }
             break;
 
-        case IDCANCEL:
-            // 使用者按下了取消按鈕
-            EndDialog(hwndDlg, IDCANCEL);
+            case ID_LOADFRUIT: // 選擇水果
+            {
+                //Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap);
+                //SendMessage(hwndDlg, WM_PAINT, 0, 0);
+                InvalidateRect(hwndDlg, NULL, TRUE);
+            }
             break;
-        case ID_LOADTREE: // 選擇樹木
+            }
+            break;
+        case WM_PAINT:
         {
-        }
-        break;
+            Tree_RenderTarget->BeginDraw();
+            Tree_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+            Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
 
-        case ID_LOADFRUIT: // 選擇水果
-        {
-        }
-        break;
-        }
-        break;
-    case WM_PAINT:
-        {
+            //繪製草地
+            //D2D1_COLOR_F customColor = D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f);
+            //ID2D1SolidColorBrush* pGreenBrush;
+            //D2D1_RECT_F rectangle = D2D1::RectF(0.0f, 50.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
+            //Tree_RenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
+            //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+            //Tree_RenderTarget->FillRectangle(&rectangle, pGreenBrush);
 
-        }
-        break;
+            POINT point;
+            point.x = 10;
+            point.y = 10;
+            if (Tree_Bitmap)
+            {
+                D2D1_SIZE_U size = Tree_Bitmap->GetPixelSize();
+                UINT width = size.width;
+                UINT height = size.height;
+                int fixed_px=200;
+                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(point.x, point.y, point.x + fixed_px, point.y + fixed_px));
+            }
+
+            //if (Tree_Bitmap)
+            //    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
+
+            Tree_RenderTarget->EndDraw();
+            ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
+
+            }
+            break;
+        case WM_ERASEBKGND:
+            {
+
+            }
     }
     return FALSE;
 }
@@ -320,62 +355,66 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     engine = new Engine();
-    engine->InitializeD2D(hWnd);
-    //InitD2D(hWnd);
+    engine->InitializeD2D(hWnd); //繪製背景
+    //InitD2D(hWnd , Tree_RenderTarget); //繪製
 
     //   InitD3D(hWnd);
     // 進入主要迴圈:
     
     // 這個結構體包含Windows事件訊息
     MSG msg = { 0 };
+
+    // 因種樹程式不需重複繪圖故不使用計時器
     // 計時器
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    int frames = 0;
-    double framesTime = 0;
-    double FPS = 0;
+    //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //int frames = 0;
+    //double framesTime = 0;
+    //double FPS = 0;
+    
     // 訊息迴圈
     while (TRUE)
     {
-        end = std::chrono::steady_clock::now();
-        double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
-        begin = end;
+        // 因種樹程式不需重複運算邏輯故不使用引擎
+        //end = std::chrono::steady_clock::now();
+        //double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
+        //begin = end;
 
-        accumulatedTime += elapsed_secs;
-        //顯示 FPS
-        //暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
-        if (engine->playing)
-        {
-            framesTime += elapsed_secs;
-            frames++;
-            if
-                (framesTime > 1) {
-                //WCHAR fpsText[32];
-                //swprintf(fpsText, 32, L"Game: %d FPS", frames);
-                //SetWindowText(hWnd, fpsText);
-                FPS = frames;
-                frames = 0;
-                framesTime = 0;
-            }
-        }
-        while (accumulatedTime >= targetFrameTime)
-        {
+        //accumulatedTime += elapsed_secs;
+        ////顯示 FPS
+        ////暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
+        //if (engine->playing)
+        //{
+        //    framesTime += elapsed_secs;
+        //    frames++;
+        //    if
+        //        (framesTime > 1) {
+        //        //WCHAR fpsText[32];
+        //        //swprintf(fpsText, 32, L"Game: %d FPS", frames);
+        //        //SetWindowText(hWnd, fpsText);
+        //        FPS = frames;
+        //        frames = 0;
+        //        framesTime = 0;
+        //    }
+        //}
+        //while (accumulatedTime >= targetFrameTime)
+        //{
 
 
-            // Game logic
-            if (engine->playing)
-            {
-                engine->Logic(targetFrameTime);
-                if (!engine->playing)
-                {
-                    SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
-                    engine->Reset();
-                    engine->ClearDraw(hWnd);
-                }
-            }
+        //    // Game logic
+        //    if (engine->playing)
+        //    {
+        //        engine->Logic(targetFrameTime);
+        //        if (!engine->playing)
+        //        {
+        //            SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
+        //            engine->Reset();
+        //            engine->ClearDraw(hWnd);
+        //        }
+        //    }
 
-            accumulatedTime -= targetFrameTime;
-        }
+        //    accumulatedTime -= targetFrameTime;
+        //}
 
         // 检查队列中是否有消息正在等待
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -393,11 +432,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
-            if (engine->playing)
-            {
-                // Drawing
-                engine->Draw();
-            }
+            // 因種樹程式不需重複繪圖故不使用
+            //if (engine->playing)
+            //{
+            //    // Drawing
+            //    engine->Draw();
+            //}
         }
     }
 
@@ -606,32 +646,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 
 // 開啟檔案
-void OpenFile()
-{
-    OPENFILENAME ofn;
-    wchar_t szFile[MAX_PATH] = L"";
 
-    ZeroMemory(&ofn, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = hWnd;  // 父視窗的 handle
-    ofn.lpstrFile = szFile;
-    ofn.lpstrFile[0] = '\0';
-    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-    ofn.lpstrFilter = L"All Files\0*.*\0";
-    ofn.nFilterIndex = 1;
-    ofn.lpstrFileTitle = NULL;
-    ofn.nMaxFileTitle = 0;
-    ofn.lpstrInitialDir = NULL;
-    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-    // TODO:判斷副檔名
-    if (GetOpenFileName(&ofn) == TRUE)
-    {
-        IWICImagingFactory* pIWICFactory = NULL;
-        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-        LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
-        pIWICFactory->Release();
-    }
-}
 
 // 繪圖
 //void DrawBitmap()

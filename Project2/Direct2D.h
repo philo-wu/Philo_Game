@@ -7,7 +7,7 @@
 // ¥]§tDirect2D®w¤å¥ó
 #pragma comment (lib, "d2d1.lib")
 #pragma comment (lib, "windowscodecs.lib")
-#pragma comment(lib, "dwrite")
+#pragma comment( lib, "dwrite")
 
 
 

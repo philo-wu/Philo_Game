@@ -63,6 +63,12 @@ Engine* engine;
 // void OnPaint(HWND hWnd);
 // 以上貪吃蛇使用不到, 並轉移給引擎宣告
 
+ID2D1Bitmap* Tree_Bitmap;
+ID2D1Bitmap* Fruit_Bitmap;
+ID2D1HwndRenderTarget* Tree_RenderTarget;
+
+ID2D1Factory* pD2DFactory;
+
 void ShowButton(bool);
 
 //  宣告WindowProc
@@ -72,3 +78,23 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
                             LPARAM lParam);
 
 
+HRESULT InitD2D(HWND hwnd , ID2D1HwndRenderTarget* RenderTarget)
+{
+    // 創建 D2D 工廠
+    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
+
+    if (SUCCEEDED(hr))
+    {
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+
+        // 創建 D2D 渲染目標
+        hr = pD2DFactory->CreateHwndRenderTarget(
+            D2D1::RenderTargetProperties(),
+            D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
+            &RenderTarget
+        );
+    }
+
+    return hr;
+}
