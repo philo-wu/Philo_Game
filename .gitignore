@@ -18,3 +18,4 @@
 *.filters
 *.vsidx
 .vs/*
+release/*
