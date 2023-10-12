@@ -117,7 +117,7 @@
         <item>
          <widget class="QLabel" name="label_out_folderPath">
           <property name="text">
-           <string>輸出路徑預設為專案下Json資料夾</string>
+           <string>輸出路徑預設為執行檔同目錄Json資料夾</string>
           </property>
          </widget>
         </item>
@@ -215,7 +215,7 @@
      <x>0</x>
      <y>0</y>
      <width>832</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuQt_Excel_to_Json">

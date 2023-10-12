@@ -189,7 +189,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 832, 20));
+        menubar->setGeometry(QRect(0, 0, 832, 21));
         menuQt_Excel_to_Json = new QMenu(menubar);
         menuQt_Excel_to_Json->setObjectName(QString::fromUtf8("menuQt_Excel_to_Json"));
         MainWindow->setMenuBar(menubar);
@@ -218,7 +218,7 @@ public:
         checkBox_istoServer->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272Server\347\253\257", nullptr));
         checkBox_2->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
         checkBox->setText(QCoreApplication::translate("MainWindow", "\344\277\235\347\225\231", nullptr));
-        label_out_folderPath->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221\351\240\220\350\250\255\347\202\272\345\260\210\346\241\210\344\270\213Json\350\263\207\346\226\231\345\244\276", nullptr));
+        label_out_folderPath->setText(QCoreApplication::translate("MainWindow", "\350\274\270\345\207\272\350\267\257\345\276\221\351\240\220\350\250\255\347\202\272\345\237\267\350\241\214\346\252\224\345\220\214\347\233\256\351\214\204Json\350\263\207\346\226\231\345\244\276", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_show->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "\345\272\217\350\231\237", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget_show->horizontalHeaderItem(1);
