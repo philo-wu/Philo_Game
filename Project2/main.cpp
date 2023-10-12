@@ -4,12 +4,18 @@
 #include "nlohmann/json.hpp"
 #include <thread>
 
-
+POINT clickPoint = { 0 };
+POINT treePoint = { 0 };
 
 HINSTANCE HINSTANCE1;
 INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
+
+    treePoint.x = 130;
+    treePoint.y = 10;
+    int fixed_px = 200;
+    int fixed_px_fruit = 30;
 
     switch (uMsg) {
         case WM_INITDIALOG: 
@@ -35,7 +41,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_HIDE);
                 }
             }
-            return TRUE;
+        break;
 
         case WM_COMMAND:
             switch (LOWORD(wParam))
@@ -54,23 +60,39 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             case ID_LOADTREE: // 選擇樹木
             {
                 Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap);
-                SendMessage(hwndDlg, WM_PAINT, 0, 0);
-                //InvalidateRect(hwndDlg, NULL, TRUE);
+                //SendMessage(hwndDlg, WM_PAINT, 0, 0);
+                InvalidateRect(hwndDlg, NULL, TRUE);
 
             }
             break;
 
             case ID_LOADFRUIT: // 選擇水果
             {
-                //Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap);
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap);
                 //SendMessage(hwndDlg, WM_PAINT, 0, 0);
                 InvalidateRect(hwndDlg, NULL, TRUE);
             }
             break;
             }
-            break;
+        break;
+        case WM_LBUTTONDOWN:
+            // 處理滑鼠左鍵
+        {
+            int xPos = GET_X_LPARAM(lParam);
+            int yPos = GET_Y_LPARAM(lParam);
+            if (xPos >= treePoint.x && yPos >= treePoint.y && xPos <= treePoint.x + fixed_px && yPos <= treePoint.y + fixed_px)
+            {
+                clickPoint.x = static_cast<FLOAT>(xPos);
+                clickPoint.y = static_cast<FLOAT>(yPos);
+                InvalidateRect(hwndDlg, NULL, TRUE);
+            }
+        }
+        break;
         case WM_PAINT:
         {
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwndDlg, &ps);
+
             Tree_RenderTarget->BeginDraw();
             Tree_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
             Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
@@ -83,30 +105,29 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
             //Tree_RenderTarget->FillRectangle(&rectangle, pGreenBrush);
 
-            POINT point;
-            point.x = 10;
-            point.y = 10;
+            
             if (Tree_Bitmap)
             {
                 D2D1_SIZE_U size = Tree_Bitmap->GetPixelSize();
                 UINT width = size.width;
                 UINT height = size.height;
-                int fixed_px=200;
-                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(point.x, point.y, point.x + fixed_px, point.y + fixed_px));
+                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(treePoint.x, treePoint.y, treePoint.x + fixed_px, treePoint.y + fixed_px));
             }
-
+            if (Fruit_Bitmap && clickPoint.x !=0 && clickPoint.y !=0)
+            {
+                D2D1_SIZE_U size = Fruit_Bitmap->GetPixelSize();
+                UINT width = size.width;
+                UINT height = size.height;
+                Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + fixed_px_fruit, clickPoint.y + fixed_px_fruit));
+            }
             //if (Tree_Bitmap)
             //    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
 
             Tree_RenderTarget->EndDraw();
-            ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
 
+            EndPaint(hwndDlg, &ps);
             }
-            break;
-        case WM_ERASEBKGND:
-            {
-
-            }
+        break;
     }
     return FALSE;
 }
