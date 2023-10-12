@@ -8,5 +8,6 @@
 *.recipe
 *.obj
 *.db
-.vs/Philo_Snake/v16/.suo
+.vs/*
 *.res
+debug/*
