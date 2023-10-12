@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Food.h"
-#include "Snake.h"
-
-
 
 class Engine
 {
@@ -16,14 +12,9 @@ public:
 	void Reset();
 	void Logic(double elapsedTime);
 	void ClearDraw(HWND hWnd);
-	int getscore() { return score; };
-	int FPS = 0;
-	void fps_count();
 
 	HRESULT Draw();
 	bool playing = 0;
-	int difficulty = 5;
-	double UpdateFrameSleep(int difficulty);
 	bool isFoodOnBorderChecked = 0;
 
 private:
@@ -34,11 +25,5 @@ private:
 	IDWriteTextFormat* m_pTextFormat;
 	ID2D1SolidColorBrush* m_pWhiteBrush;
 
-	Snake* snake;
-	Food* food;	
 
-	int score;
-	int highScore;
-
-	bool keyPressed;
 };

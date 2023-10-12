@@ -21,12 +21,6 @@
     <ClCompile Include="main.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
-    <ClCompile Include="Food.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-    <ClCompile Include="Snake.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
@@ -35,19 +29,10 @@
     <ClInclude Include="mian.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="Food.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="Snake.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Direct2D.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
-    <ClInclude Include="Direct3D.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">

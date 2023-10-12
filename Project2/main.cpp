@@ -14,16 +14,16 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
     switch (uMsg) {
     case WM_INITDIALOG:
 
-        // 設定滑塊範圍
-        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
-        // 設定滑塊初始值
-        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
+        //// 設定滑塊範圍
+        //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
+        //// 設定滑塊初始值
+        //SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
 
-        // 設定 "食物生成於邊界" 勾選框的初始狀態
-        if(engine->isFoodOnBorderChecked)
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
-        else
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
+        //// 設定 "食物生成於邊界" 勾選框的初始狀態
+        //if(engine->isFoodOnBorderChecked)
+        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
+        //else
+        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
 
         return TRUE;
 
@@ -33,13 +33,13 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
         case IDOK:
             // 使用者按下了確定按鈕
             {
-                // 取得設定頁面的資料
-                int sliderValue = SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_GETPOS, 0, 0);
-                BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
-                // 將資料存入引擎
-                engine->difficulty = sliderValue;
-                targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
-                engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
+                //// 取得設定頁面的資料
+                //int sliderValue = SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_GETPOS, 0, 0);
+                //BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
+                //// 將資料存入引擎
+                //engine->difficulty = sliderValue;
+                //targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
+                //engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
 
                 EndDialog(hwndDlg, IDOK);
             }   
@@ -164,9 +164,9 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_INITDIALOG:
 
         // 將實際分數設定到對應的靜態文字控制項上
-        SetDlgItemInt(hwndDlg, IDC_STATIC_SCORE, engine->getscore(), FALSE);
+        //SetDlgItemInt(hwndDlg, IDC_STATIC_SCORE, engine->getscore(), FALSE);
         // 將實際難度設定到對應的靜態文字控制項上
-        SetDlgItemInt(hwndDlg, IDC_STATIC_DIFFICULTY, engine->difficulty, FALSE);
+        //SetDlgItemInt(hwndDlg, IDC_STATIC_DIFFICULTY, engine->difficulty, FALSE);
 
         return TRUE;
 
@@ -192,8 +192,8 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 std::string newName = converter.to_bytes(buffer);
 
-                int newScore = engine->getscore();
-                int newDifficulty = engine->difficulty;
+                int newScore =0;
+                int newDifficulty =0;
 
                 std::ifstream file("./Ranklist.json", std::ifstream::binary);
                 json jsonData;
@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     hWnd = CreateWindowEx(
         NULL,
         L"WindowClass1",                 // 視窗類別的名字
-        L"Philo_Snake",   // 視窗的標題
+        L"種樹程式",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
         300,                             // 視窗的x座標
         100,                             // 視窗的y座標
@@ -402,7 +402,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             Start_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"開始遊戲",                            // 按鈕上顯示的文字
+                L"選擇圖片",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
                 SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -160,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
@@ -477,26 +477,26 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 switch (LOWORD(wParam))
                 {
                 case 1: // 開始遊戲
-                    ShowButton(0);
+                    //ShowButton(0);
                     //OnPaint(hWnd);
-                    engine->playing = 1;
+                    //engine->playing = 1;
                     break;
 
                 case 2: // 難度選擇
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_DIFFICULTY), NULL, Dialog_Difficulty_Proc);
+                    //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_DIFFICULTY), NULL, Dialog_Difficulty_Proc);
 
                     break;
 
-                case 3: //TODO:: 最高分數
+                case 3: // 最高分數
                     //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
+                    //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
 
                     break;
 
-                case 4: //離開遊戲
+                case 4: // 離開遊戲
                     //SendMessage(hWnd, WM_COMMAND, ID_CUSTOM_COMMAND, 0);  //此為自定義命令
                     //SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);           //此為自定義事件
-                    SendMessage(hWnd, WM_CLOSE, 0, 0);                      //視窗關閉
+                    //SendMessage(hWnd, WM_CLOSE, 0, 0);                      //視窗關閉
                     break;
                 case ID_CUSTOM_COMMAND: // 自定義命令的處理
                     //MessageBox(hWnd, L"遊戲結束 \n得分為X", L"結算", MB_OK);
