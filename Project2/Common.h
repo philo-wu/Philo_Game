@@ -8,6 +8,7 @@
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  100
 #define BUTTON_HEIGHT 30
+#define FUNCTION_COLUMN_HEIGHT 50
 
 // 遊戲相關
 #define CELL_SIZE 20
@@ -104,5 +105,19 @@ public:
             pIWICFactory->Release();
         }
     }
+    static HBITMAP CreateDIBSectionBitmap(int width, int height) 
+    {
+        BITMAPINFO bmi;
+        ZeroMemory(&bmi, sizeof(BITMAPINFO));
+        bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bmi.bmiHeader.biWidth = width;
+        bmi.bmiHeader.biHeight = -height;  // 負值表示頂部向下
+        bmi.bmiHeader.biPlanes = 1;
+        bmi.bmiHeader.biBitCount = 32;  // 32 位色彩
+        bmi.bmiHeader.biCompression = BI_RGB;
 
+        void* pBits; // 用於存儲圖像數據的指針
+        HBITMAP hBitmap = CreateDIBSection(NULL, &bmi, DIB_RGB_COLORS, &pBits, NULL, 0);
+        return hBitmap;
+    }
 };

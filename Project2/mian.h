@@ -68,6 +68,7 @@ ID2D1Bitmap* Fruit_Bitmap;
 ID2D1HwndRenderTarget* Tree_RenderTarget;
 
 ID2D1Factory* pD2DFactory;
+HBITMAP finish_Tree;
 
 void ShowButton(bool);
 

@@ -151,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="Dialog_LoadTree_Proc.h" />
     <ClInclude Include="Direct2D.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="framework.h" />

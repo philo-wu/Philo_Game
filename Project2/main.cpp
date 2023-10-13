@@ -3,134 +3,11 @@
 #include "resource.h"
 #include "nlohmann/json.hpp"
 #include <thread>
+#include "Dialog_LoadTree_Proc.h"
 
-POINT clickPoint = { 0 };
-POINT treePoint = { 0 };
-
+//提供Dialog句柄
 HINSTANCE HINSTANCE1;
-INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    DWORD dwID = wParam;
 
-    treePoint.x = 130;
-    treePoint.y = 10;
-    int fixed_px = 200;
-    int fixed_px_fruit = 30;
-
-    switch (uMsg) {
-        case WM_INITDIALOG: 
-            {
-                HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
-                if (SUCCEEDED(hr))
-                {
-                    RECT rc;
-                    GetClientRect(hwndDlg, &rc);
-                    // 創建 D2D 渲染目標
-                    hr = pD2DFactory->CreateHwndRenderTarget(
-                        D2D1::RenderTargetProperties(),
-                        D2D1::HwndRenderTargetProperties(hwndDlg, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
-                        &Tree_RenderTarget
-                    );
-                }            
-                if(dialog_isfruit) {
-                    // 顯示水果圖片按鈕
-                    ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
-                }
-                else {
-                    // 隱藏水果圖片按鈕
-                    ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_HIDE);
-                }
-            }
-        break;
-
-        case WM_COMMAND:
-            switch (LOWORD(wParam))
-            {
-            case IDOK:
-                // 使用者按下了確定按鈕
-                {
-                    EndDialog(hwndDlg, IDOK);
-                }   
-                break;
-
-            case IDCANCEL:
-                // 使用者按下了取消按鈕
-                EndDialog(hwndDlg, IDCANCEL);
-                break;
-            case ID_LOADTREE: // 選擇樹木
-            {
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap);
-                //SendMessage(hwndDlg, WM_PAINT, 0, 0);
-                InvalidateRect(hwndDlg, NULL, TRUE);
-
-            }
-            break;
-
-            case ID_LOADFRUIT: // 選擇水果
-            {
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap);
-                //SendMessage(hwndDlg, WM_PAINT, 0, 0);
-                InvalidateRect(hwndDlg, NULL, TRUE);
-            }
-            break;
-            }
-        break;
-        case WM_LBUTTONDOWN:
-            // 處理滑鼠左鍵
-        {
-            int xPos = GET_X_LPARAM(lParam);
-            int yPos = GET_Y_LPARAM(lParam);
-            if (xPos >= treePoint.x && yPos >= treePoint.y && xPos <= treePoint.x + fixed_px && yPos <= treePoint.y + fixed_px)
-            {
-                clickPoint.x = static_cast<FLOAT>(xPos);
-                clickPoint.y = static_cast<FLOAT>(yPos);
-                InvalidateRect(hwndDlg, NULL, TRUE);
-            }
-        }
-        break;
-        case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwndDlg, &ps);
-
-            Tree_RenderTarget->BeginDraw();
-            Tree_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-            Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
-
-            //繪製草地
-            //D2D1_COLOR_F customColor = D2D1::ColorF(0.5f, 0.0f, 0.0f, 1.0f);
-            //ID2D1SolidColorBrush* pGreenBrush;
-            //D2D1_RECT_F rectangle = D2D1::RectF(0.0f, 50.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
-            //Tree_RenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
-            //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-            //Tree_RenderTarget->FillRectangle(&rectangle, pGreenBrush);
-
-            
-            if (Tree_Bitmap)
-            {
-                D2D1_SIZE_U size = Tree_Bitmap->GetPixelSize();
-                UINT width = size.width;
-                UINT height = size.height;
-                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(treePoint.x, treePoint.y, treePoint.x + fixed_px, treePoint.y + fixed_px));
-            }
-            if (Fruit_Bitmap && clickPoint.x !=0 && clickPoint.y !=0)
-            {
-                D2D1_SIZE_U size = Fruit_Bitmap->GetPixelSize();
-                UINT width = size.width;
-                UINT height = size.height;
-                Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + fixed_px_fruit, clickPoint.y + fixed_px_fruit));
-            }
-            //if (Tree_Bitmap)
-            //    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
-
-            Tree_RenderTarget->EndDraw();
-
-            EndPaint(hwndDlg, &ps);
-            }
-        break;
-    }
-    return FALSE;
-}
 INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -616,14 +493,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             EndPaint(hWnd, &ps);
         }break;
-        //貪吃蛇不使用
-        //case WM_LBUTTONDOWN:
-        //    // 處理滑鼠左鍵
-        //    {
-        //        int xPos = GET_X_LPARAM(lParam);
-        //        int yPos = GET_Y_LPARAM(lParam);
-        //        OnClick(xPos, yPos);
-        //    }break;
+        case WM_LBUTTONDOWN:
+            // 處理滑鼠左鍵
+        {
+            int xPos = GET_X_LPARAM(lParam);
+            int yPos = GET_Y_LPARAM(lParam);
+            if (xPos >= 0 && yPos >= FUNCTION_COLUMN_HEIGHT)
+            {
+                clickPoint.x = static_cast<FLOAT>(xPos);
+                clickPoint.y = static_cast<FLOAT>(yPos);
+                InvalidateRect(hWnd, NULL, TRUE);
+            }
+        }
+        break;
         case WM_KEYDOWN:
         {
             engine->KeyUp(wParam);
@@ -632,7 +514,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
         case WM_CUSTOM_GAMEEND:
             // 處理遊戲結束
-            engine->playing = 0;
+            //engine->playing = 0;
             //WCHAR scoreStr[64];
             //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
             //MessageBox(hWnd, scoreStr, L"結算", MB_OK);

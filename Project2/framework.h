@@ -28,6 +28,7 @@
 #include "Common.h"
 #include "nlohmann/json.hpp"
 #include <fstream>
+#include <atlimage.h>  
 
 using json = nlohmann::json;
 

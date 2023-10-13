@@ -132,7 +132,7 @@ HRESULT Engine::Draw()
     //繪製功能列底色
     D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
     ID2D1SolidColorBrush* pWhiteBrush;
-    D2D1_RECT_F rectangle_white = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, 50);
+    D2D1_RECT_F rectangle_white = D2D1::RectF(0, 0, SCREEN_WIDTH - 3, FUNCTION_COLUMN_HEIGHT);
     m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
     //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
     m_pRenderTarget->FillRectangle(&rectangle_white, pWhiteBrush);
@@ -141,7 +141,7 @@ HRESULT Engine::Draw()
     //繪製草地
     D2D1_COLOR_F customColor = D2D1::ColorF(0.0f, 0.65f, 0.0f, 1.0f);
     ID2D1SolidColorBrush* pGreenBrush;
-    D2D1_RECT_F rectangle = D2D1::RectF(1.0f, 50.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
+    D2D1_RECT_F rectangle = D2D1::RectF(0, 0+ FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
     m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
     //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
     m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
