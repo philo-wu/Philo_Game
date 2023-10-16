@@ -123,7 +123,11 @@ HRESULT Engine::Draw(POINT point, int pxSize, Tree* tree)
         //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
         m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
     }
-    if (tree->treeBitmap)
+    if (do_drawMap)
+    {
+        do_drawMap = 0;
+    }
+    if (tree->treeBitmap && point.x >0 && point.y >50)
     {
 
         m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));

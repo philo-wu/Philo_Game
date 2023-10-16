@@ -67,7 +67,6 @@ Common* common;
 //
 
 ID2D1Factory* pD2DFactory;
-ID2D1Bitmap* Map_Bitmap;
 
 void ShowButton(bool);
 

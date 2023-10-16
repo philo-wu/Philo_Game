@@ -415,6 +415,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 std::wstring  NULLPATH ;
                 Common::OpenFile(hWnd, engine->m_pRenderTarget, &Map_Bitmap, NULLPATH);
                 InvalidateRect(hWnd, NULL, TRUE);
+                engine->do_drawMap = 1;
+
             }
                 break;
             case ID_CUSTOM_COMMAND: // 自定義命令的處理

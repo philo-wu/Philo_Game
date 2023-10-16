@@ -30,7 +30,6 @@ Tree* drawTree;
 FruitTree* drawFruitTree;
 ID2D1Bitmap* Map_Bitmap;
 
-
 std::wstring  Load_File_Path = L"./種樹得樹.png";
 std::wstring  Save_File_Path = L"./種樹得樹.png";
 

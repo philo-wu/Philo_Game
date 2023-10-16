@@ -16,6 +16,7 @@ public:
 	HRESULT Draw(POINT point ,int pxSize,Tree* tree);
 	bool frist_start = 1;
 	bool do_clear = 1;
+	bool do_drawMap = 0;
 
 	ID2D1Factory* m_pDirect2dFactory;
 	ID2D1HwndRenderTarget* m_pRenderTarget;
