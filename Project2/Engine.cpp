@@ -1,12 +1,9 @@
 ﻿#include "framework.h"
 #include "Engine.h"
-
+#include "Tree.h"
 
 Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrush(NULL)
 {
-
-    playing = false;
-
 }
 
 Engine::~Engine()
@@ -44,7 +41,7 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
         L"", //locale
         &m_pTextFormat
     );
-
+    // 文字置中
     //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
     m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
@@ -57,32 +54,6 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
     return S_OK;
 }
 
-void Engine::KeyUp(WPARAM wParam)
-{
-    //if (!keyPressed)
-    //{
-    //    if (wParam == VK_UP)
-    //        snake->GoUp();
-    //    if (wParam == VK_DOWN)
-    //        snake->GoDown();
-    //    if (wParam == VK_LEFT)
-    //        snake->GoLeft();
-    //    if (wParam == VK_RIGHT)
-    //        snake->GoRight();
-    //    keyPressed = true;
-    //}
-}
-
-void Engine::Reset()
-{
-    // This method reset the game, given that the game was won or lost
-    //if (!playing)
-    //{
-    //    snake->Reset();
-    //    food->Reset(snake, isFoodOnBorderChecked );
-    //    score = 5;
-    //}
-}
 
 void Engine::Logic(double elapsedTime)
 {
@@ -113,39 +84,53 @@ void Engine::Logic(double elapsedTime)
     //}
 }
 
-HRESULT Engine::Draw()
+HRESULT Engine::Draw(POINT point, int pxSize, Tree* tree)
 {
-
-    auto frameStart = std::chrono::steady_clock::now();
 
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
     //HRESULT hr;
 
-    m_pRenderTarget->BeginDraw();
 
+    m_pRenderTarget->BeginDraw();
     m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 
+    //是否清空畫面
+    if (do_clear)
+    {
+        m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+        do_clear = 0;
+        frist_start = 1;
+    }
 
-    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+    if(frist_start)
+    {     
 
-    //繪製功能列底色
-    D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
-    ID2D1SolidColorBrush* pWhiteBrush;
-    D2D1_RECT_F rectangle_white = D2D1::RectF(0, 0, SCREEN_WIDTH - 3, FUNCTION_COLUMN_HEIGHT);
-    m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
-    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-    m_pRenderTarget->FillRectangle(&rectangle_white, pWhiteBrush);
+        //繪製功能列底色
+        D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
+        ID2D1SolidColorBrush* pWhiteBrush;
+        D2D1_RECT_F rectangle_white = D2D1::RectF(0, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);
+        m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
+        //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+        m_pRenderTarget->FillRectangle(&rectangle_white, pWhiteBrush);
+        frist_start = 0;
 
+        //繪製草地
+        D2D1_COLOR_F customColor = D2D1::ColorF(204.0f / 255.0f, 153.0f / 255.0f, 102.0f / 255.0f, 1.0f);
+        ID2D1SolidColorBrush* pGreenBrush;
+        D2D1_RECT_F rectangle = D2D1::RectF(0, 0 + FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
+        m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
+        //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+        m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
+    }
+    if (tree->treeBitmap)
+    {
 
-    //繪製草地
-    D2D1_COLOR_F customColor = D2D1::ColorF(0.0f, 0.65f, 0.0f, 1.0f);
-    ID2D1SolidColorBrush* pGreenBrush;
-    D2D1_RECT_F rectangle = D2D1::RectF(0, 0+ FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
-    m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
-    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-    m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
+        m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));
 
+    }
+
+    //pBitmapLock->Unlock();
 
     // Draw score
     //D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);

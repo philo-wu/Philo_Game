@@ -7,6 +7,7 @@
 #include <wincodec.h>
 #include <locale>
 #include <iostream>
+#include <shobjidl.h>
 
 
 #include <stdlib.h>
@@ -29,6 +30,7 @@
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <atlimage.h>  
+#include <thread>
 
 using json = nlohmann::json;
 

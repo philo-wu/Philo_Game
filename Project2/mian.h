@@ -4,6 +4,7 @@
 //#include "Direct3D.h"
 #include "framework.h"
 #include "Engine.h"
+#include "resource.h"
 
 
 // 以下為原複製圖片宣告,但經思考後,決定學習網路上宣告在引擎內
@@ -39,7 +40,6 @@
 
 // 全域聲明
 HWND hWnd; // 只將W大寫避免錯誤呼叫
-bool GameRunning = 0;
 //  按鈕宣告
 HWND Load_Button;
 HWND Clean_Button;
@@ -50,11 +50,12 @@ HWND End_Button;
 HWND hwndScrollBar;
 
 //畫面更新
-double targetFrameTime = 1.0 / 8; // 目標每幀時間（這裡假設 為 8 FPS）
-double accumulatedTime = 0.0;
-bool dialog_isfruit;
+//double targetFrameTime = 1.0 / 8; // 目標每幀時間（這裡假設 為 8 FPS）
+//double accumulatedTime = 0.0;
+
 // 遊戲引擎
 Engine* engine;
+Common* common;
 // 函數原型
 // void OpenFile(void);
 // void DrawBitmap();
@@ -63,12 +64,10 @@ Engine* engine;
 // void OnPaint(HWND hWnd);
 // 以上貪吃蛇使用不到, 並轉移給引擎宣告
 
-ID2D1Bitmap* Tree_Bitmap;
-ID2D1Bitmap* Fruit_Bitmap;
-ID2D1HwndRenderTarget* Tree_RenderTarget;
+//
 
 ID2D1Factory* pD2DFactory;
-HBITMAP finish_Tree;
+ID2D1Bitmap* Map_Bitmap;
 
 void ShowButton(bool);
 

@@ -1,8 +1,5 @@
 ﻿
 #include "mian.h"
-#include "resource.h"
-#include "nlohmann/json.hpp"
-#include <thread>
 #include "Dialog_LoadTree_Proc.h"
 
 //提供Dialog句柄
@@ -116,12 +113,6 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
     switch (uMsg) {
     case WM_INITDIALOG:
-
-        // 將實際分數設定到對應的靜態文字控制項上
-        //SetDlgItemInt(hwndDlg, IDC_STATIC_SCORE, engine->getscore(), FALSE);
-        // 將實際難度設定到對應的靜態文字控制項上
-        //SetDlgItemInt(hwndDlg, IDC_STATIC_DIFFICULTY, engine->difficulty, FALSE);
-
         return TRUE;
 
     case WM_COMMAND:
@@ -253,6 +244,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     engine = new Engine();
+    drawTree = new Tree("1");
+    drawFruitTree = new FruitTree("2","apple");
     engine->InitializeD2D(hWnd); //繪製背景
     //InitD2D(hWnd , Tree_RenderTarget); //繪製
 
@@ -260,59 +253,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 進入主要迴圈:
     
     // 這個結構體包含Windows事件訊息
-    MSG msg = { 0 };
-
-    // 因種樹程式不需重複繪圖故不使用計時器
-    // 計時器
-    //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    //int frames = 0;
-    //double framesTime = 0;
-    //double FPS = 0;
-    
+    MSG msg = { 0 };    
     // 訊息迴圈
     while (TRUE)
     {
-        // 因種樹程式不需重複運算邏輯故不使用引擎
-        //end = std::chrono::steady_clock::now();
-        //double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
-        //begin = end;
 
-        //accumulatedTime += elapsed_secs;
-        ////顯示 FPS
-        ////暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
-        //if (engine->playing)
-        //{
-        //    framesTime += elapsed_secs;
-        //    frames++;
-        //    if
-        //        (framesTime > 1) {
-        //        //WCHAR fpsText[32];
-        //        //swprintf(fpsText, 32, L"Game: %d FPS", frames);
-        //        //SetWindowText(hWnd, fpsText);
-        //        FPS = frames;
-        //        frames = 0;
-        //        framesTime = 0;
-        //    }
-        //}
-        //while (accumulatedTime >= targetFrameTime)
-        //{
-
-
-        //    // Game logic
-        //    if (engine->playing)
-        //    {
-        //        engine->Logic(targetFrameTime);
-        //        if (!engine->playing)
-        //        {
-        //            SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
-        //            engine->Reset();
-        //            engine->ClearDraw(hWnd);
-        //        }
-        //    }
-
-        //    accumulatedTime -= targetFrameTime;
-        //}
 
         // 检查队列中是否有消息正在等待
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -338,10 +283,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
             //}
         }
     }
-
-    // 清理 DirectX 和 COM
-    // CleanD3D();
-    // TODO: CleanD2D
     
     // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
@@ -398,7 +339,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             End_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"保留",                            // 按鈕上顯示的文字
+                L"讀取地圖",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
                 10 + (BUTTON_WIDTH + 10) * 3, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
@@ -408,93 +349,102 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
-            //hwndScrollBar = CreateWindowEx(
-            //    NULL,                                        // window styles
-            //    TRACKBAR_CLASS,                               // 視窗類別的名字
-            //    L"難易度選擇",                               // 視窗的標題
-            //    WS_CHILD | WS_VISIBLE | TBS_HORZ,         // 視窗的樣式
-            //    10, 10, 200, 30,                          // 按鈕位置和大小 (x, y, width, height)
-            //    hWnd,                                     // Parent window
-            //    (HMENU)2001,                                 // Unique ID
-            //    GetModuleHandle(NULL),                    // Instance handle
-            //    NULL                                      // Additional application data
-            //);
-            //ShowWindow(hwndScrollBar, SW_HIDE);
-
-            // 使用2D繪圖 並觸發WM_PAINT後,按鈕即可正常顯示,故先不使用置頂設置
-            // 猜測若使用置頂,但無觸發WM_PAINT,仍會發生按鈕被覆蓋的問題
-            //SetWindowPos(Load_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); //使按鈕置頂
-            //SetWindowPos(Clean_Button, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-
-            break;
         }
+        break;
+
+        // 檢查按鈕事件
         case WM_COMMAND:
-            // 檢查按鈕事件
-            if (HIWORD(wParam) == BN_CLICKED )
+        if (HIWORD(wParam) == BN_CLICKED )
+        {
+            //檢查按鈕身分
+            switch (LOWORD(wParam))
             {
-                //檢查按鈕身分
-                switch (LOWORD(wParam))
+            case 1: // 選擇樹木
                 {
-                case 1: // 選擇樹木
-                    {
-                        dialog_isfruit = 0;
-                        DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
-                    }
-                    break;
-
-                case 2: // 選擇水果樹
-                    {
-                        dialog_isfruit = 1;
-                        DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
-                    }                    
-                    break;
-
-                case 3: // 儲存地圖
-                    //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
-                    //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
-
-                    break;
-
-                case 4: // 離開遊戲
-                    //SendMessage(hWnd, WM_COMMAND, ID_CUSTOM_COMMAND, 0);  //此為自定義命令
-                    //SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);           //此為自定義事件
-                    //SendMessage(hWnd, WM_CLOSE, 0, 0);                      //視窗關閉
-                    break;
-                case ID_CUSTOM_COMMAND: // 自定義命令的處理
-                    //MessageBox(hWnd, L"遊戲結束 \n得分為X", L"結算", MB_OK);
-                    return 0;
+                    dialog_isfruit = 0;
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }
+                break;
+
+            case 2: // 選擇水果樹
+                {
+                    dialog_isfruit = 1;
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
+                }                    
+                break;
+
+            case 3: // 儲存地圖
+                {   
+                //MessageBox(hWnd, L"此功能尚未實作", L"錯誤", MB_OK | MB_ICONINFORMATION);
+                //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_Ranklist_Proc);
+                RECT rc;
+                GetClientRect(hWnd, &rc);
+                int width = rc.right - rc.left;  // 區域的寬度
+                int height = rc.bottom - rc.top;  // 區域的高度
+
+                int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
+                if (result == -1)
+                {
+                    // 對話框創建失敗
+                    MessageBox(NULL, L"對話框創建失敗", L"錯誤", MB_OK | MB_ICONERROR);
+                }
+                else
+                {
+                    if (result == IDCANCEL)
+                    {
+                        break;
+                    }
+                }
+
+                std::wstring Path ;
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                std::wstring wideName = converter.from_bytes(Save_name);
+                Common::OpenFolder(hWnd, Path);
+                // 拼接字串
+                std::wstring filePath = Path+ L"/" + wideName + L".png";
+
+                OutputDebugString(filePath.c_str());
+
+                Common::SaveWindowToImage(hWnd, filePath.c_str(), { 0,50 }, width, height - 50 );
+                }
+                break;
+
+            case 4: // 讀取地圖
+
+            {
+                std::wstring  NULLPATH ;
+                Common::OpenFile(hWnd, engine->m_pRenderTarget, &Map_Bitmap, NULLPATH);
+                InvalidateRect(hWnd, NULL, TRUE);
             }
-            break;
+                break;
+            case ID_CUSTOM_COMMAND: // 自定義命令的處理
+                //常用指令
+                //MessageBox(hWnd, L"遊戲結束 \n得分為X", L"結算", MB_OK);
+                //SendMessage(hWnd, WM_COMMAND, ID_CUSTOM_COMMAND, 0);  //此為自定義命令
+                //SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);           //此為自定義事件
+                //SendMessage(hWnd, WM_CLOSE, 0, 0);                      //視窗關閉
+                break;
+            }
+        }
+        break;
 
         case WM_PAINT:
         {
             // 主選單畫面
-
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            engine->Draw();
-
-            // 主選單標題
-            //HFONT hFont = CreateFont(72, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET,
-            //    OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, TEXT("Arial"));
-            //SelectObject(hdc, hFont);
-            //SetTextColor(hdc, RGB(0, 0, 0));
-            //SetBkColor(hdc, RGB(240, 240, 240));
-
-            //WCHAR Str[64];
-            //swprintf_s(Str, L"%s", L"小精靈吃漢堡");
-            //TextOut(hdc, 310, 100, Str, wcslen(Str));
-
-            //// 釋放字體資源
-            //DeleteObject(hFont);
-
+            int pxSize = 50;//50是長寬 測試用
+            if(!dialog_isfruit)// 1改成判斷要畫樹還是水果樹
+                engine->Draw(clickPoint, 50, drawTree);
+            else
+                engine->Draw(clickPoint, 50, drawFruitTree);
 
             EndPaint(hWnd, &ps);
-        }break;
+        }
+        break;
+
+        // 處理滑鼠左鍵
         case WM_LBUTTONDOWN:
-            // 處理滑鼠左鍵
         {
             int xPos = GET_X_LPARAM(lParam);
             int yPos = GET_Y_LPARAM(lParam);
@@ -508,32 +458,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         break;
         case WM_KEYDOWN:
         {
-            engine->KeyUp(wParam);
         }
         break;
 
-        case WM_CUSTOM_GAMEEND:
-            // 處理遊戲結束
-            //engine->playing = 0;
-            //WCHAR scoreStr[64];
-            //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
-            //MessageBox(hWnd, scoreStr, L"結算", MB_OK);
-            //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_GameEnd_Proc);
-            //ShowButton(1);
-            //ClearDraw();
-            break;
-
-        case WM_CUSTOM_GAMEWIN:
-
-            break;
-
         // 當視窗關閉時會讀取此訊息
         case WM_DESTROY:
-            {
+        {
                 // 完全關閉應用程式
                 PostQuitMessage(0);
                 return 0;
-            } break;
+        } 
+        break;
     }
 
     // 處理 switch 語句未攔截訊息
@@ -546,36 +481,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-
-
-// 開啟檔案
-
-
-// 繪圖
-//void DrawBitmap()
-//{
-//    if (pRT && pBitmap)
-//    {
-//        D2D1_SIZE_U size = pBitmap->GetPixelSize();
-//        UINT width = size.width;
-//        UINT height = size.height;
-//        pRT->BeginDraw();
-//        pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
-//        pRT->EndDraw();
-//    }
-//}
-//
-// 
-//void OnClick(int mouseX, int mouseY)
-//{
-//    // 更新點擊位置
-//    clickPoint.x = static_cast<FLOAT>(mouseX);
-//    clickPoint.y = static_cast<FLOAT>(mouseY);
-//    // 通知系統進行重繪
-//    InvalidateRect(hWnd, NULL, TRUE);
-//
-//}
-//
 void ShowButton(bool show)
 {
     if(show)
