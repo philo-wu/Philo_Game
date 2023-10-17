@@ -6,38 +6,6 @@
 #include "Engine.h"
 #include "resource.h"
 
-
-// 以下為原複製圖片宣告,但經思考後,決定學習網路上宣告在引擎內
-// 原本想宣告在Direct2D.h ,但發現會重複宣告,應包成 Class處理,
-//ID2D1Factory* pD2DFactory;
-//ID2D1HwndRenderTarget* pRT;
-//ID2D1Bitmap* pBitmap;
-//IWICBitmapDecoder* pDecoder;
-//IWICBitmapFrameDecode* pSource;
-//IWICStream* pStream;
-//IWICFormatConverter* pConverter;
-//D2D1_POINT_2F clickPoint = { 0 };
-//HRESULT InitD2D(HWND hwnd)
-//{
-//    // 建立D2D工廠
-//    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
-//
-//    if (SUCCEEDED(hr))
-//    {
-//        RECT rc;
-//        GetClientRect(hwnd, &rc);
-//
-//
-//        hr = pD2DFactory->CreateHwndRenderTarget(
-//            D2D1::RenderTargetProperties(),
-//            D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
-//            &pRT
-//        );
-//    }
-//
-//    return hr;
-//};
-
 // 全域聲明
 HWND hWnd; // 只將W大寫避免錯誤呼叫
 //  按鈕宣告
@@ -47,6 +15,7 @@ HWND Start_Button;
 HWND Difficulty_Button;
 HWND Score_Button;
 HWND End_Button;
+
 HWND hwndScrollBar;
 
 //畫面更新
@@ -56,20 +25,13 @@ HWND hwndScrollBar;
 // 遊戲引擎
 Engine* engine;
 Common* common;
+
+IFileSaveDialog* pFileSaveDlg = NULL;
+
+
 // 函數原型
-// void OpenFile(void);
-// void DrawBitmap();
-// void ClearDraw();
-// void OnClick(int mouseX, int mouseY); 
-// void OnPaint(HWND hWnd);
-// 以上貪吃蛇使用不到, 並轉移給引擎宣告
-
-//
-
-ID2D1Factory* pD2DFactory;
-
 void ShowButton(bool);
-
+void InitButtom();
 //  宣告WindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
                             UINT message,
@@ -77,23 +39,52 @@ LRESULT CALLBACK WindowProc(HWND hWnd,
                             LPARAM lParam);
 
 
-HRESULT InitD2D(HWND hwnd , ID2D1HwndRenderTarget* RenderTarget)
+void ShowButton(bool show)
 {
-    // 創建 D2D 工廠
-    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
-
-    if (SUCCEEDED(hr))
+    if (show)
     {
-        RECT rc;
-        GetClientRect(hwnd, &rc);
+        ShowWindow(Start_Button, SW_SHOW);
+        ShowWindow(Difficulty_Button, SW_SHOW);
+        ShowWindow(Score_Button, SW_SHOW);
+        ShowWindow(End_Button, SW_SHOW);
+        ShowWindow(Clean_Button, SW_SHOW);
 
-        // 創建 D2D 渲染目標
-        hr = pD2DFactory->CreateHwndRenderTarget(
-            D2D1::RenderTargetProperties(),
-            D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
-            &RenderTarget
-        );
     }
+    else
+    {
+        ShowWindow(Start_Button, SW_HIDE);
+        ShowWindow(Difficulty_Button, SW_HIDE);
+        ShowWindow(Score_Button, SW_HIDE);
+        ShowWindow(End_Button, SW_HIDE);
+        ShowWindow(Clean_Button, SW_HIDE);
 
-    return hr;
+    }
+}
+
+void InitButtom()
+{
+    // 字體及大小
+    HFONT hFont = CreateFont(
+        18,                                     // 字體的高度
+        0,                                      // 字體的寬度
+        0,                                      // 字體的旋轉角度
+        0,                                      // 字體的斜體角度
+        FW_NORMAL,                              // 字體的粗細度
+        FALSE,                                  // 是否是斜體字體
+        FALSE,                                  // 是否是下劃線字體
+        FALSE,                                  // 是否是刪除線字體
+        DEFAULT_CHARSET,                        // 字符集
+        OUT_OUTLINE_PRECIS,                     // 輸出精度
+        CLIP_DEFAULT_PRECIS,                    // 剪裁精度
+        ANTIALIASED_QUALITY,                    // 邊緣平滑度
+        DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
+        L"Verdana"                              // 字體名
+    );
+
+    SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Difficulty_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Score_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(End_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Clean_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+
 }

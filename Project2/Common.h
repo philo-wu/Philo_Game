@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <wincodec.h>
 #include "Direct2D.h"
+#include <Shlobj.h>
 
 // 視窗相關
 #define SCREEN_WIDTH  1024  
@@ -84,6 +85,29 @@ public:
         return hr;
     }
 
+    //初始化RenderTarget
+    static HRESULT InitD2D(HWND hwnd, ID2D1Factory* D2DFactory, ID2D1HwndRenderTarget** RenderTarget)
+    {
+        // 創建 D2D 工廠
+        HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2DFactory);
+
+        if (SUCCEEDED(hr))
+        {
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            // 創建 D2D 渲染目標
+            hr = D2DFactory->CreateHwndRenderTarget(
+                D2D1::RenderTargetProperties(),
+                D2D1::HwndRenderTargetProperties(hwnd, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
+                RenderTarget
+            );
+            OutputDebugString(L"RenderTarget初始化完成\n");
+        }
+
+        return hr;
+    }
+
     static void OpenFile(HWND hWnd,ID2D1RenderTarget* pRenderTarget, ID2D1Bitmap** ppBitmap, std::wstring& ploadPath)
     {
         //OutputDebugString(L"讀取檔案\n");
@@ -143,9 +167,11 @@ public:
         int RECTheight
     )
     {
+        if (filePath == nullptr || wcslen(filePath) == 0)
+            return;
+
         // 初始化 WIC
         CoInitialize(nullptr);
-
         IWICImagingFactory* pWICFactory = nullptr;
         IWICBitmapEncoder* pEncoder = nullptr;
         IWICBitmapFrameEncode* pFrame = nullptr;
@@ -318,6 +344,57 @@ public:
             }
 
             pFileOpen->Release();
+        }
+
+        // 釋放 COM
+        CoUninitialize();
+    }
+    //選擇資料夾及檔案名稱
+    static void FileSaveDialog(std::wstring& filename)
+    {
+        IFileSaveDialog* pFileSaveDlg = NULL;
+
+        // 初始化 COM
+        CoInitialize(NULL);
+
+        // 創建 File Save Dialog
+        HRESULT hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pFileSaveDlg));
+
+        if (SUCCEEDED(hr))
+        {
+            // 設置 File Save Dialog 的屬性
+            COMDLG_FILTERSPEC fileTypes[] = { { L"PNG Files", L"*.png" } };
+            pFileSaveDlg->SetFileTypes(ARRAYSIZE(fileTypes), fileTypes);
+
+            // 顯示 File Save Dialog
+            hr = pFileSaveDlg->Show(NULL);
+
+            if (SUCCEEDED(hr))
+            {
+                // 獲取選擇的文件名
+                IShellItem* pItem;
+                hr = pFileSaveDlg->GetResult(&pItem);
+
+                if (SUCCEEDED(hr))
+                {
+                    PWSTR pszFilePath;
+                    hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+                    if (SUCCEEDED(hr))
+                    {
+                        filename = pszFilePath;
+                        CoTaskMemFree(pszFilePath);
+                        if (filename.find(L".png") == std::wstring::npos)
+                        {
+                            filename += L".png";
+                        }
+                    }
+
+                    pItem->Release();
+                }
+            }
+
+            pFileSaveDlg->Release();
         }
 
         // 釋放 COM

@@ -6,21 +6,26 @@
 #include "mian.h"
 #include "resource.h"
 
+//防呆
+bool Dialog_LoadTree_is_open = false;
+bool Dialog_Input_is_open = false;
+
 // Dialog相關
 POINT clickPoint = { 0 }; //主視窗點擊座標
 POINT treePoint = { 0 }; //Dialog樹木生成座標
 POINT treeclickPoint = { 0 }; //Dialog點擊座標
 //判斷是否重繪
-bool Dialog_do_Clear = 1; 
-bool Dialog_do_TreeClear = 1;
-bool Dialog_is_Save = 0;
+
 //圖檔繪製大小 樹木圖檔為正方形,長寬為fixed_px, 
 int fixed_px = 200;
 //圖檔繪製大小 水果圖檔為正方形,長寬為fixed_px_fruit, 
 int fixed_px_fruit = 30;
 
-//dialog繪圖
-bool dialog_isfruit;
+//Dialog繪圖
+bool Dialog_do_Clear = 1;
+bool Dialog_do_TreeClear = 1;
+bool Dialog_is_Save = 0;
+bool Dialog_isfruit;
 ID2D1Bitmap* Tree_Bitmap;
 ID2D1Bitmap* Fruit_Bitmap;
 ID2D1HwndRenderTarget* Tree_RenderTarget;
@@ -28,91 +33,20 @@ ID2D1HwndRenderTarget* Tree_RenderTarget;
 //主視窗繪圖
 Tree* drawTree;
 FruitTree* drawFruitTree;
-ID2D1Bitmap* Map_Bitmap;
+ID2D1Factory* pD2DFactory;
 
-std::wstring  Load_File_Path = L"./種樹得樹.png";
-std::wstring  Save_File_Path = L"./種樹得樹.png";
+std::wstring  Load_File_Path;
+std::wstring  Save_File_Path;
 
 std::string Save_name;
 
-INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    DWORD dwID = wParam;
-
-    switch (uMsg) {
-    case WM_INITDIALOG:
-    {
-
-
-        return TRUE;
-    }
-    case WM_COMMAND:
-        switch (LOWORD(wParam))
-        {
-        case IDOK:
-            // 使用者按下了確定按鈕
-        {
-            // 取得玩家名稱
-            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
-            if (textLength == 0)
-            {
-                // 輸入為空
-                MessageBox(hwndDlg, L"未輸入檔案名稱", L"錯誤", MB_OK);
-                break;
-
-            }
-            else
-            {
-                wchar_t buffer[100]; // 要存放資料的緩衝區
-                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                Save_name = converter.to_bytes(buffer);
-
-                //TODO: 寫入存檔路徑以及快捷記錄檔
-
-                //wchar_t buffer[100]; // 要存放資料的緩衝區
-                //GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
-                //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                //std::string newName = converter.to_bytes(buffer);
-
-                //int newScore = 0;
-                //int newDifficulty = 0;
-
-                //std::ifstream file("./Ranklist.json", std::ifstream::binary);
-                //json jsonData;
-                //file >> jsonData;
-                //file.close();
-
-                //json newEntry = {
-                //    {"name", newName},
-                //    {"score", newScore},
-                //    {"difficulty", newDifficulty}
-                //};
-                //jsonData["Ranklist"].push_back(newEntry);
-                //std::ofstream outFile("./Ranklist.json");
-                //outFile << jsonData.dump(4);  // 4 是縮排的數量
-                //outFile.close();
-
-            }
-            EndDialog(hwndDlg, IDOK);
-        }
-        break;
-
-        case IDCANCEL:
-            // 使用者按下了取消按鈕
-            EndDialog(hwndDlg, IDCANCEL);
-            break;
-        }
-        break;
-    }
-    return FALSE;
-}
 INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
     switch (uMsg) {
     case WM_INITDIALOG:
     {
+        Dialog_LoadTree_is_open = 1;
         HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
         if (SUCCEEDED(hr))
         {
@@ -122,17 +56,10 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             Dialog_is_Save = 0;
             Tree_Bitmap = NULL;
             Fruit_Bitmap = NULL;
+            Common::InitD2D(hwndDlg, pD2DFactory, &Tree_RenderTarget);
 
-            RECT rc;
-            GetClientRect(hwndDlg, &rc);
-            // 創建 D2D 渲染目標
-            hr = pD2DFactory->CreateHwndRenderTarget(
-                D2D1::RenderTargetProperties(),
-                D2D1::HwndRenderTargetProperties(hwndDlg, D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top)),
-                &Tree_RenderTarget
-            );
         }
-        if (dialog_isfruit) 
+        if (Dialog_isfruit) 
         {
             // 顯示水果圖片按鈕
             ShowWindow(GetDlgItem(hwndDlg, ID_LOADFRUIT), SW_SHOW);
@@ -155,7 +82,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 
 
                 //OutputDebugString(L"儲存圖片\n");
-                if (!dialog_isfruit)//先處理一般樹
+                if (!Dialog_isfruit)//先處理一般樹
                 {
                     // 自動帶入一般樹圖片
                     OutputDebugString(Load_File_Path.c_str());
@@ -169,8 +96,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     if(!Dialog_is_Save)
                     {
                         drawFruitTree->Release();
-                        Save_File_Path = L"./auto_save.png";
-
+                        Save_File_Path = L"./tree_save/auto_save.png";
                         Common::SaveWindowToImage(hwndDlg, Save_File_Path.c_str(), treePoint, fixed_px, fixed_px);
                     }
                     // 自動帶入水果樹圖片      
@@ -184,12 +110,14 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
 
             case IDCANCEL:
+            {
                 // 使用者按下了取消按鈕
                 Dialog_do_Clear = 1;
                 Dialog_do_TreeClear = 1;
 
                 EndDialog(hwndDlg, IDCANCEL);
-                break;
+            }
+            break;
             case ID_LOADTREE: // 選擇樹木
             {
                 Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_File_Path);
@@ -217,43 +145,16 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_SAVEFILE: // 儲存檔案
             {
-                if (!Tree_Bitmap)
-                {
-                    MessageBox(hwndDlg, L"請先選擇樹木", L"錯誤", MB_OK);
-                    break;
-                }
-                int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
-                if (result == -1)
-                {
-                    // 對話框創建失敗
-                    MessageBox(NULL, L"對話框創建失敗", L"錯誤", MB_OK | MB_ICONERROR);
-                }
-                else
-                {
-                    if (result == IDCANCEL)
-                    {
-                        break;
-                    }
-                }
                 Dialog_is_Save = 1;
-                if (!dialog_isfruit)
+                if (!Dialog_isfruit)
                     drawTree->Release();
                 else
                     drawFruitTree->Release();
 
-                //固定儲存地點
-                //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                //std::wstring wideName = converter.from_bytes(Save_name);
-                //// 拼接字串
-                //std::wstring filePath = L"./" + wideName + L".png";
-                //Save_File_Path = filePath;
-
-                std::wstring Path;
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideName = converter.from_bytes(Save_name);
-                Common::OpenFolder(hWnd, Path);
+                std::wstring filePath;
+                Common::FileSaveDialog(filePath);
                 // 拼接字串
-                std::wstring filePath = Path + L"/" + wideName + L".png";
+                Save_File_Path = filePath;
 
                 Common::SaveWindowToImage(hwndDlg, Save_File_Path.c_str(), treePoint, fixed_px , fixed_px);
             }
@@ -314,16 +215,75 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         break;
     case WM_DESTROY:
         {
-        if (Tree_Bitmap)
-            Tree_Bitmap->Release();
-        if (Fruit_Bitmap)
-            Fruit_Bitmap->Release();
-        Dialog_do_Clear = 1;
-        Dialog_do_TreeClear = 1;
-        treeclickPoint = { 0 };
+            if (Tree_Bitmap)
+                Tree_Bitmap->Release();
+            if (Fruit_Bitmap)
+                Fruit_Bitmap->Release();
+            Dialog_do_Clear = 1;
+            Dialog_do_TreeClear = 1;
+            treeclickPoint = { 0 };
+            Tree_RenderTarget->Release();
+            Dialog_LoadTree_is_open = 0;
         }
         break;
 
     }
     return FALSE;
 }
+
+// 原本自己寫Dialog用以存放檔案 ,但發現使用Windows自帶的IShellItem 則更為輕便
+//INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//{
+//    DWORD dwID = wParam;
+//
+//    switch (uMsg) {
+//    case WM_INITDIALOG:
+//    {
+//        Dialog_Input_is_open = 1;
+//
+//        return TRUE;
+//    }
+//    case WM_COMMAND:
+//        switch (LOWORD(wParam))
+//        {
+//            // 使用者按下了確定按鈕
+//        case IDOK:
+//        {
+//            // 取得玩家名稱
+//            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
+//            if (textLength == 0)
+//            {
+//                // 輸入為空
+//                MessageBox(hwndDlg, L"未輸入檔案名稱", L"錯誤", MB_OK);
+//                break;
+//
+//            }
+//            else
+//            {
+//                wchar_t buffer[100]; // 要存放資料的緩衝區
+//                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
+//                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+//                Save_name = converter.to_bytes(buffer);
+//
+//                //TODO: 寫入存檔路徑以及快捷記錄檔
+//
+//            }
+//            EndDialog(hwndDlg, IDOK);
+//        }
+//        break;
+//        // 使用者按下了取消按鈕
+//        case IDCANCEL:
+//        {
+//            EndDialog(hwndDlg, IDCANCEL);
+//        }
+//        break;
+//        }
+//        break;
+//    case WM_DESTROY:
+//    {
+//        Dialog_Input_is_open = 0;
+//    }
+//    break;
+//    }
+//    return FALSE;
+//}

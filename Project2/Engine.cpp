@@ -109,28 +109,27 @@ HRESULT Engine::Draw(POINT point, int pxSize, Tree* tree)
         //繪製功能列底色
         D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
         ID2D1SolidColorBrush* pWhiteBrush;
-        D2D1_RECT_F rectangle_white = D2D1::RectF(0, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);
         m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
         //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-        m_pRenderTarget->FillRectangle(&rectangle_white, pWhiteBrush);
+        m_pRenderTarget->FillRectangle(&Rect_functionColumn, pWhiteBrush);
         frist_start = 0;
 
         //繪製草地
         D2D1_COLOR_F customColor = D2D1::ColorF(204.0f / 255.0f, 153.0f / 255.0f, 102.0f / 255.0f, 1.0f);
         ID2D1SolidColorBrush* pGreenBrush;
-        D2D1_RECT_F rectangle = D2D1::RectF(0, 0 + FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
         m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
         //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-        m_pRenderTarget->FillRectangle(&rectangle, pGreenBrush);
+        m_pRenderTarget->FillRectangle(&Rect_drawingArea, pGreenBrush);
     }
     if (do_drawMap)
     {
+        m_pRenderTarget->DrawBitmap(Map_Bitmap, Rect_drawingArea);
         do_drawMap = 0;
     }
     if (tree->treeBitmap && point.x >0 && point.y >50)
     {
 
-        m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));
+        m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));//Rect為樹的位子加上恆定長寬
 
     }
 

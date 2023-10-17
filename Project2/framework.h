@@ -32,6 +32,8 @@
 #include <atlimage.h>  
 #include <thread>
 
+#include <shobjidl.h>
+
 using json = nlohmann::json;
 
 template<class Interface>
