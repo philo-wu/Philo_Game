@@ -380,6 +380,21 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
             }
             break;
+            case ID_DATADELETE:
+            {
+
+            }
+            break;
+            case ID_DATALOAD:
+            {
+
+            }
+            break;
+            case ID_RETURN:
+            {
+
+            }
+            break;
         }
         break;
     case WM_LBUTTONDOWN:
