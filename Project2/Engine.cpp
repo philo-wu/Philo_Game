@@ -99,7 +99,6 @@ void Engine::Logic(double elapsedTime)
     if (playing)
     {
         snake->Advance();
-        fps_count();
         if (snake->CheckFoodCollision(food->position.x, food->position.y))
         {
             food->Reset(snake, isFoodOnBorderChecked);
@@ -226,11 +225,9 @@ double Engine::UpdateFrameSleep(int difficulty)
 };
 void Engine::fps_count()
 {
-    static auto lastTime = std::chrono::system_clock::now(); // 时间点
+    //lastTime = std::chrono::system_clock::now(); // 當前時間
     static int frameCount = 0;
-
     ++frameCount;
-
     auto curTime = std::chrono::system_clock::now(); // 当前时间点
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - lastTime).count(); // 毫秒
 

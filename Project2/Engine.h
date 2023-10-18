@@ -1,7 +1,7 @@
 #pragma once
-
 #include "Food.h"
 #include "Snake.h"
+#include <chrono>
 
 
 
@@ -19,6 +19,7 @@ public:
 	int getscore() { return score; };
 	int FPS = 0;
 	void fps_count();
+	std::chrono::system_clock::time_point lastTime;
 
 	HRESULT Draw();
 	bool playing = 0;

@@ -96,7 +96,7 @@ INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
 
 
-            std::ifstream file("C:\\Users\\philo.wu\\Documents\\GitHub\\Philo_Snake\\Project2\\Ranklist.json", std::ifstream::binary);
+            std::ifstream file("./Ranklist.json", std::ifstream::binary);
             if (file.is_open()) 
             {
                 json j;
@@ -197,9 +197,11 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 std::ifstream file("./Ranklist.json", std::ifstream::binary);
                 json jsonData;
-                file >> jsonData;
-                file.close();
-
+                if(file.is_open())
+                {
+                    file >> jsonData;
+                    file.close();
+                }
                 json newEntry = {
                     {"name", newName},
                     {"score", newScore},
@@ -320,23 +322,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
         begin = end;
 
         accumulatedTime += elapsed_secs;
-        //顯示 FPS
-        //暫不顯示, 因目前FPS設定關係到難度,並非實際電腦FPS效能
+        //顯示 FPS 從Logic中搬出來
         if (engine->playing)
-        {
-            framesTime += elapsed_secs;
-            frames++;
-            if
-                (framesTime > 1) {
-                //WCHAR fpsText[32];
-                //swprintf(fpsText, 32, L"Game: %d FPS", frames);
-                //SetWindowText(hWnd, fpsText);
-                FPS = frames;
-                frames = 0;
-                framesTime = 0;
-            }
-        }
+            engine->fps_count();
+
         while (accumulatedTime >= targetFrameTime)
+
         {
 
 
@@ -376,7 +367,11 @@ int WINAPI WinMain(HINSTANCE hInstance,
                 // Drawing
                 engine->Draw();
             }
+            // FPS新增於此
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // 控制迴圈速度
+
         }
+
     }
 
     // 清理 DirectX 和 COM
