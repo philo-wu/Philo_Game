@@ -44,8 +44,8 @@ ID2D1Factory* pD2DFactory;
 std::filesystem::path currentPath = std::filesystem::current_path();
 
 
-std::wstring  Load_File_Path;
-std::wstring  Save_File_Path;
+std::wstring Load_File_Path;
+std::wstring Save_File_Path;
 std::string Tree_File_Name;
 std::string Fruit_File_Name;
 std::string Save_Name;
@@ -170,7 +170,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             ShowWindow(GetDlgItem(hwndDlg, ID_DATASAVE), SW_HIDE);
         }
 
-        std::string path = currentPath.string() + "/Images/map_data.json";
+        std::string path = currentPath.string() + "/Images/saveData.json";
         std::ifstream inFile(path);
         if (!inFile.is_open()) {
             //std::cerr << "無法打開 JSON 文件" << std::endl;
@@ -264,13 +264,15 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             {
                 std::wstring filename;
                 Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_File_Path , filename);
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                Tree_File_Name = converter.to_bytes(filename);
+                if (!filename.empty())
+                {
 
-                //OutputDebugString(Load_File_Path.c_str());
-                Dialog_clear();
-                InvalidateRect(hwndDlg, NULL, TRUE);
-
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                    Tree_File_Name = converter.to_bytes(filename);
+                    //OutputDebugString(Load_File_Path.c_str());
+                    Dialog_clear();
+                    InvalidateRect(hwndDlg, NULL, TRUE);
+                }
             }
             break;
 
@@ -283,11 +285,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 }
                 std::wstring filename;
                 Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_File_Path , filename);
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                Fruit_File_Name = converter.to_bytes(filename);
-
-                Dialog_clear();
-                InvalidateRect(hwndDlg, NULL, TRUE);
+                if (!filename.empty())
+                {
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                    Fruit_File_Name = converter.to_bytes(filename);
+                    Dialog_clear();
+                    InvalidateRect(hwndDlg, NULL, TRUE);
+                }
             }
             break;
             case ID_DATASAVE: // 儲存檔案
@@ -305,10 +309,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 // 創建一個 JSON array，用於存放 coordinates
                 json coordinatesArray;
                 // 將 fruitpoint 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-                for (const POINT& point : fruitpoint) {
-                    json pointObject = {
-                        {"X", point.x},
-                        {"Y", point.y}
+                for (const POINT& point : fruitpoint) 
+                {
+                    json pointObject = 
+                    {
+                        {"X", point.x - treePoint.x},
+                        {"Y", point.y - treePoint.y}
                     };
 
                     coordinatesArray.push_back(pointObject);
@@ -337,19 +343,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 }
                 //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 //std::wstring wideName = converter.from_bytes(Save_Name);
-                OutputDebugString(L"讀取保存名稱\n");
-
-                std::wstring wideSaveName(Save_Name.begin(), Save_Name.end());
-                OutputDebugString(wideSaveName.c_str());
-
-                saveData[Save_Name] = save_tree;
-                // TREE_1
-                //json tree1;
-                //tree1["coordinates"] = { {"X", 1}, {"Y", 2} };
-                //tree1["image"] = "tree_1.png";
-                //mapData["TREE_1"] = tree1;
+                //OutputDebugString(L"讀取保存名稱\n");
+                //std::wstring wideSaveName(Save_Name.begin(), Save_Name.end());
+                //OutputDebugString(wideSaveName.c_str());
 
                 // 將 JSON 對象轉換為字串
+                saveData[Save_Name] = save_tree;
                 std::string jsonString = saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
@@ -359,17 +358,21 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 {
                     outFile << jsonString;
                     outFile.close();
-                    OutputDebugString(L"JSON 已保存到 map_data.json\n");
+                    OutputDebugString(L"JSON 已保存到 saveData.json\n");
 
                     CComboBox pComboBox;
                     pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
                     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                     std::wstring wideSaveName = converter.from_bytes(Save_Name);
-                    pComboBox.AddString(wideSaveName.c_str());
-
-
+                    //判斷是否有存在同名選項
+                    int index = pComboBox.FindString(-1, wideSaveName.c_str());
+                    if (index == CB_ERR) {
+                        // 相同的選項不存在，可以新增
+                        pComboBox.AddString(wideSaveName.c_str());
+                    }
                     pComboBox.Detach();
+
                 }
                 else 
                 {
@@ -382,17 +385,139 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_DATADELETE:
             {
+                OutputDebugString(L"刪除存檔\n");
+
+                CComboBox pComboBox;
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+
+                int selectedIndex = pComboBox.GetCurSel();
+
+                if (selectedIndex != CB_ERR)
+                {
+                    // 有項目被選中
+
+                    CString selectedText;
+                    pComboBox.GetLBText(selectedIndex, selectedText);
+                    OutputDebugString(selectedText);
+                    OutputDebugString(L"\n");
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                    std::wstring wideselectedText(selectedText);
+                    std::string stdStr = converter.to_bytes(wideselectedText);
+
+                    //OutputDebugString(selectedText);
+                    // 
+                    //刪除存檔
+                    saveData.erase(stdStr);
+                    pComboBox.DeleteString(selectedIndex);
+                    if (pComboBox.GetCount() == 0)
+                        pComboBox.SetCurSel(-1);
+                    else
+                        pComboBox.SetCurSel(0);
+
+
+                    std::string jsonString = saveData.dump(4);
+                    // 將 JSON 字串保存到文件
+                    std::string path = currentPath.string() + "/Images/saveData.json";
+                    std::ofstream outFile(path);
+                    if (outFile.is_open())
+                    {
+                        outFile << jsonString;
+                        outFile.close();
+                        OutputDebugString(L"JSON 已保存到 saveData.json\n");
+                    }
+                }
+                else
+                {
+                    // 沒有項目被選中
+                    //OutputDebugString(L"沒有項目被選中\n");
+                    MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+                }
+                pComboBox.Detach();
+                InvalidateRect(hwndDlg, NULL, TRUE);
 
             }
             break;
             case ID_DATALOAD:
             {
+                OutputDebugString(L"載入存檔\n");
+
+                CComboBox pComboBox;
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+
+                int selectedIndex = pComboBox.GetCurSel();
+
+                if (selectedIndex != CB_ERR) 
+                {
+                    // 有項目被選中
+
+                    CString selectedText;
+                    pComboBox.GetLBText(selectedIndex, selectedText);
+                    OutputDebugString(selectedText);
+                    OutputDebugString(L"\n");
+
+
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                    std::wstring wideselectedText(selectedText);
+                    std::string stdStr = converter.to_bytes(wideselectedText);
+
+                    //OutputDebugString(selectedText);
+                    // 
+                    //讀取存檔
+                    json save_tree = saveData[stdStr];
+                    Dialog_clear();
+
+                    json Fruit = save_tree["Fruit"];
+                    json coordinatesArray = Fruit["coordinates"];
+
+                    // 將 JSON array 中的每個 object 轉換為 POINT 並添加到 fruitpoint 中
+                    for (const auto& pointObject : coordinatesArray)
+                    {
+                        POINT point;
+                        point.x = pointObject["X"] + treePoint.x;
+                        point.y = pointObject["Y"] + treePoint.y;
+                        fruitpoint.push_back(point);
+                    }
+
+                    IWICImagingFactory* pIWICFactory = NULL;
+                    CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+
+                    // 讀取圖檔
+                    stdStr = save_tree["image"];
+                    std::wstring Png = converter.from_bytes(stdStr);
+                    std::wstring path = currentPath.wstring() + L"/Images/" + Png;
+                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg);
+
+                    stdStr = Fruit["image"];
+                    Png =converter.from_bytes(stdStr);
+                    path = currentPath.wstring() + L"/Images/" + Png;
+                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg);
+
+                    if (pIWICFactory)
+                        pIWICFactory->Release();
+
+
+                }
+                else 
+                {
+                    // 沒有項目被選中
+                    //OutputDebugString(L"沒有項目被選中\n");
+                    MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+                }
+                pComboBox.Detach();
+                InvalidateRect(hwndDlg, NULL, TRUE);
 
             }
             break;
             case ID_RETURN:
             {
-
+                if (!fruitpoint.empty())
+                    fruitpoint.pop_back();
+                else
+                    MessageBox(hwndDlg, L"已經沒有水果可以刪除", L"錯誤", MB_OK);
+                Dialog_do_Clear = 1;
+                Dialog_do_TreeClear = 1;
+                treeclickPoint = { 0 };
+                InvalidateRect(hwndDlg, NULL, TRUE);
             }
             break;
         }
@@ -408,6 +533,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             && xPos <= treePoint.x + fixed_px 
             && yPos <= treePoint.y + fixed_px)
         {
+            //越界判定
+            if (xPos + fixed_px_fruit > treePoint.x + fixed_px)
+                xPos = treePoint.x + fixed_px - fixed_px_fruit;
+            if (yPos + fixed_px_fruit > treePoint.y + fixed_px)
+                yPos = treePoint.y + fixed_px - fixed_px_fruit;
+
             treeclickPoint.x = static_cast<FLOAT>(xPos);
             treeclickPoint.y = static_cast<FLOAT>(yPos);
             fruitpoint.push_back(treeclickPoint);
@@ -439,13 +570,18 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             //不重複清除是因為要保留繪製結果 //使用點擊陣列後即可每次清除
             if (Dialog_do_Clear)
             {
-                Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));
+                Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Gray));
                 Dialog_do_Clear = 0;
             }
 
             //有讀取樹木圖片
             if (Tree_Bitmap && Dialog_do_TreeClear)
             {
+                D2D1_COLOR_F white_Color = D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f);
+                ID2D1SolidColorBrush* pWhiteBrush;
+                Tree_RenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
+                //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+                Tree_RenderTarget->FillRectangle(D2D1::RectF(treePoint.x, treePoint.y, treePoint.x + fixed_px, treePoint.y + fixed_px), pWhiteBrush);
                 D2D1_SIZE_U size = Tree_Bitmap->GetPixelSize();
                 UINT width = size.width;
                 UINT height = size.height;

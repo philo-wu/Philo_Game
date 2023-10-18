@@ -44,7 +44,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         L"WindowClass1",                 // 視窗類別的名字
         L"種樹得樹",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
-        300,                             // 視窗的x座標
+        510,                             // 視窗的x座標
         100,                             // 視窗的y座標
         wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
         wr.bottom - wr.top,              // 視窗的高度
@@ -188,7 +188,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case 1: // 選擇樹木
                 {
                     if (Dialog_LoadTree_is_open)
+                    {
+                        MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
                         break;
+                    }
                     Dialog_isfruit = 0;
                     DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }
@@ -197,7 +200,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case 2: // 選擇水果樹
                 {
                     if (Dialog_LoadTree_is_open)
+                    {
+                        MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
                         break;
+                    }
                     Dialog_isfruit = 1;
                     DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }                    
@@ -234,8 +240,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                 case 4: // 讀取地圖
                 {
-                    std::wstring  NULLPATH ;
-                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, NULLPATH);
+                    std::wstring  NULLPATH ;//不保存檔案路徑
+                    std::wstring  fileName ;
+                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, fileName);
+                    if (fileName.empty())
+                        break;
                     engine->do_clear = 1;
                     engine->do_drawMap = 1;
                     InvalidateRect(hWnd, NULL, TRUE);

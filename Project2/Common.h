@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <wincodec.h>
 #include "Direct2D.h"
-#include <Shlobj.h>
+//#include <Shlobj.h>
 
 // 視窗相關
 #define SCREEN_WIDTH  1024  
@@ -31,7 +31,8 @@ public:
                     std::wstring uri,
                     UINT destinationWidth,
                     UINT destinationHeight,
-                    ID2D1Bitmap** ppBitmap)
+                    ID2D1Bitmap** ppBitmap,
+                    HWND hwnd)
     {
         // 初始化 WIC
         IWICBitmapDecoder* pDecoder = NULL;
@@ -72,6 +73,12 @@ public:
                     NULL,
                     ppBitmap
                 );
+        }
+        else
+        {
+            std::wstring path = PathFindFileName(uri.c_str());
+            path += L"\n圖檔不存在";
+            MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
         }
 
             // 釋放 WIC 資源
@@ -136,13 +143,17 @@ public:
             // 檔案是可寫的
             IWICImagingFactory* pIWICFactory = NULL;
             CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap);
+            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap , hWnd);
             //將讀取路徑儲存
             ploadPath = szFile;
             filename = PathFindFileName(szFile);
 
             if (pIWICFactory)
                 pIWICFactory->Release();
+        }
+        else
+        {
+            filename.erase();
         }
     }
     //用以製作32位元bitmap
