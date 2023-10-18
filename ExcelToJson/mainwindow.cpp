@@ -50,6 +50,19 @@ void MainWindow::on_pushButton_show_clicked()
 //儲存成Json檔案 jsonDoc為欲輸出內容
 void MainWindow::saveJson(QJsonDocument jsonDoc, QString filepath) 
 {
+    QString folderPath = QFileInfo(filepath).absolutePath();
+    // 檢查資料夾是否存在，如果不存在，創建它
+    QDir folderDir(folderPath);
+    if (!folderDir.exists()) {
+        if (!folderDir.mkpath(".")) {
+            QString str = "無法創建資料夾："+ folderPath;
+            qDebug() << str;
+            QMessageBox::warning(this, "錯誤", str);
+
+            return;
+        }
+    }
+
     QString jsonString = jsonDoc.toJson(QJsonDocument::Indented);
     QFile file(filepath);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -65,7 +78,10 @@ void MainWindow::saveJson(QJsonDocument jsonDoc, QString filepath)
     }
     else
     {
-        qDebug() << "無法打開檔案進行寫入";
+        QString str = "無法打開檔案進行寫入：";
+        qDebug() << str;
+        QMessageBox::warning(this, "錯誤", str);
+
     }
 }
 //檢查單元格內資料是否符合資料型別
@@ -185,9 +201,13 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
 
     for (int colIndex = 1; colIndex <= columnCount; ++colIndex)
     {
+        // 中文名稱
         QAxObject* cell_header = usedRange->querySubObject("Cells(int,int)", HEADER_ROW, colIndex);
+        // 資料型別
         QAxObject* cell_type = usedRange->querySubObject("Cells(int,int)", HEADER_ROW + 1, colIndex);
+        // 英文名稱
         QAxObject* cell_en = usedRange->querySubObject("Cells(int,int)", HEADER_ROW + 2, colIndex);
+        // 是否顯示
         QAxObject* cell_showkey = usedRange->querySubObject("Cells(int,int)", HEADER_ROW + 3, colIndex);
 
         QVariant cell_header_Value = cell_header->property("Value");
@@ -233,10 +253,10 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
     QJsonDocument doc3(header_en);
     QJsonDocument doc4(header_showkey);
 
-    qDebug() << doc1.toJson(QJsonDocument::Indented);
-    qDebug() << doc2.toJson(QJsonDocument::Indented);
-    qDebug() << doc3.toJson(QJsonDocument::Indented);
-    qDebug() << doc4.toJson(QJsonDocument::Indented);
+    //qDebug() << doc1.toJson(QJsonDocument::Indented);
+    //qDebug() << doc2.toJson(QJsonDocument::Indented);
+    //qDebug() << doc3.toJson(QJsonDocument::Indented);
+    //qDebug() << doc4.toJson(QJsonDocument::Indented);
 
     //QJsonArray dataArray_CS;
     QJsonArray dataArray_C;
@@ -247,8 +267,10 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
         //QJsonObject row_data_CS;
         QJsonObject row_data_C;
         QJsonObject row_data_S;
+        bool is_save_C =1;
+        bool is_save_S =1;
 
-        for (int colIndex = columnCount; colIndex >= 1; --colIndex)
+        for (int colIndex = 1; colIndex <= columnCount; ++colIndex)
         {
             QAxObject* cell = usedRange->querySubObject("Cells(int,int)", rowumnIndex, colIndex);
             QVariant cellValue = cell->property("Value");
@@ -256,11 +278,28 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
             // 如果儲存格有值，則將資料加入到 Json 中
             if (!cellValue.toString().isEmpty())
             {
+                // key為
+                //qDebug() << "rowumnIndex = " << rowumnIndex << "" << colIndex;
+
                 QString key = QString::number(colIndex);
                 QString showkey = header_showkey[key].toString();
                 QString name = header_en[key].toString();
+                if (name == "open")
+                {
+                    //開關功能不寫入Json
+                    if (cellValue.toString() == "0")
+                    {
+                        //若為0則整列不寫入Json
+                        row_data_C = QJsonObject();// 已寫入則清空
+                        row_data_S = QJsonObject();// 已寫入則清空
+                        is_save_C = 0;
+                        is_save_S = 0;
+                        //qDebug() << "跳過此列";
 
-                if (showkey == "CS" || showkey == "SC")
+                        break; //跳過此列
+                    }
+                }
+                else if (showkey == "CS" || showkey == "SC")
                 {
                     // 顯示在Client與Server
                     //row_data_CS[name] = cellValue.toString();
@@ -286,8 +325,10 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
             }
         }
         //dataArray_CS.append(row_data_CS);
-        dataArray_C.append(row_data_C);
-        dataArray_S.append(row_data_S);
+        if ( is_save_C)
+            dataArray_C.append(row_data_C);
+        if ( is_save_S)
+            dataArray_S.append(row_data_S);
     }
 
     //data["data"] = dataArray;
@@ -312,6 +353,9 @@ void MainWindow::loadExcelToTableWidget(QTableWidget* tableWidget, const QString
 
     //在資料夾中存成Json
     QString JsonPath = out_folderPath + "Client_Server.json"; //"./Json/Client_Server.json";
+    //QString str = "保存路徑為：" + JsonPath;
+    //QMessageBox::warning(this, "訊息", str);
+
     //saveJson(jsonDoc_CS, JsonPath);
     JsonPath = out_folderPath + "Client.json";
     if(ui->checkBox_istoClient->isChecked())
