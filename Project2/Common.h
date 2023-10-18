@@ -10,6 +10,8 @@
 #define BUTTON_WIDTH  100
 #define BUTTON_HEIGHT 30
 #define FUNCTION_COLUMN_HEIGHT 50
+#define DIALOG_TREELOAD_POINT_X 250
+#define DIALOG_TREELOAD_POINT_Y 10
 
 // 遊戲相關
 #define CELL_SIZE 20
@@ -108,7 +110,7 @@ public:
         return hr;
     }
 
-    static void OpenFile(HWND hWnd,ID2D1RenderTarget* pRenderTarget, ID2D1Bitmap** ppBitmap, std::wstring& ploadPath)
+    static void OpenFile(HWND hWnd,ID2D1RenderTarget* pRenderTarget, ID2D1Bitmap** ppBitmap, std::wstring& ploadPath , std::wstring& filename)
     {
         //OutputDebugString(L"讀取檔案\n");
 
@@ -137,6 +139,8 @@ public:
             LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap);
             //將讀取路徑儲存
             ploadPath = szFile;
+            filename = PathFindFileName(szFile);
+
             if (pIWICFactory)
                 pIWICFactory->Release();
         }

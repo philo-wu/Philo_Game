@@ -1,4 +1,6 @@
 ﻿
+//#include <afx.h>
+
 #include "mian.h"
 #include "Dialog_LoadTree_Proc.h"
 
@@ -58,8 +60,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     engine = new Engine();
-    drawTree = new Tree("1");
-    drawFruitTree = new FruitTree("2","apple");
+    //drawTree = new Tree("1");
+    //drawFruitTree = new FruitTree("2","apple");
     engine->InitializeD2D(hWnd); //繪製背景
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
 
@@ -218,7 +220,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     //    }
                     //}
                     //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                    //std::wstring wideName = converter.from_bytes(Save_name);
+                    //std::wstring wideName = converter.from_bytes(Save_Name);
                     // 原本使用Common::OpenFolder 但FileSaveDialog明顯更優 以上淘汰
 
                     std::wstring filePath ;
@@ -233,7 +235,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case 4: // 讀取地圖
                 {
                     std::wstring  NULLPATH ;
-                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH);
+                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, NULLPATH);
                     engine->do_clear = 1;
                     engine->do_drawMap = 1;
                     InvalidateRect(hWnd, NULL, TRUE);

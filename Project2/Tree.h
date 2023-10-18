@@ -2,45 +2,47 @@
 
 #include "framework.h"
 #include "Direct2D.h"
+#include "Fruit.h"
 
 
 // 父類別 Tree
 class Tree {
 protected:
-    std::string treeType;
-public:
-    Tree(const std::string& type) : treeType(type) {}
+    std::wstring treename;
     ID2D1Bitmap* treeBitmap; //繪圖圖片
-    void Release() 
-    { 
+    POINT treepoint;
+public:
+    Tree(const std::wstring& name) : treename(name) {}
+    ID2D1Bitmap* Get_TreeBitmap() { return treeBitmap; }
+    void Set_TreeBitmap(ID2D1Bitmap* pBitmap) { treeBitmap = pBitmap; return; }
+    void Release_TreeBitmap()
+    {
         if (treeBitmap) {
             treeBitmap->Release();
             //重新賦值
             treeBitmap = NULL;
         }
-    }
-    void grow() 
-    {
-        //std::cout << "樹變大了" << std::endl;
-    }
-
-    void shedLeaves() 
-    {
-        //std::cout << "葉子掉了" << std::endl;
+        std::wstring message = treename + L"釋放Bitmap\n";
+        OutputDebugString(message.c_str());
     }
 };
 
 // 子類別 FruitTree
-class FruitTree : public Tree {
+class FruitTree : public Tree , public  Fruit {
 private:
-    std::string Fruit;
-    //水果圖片 原本想一同保存於記憶體,但想不到用途
-    //ID2D1Bitmap* FruitBitmap;
-
+    std::vector<POINT> fruitpoints;
 public:
-    FruitTree(const std::string& type, std::string fruit) : Tree(type), Fruit(fruit) {}
+    FruitTree(const std::wstring& name, std::wstring fruit) : Tree(name), Fruit(fruit) {}
+    FruitTree(Tree& tree, Fruit& fruit) : Tree(tree), Fruit(fruit) {
 
-    void Fruit_name() {
-        //std::cout << "這顆樹是" << Fruit << " 樹." << std::endl;
+        // MAYBE : 進行深度複製而不是使用&
+        // 
+        // 在這裡可以使用基類的資訊進行初始化
+        // 例如，可以從 Tree 和 Fruit 中獲取相關資訊來初始化 FruitTree
+    }
+
+    void Release_Bitmap() {
+        Release_TreeBitmap();
+        Release_FruitBitmap();
     }
 };

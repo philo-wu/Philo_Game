@@ -1,9 +1,8 @@
 #pragma once
 
+#include "Engine.h"
 #include "Direct2D.h"
 //#include "Direct3D.h"
-#include "framework.h"
-#include "Engine.h"
 #include "resource.h"
 
 // ¥þ°ìÁn©ú

@@ -1,5 +1,4 @@
-﻿#include "framework.h"
-#include "Engine.h"
+﻿#include "Engine.h"
 #include "Tree.h"
 
 Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrush(NULL)
@@ -126,39 +125,15 @@ HRESULT Engine::Draw(POINT point, int pxSize, Tree* tree)
         m_pRenderTarget->DrawBitmap(Map_Bitmap, Rect_drawingArea);
         do_drawMap = 0;
     }
-    if (tree->treeBitmap && point.x >0 && point.y >50)
-    {
+    //if (tree->treeBitmap && point.x >0 && point.y >50)
+    //{
 
-        m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));//Rect為樹的位子加上恆定長寬
+    //    m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));//Rect為樹的位子加上恆定長寬
 
-    }
+    //}
 
-    //pBitmapLock->Unlock();
-
-    // Draw score
-    //D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
-    //D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
-    //WCHAR scoreStr[64];
-    //swprintf_s(scoreStr, L"分數: %d            最高分數: %d              ", score, highScore);
-    //m_pRenderTarget->DrawText(
-    //    scoreStr,
-    //    35,
-    //    m_pTextFormat,
-    //    rectangle2,
-    //    m_pWhiteBrush
-    //);
-    //swprintf_s(scoreStr, L"FPS : %d                           ",FPS);
-    ////m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-    //m_pRenderTarget->DrawText(
-    //    scoreStr,
-    //    35,
-    //    m_pTextFormat,
-    //    rectangle3,
-    //    m_pWhiteBrush
-    //);
     m_pRenderTarget->EndDraw();
 
-    //auto frameEnd = std::chrono::steady_clock::now();
     return S_OK;
 }
 
