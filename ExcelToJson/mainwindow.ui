@@ -56,7 +56,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_select">
           <property name="text">
-           <string>選擇檔案</string>
+           <string>選擇Excel並建立Json</string>
           </property>
          </widget>
         </item>
@@ -117,7 +117,7 @@
         <item>
          <widget class="QLabel" name="label_out_folderPath">
           <property name="text">
-           <string>輸出路徑預設為執行檔同目錄Json資料夾</string>
+           <string>輸出路徑:預設為執行檔同目錄Json資料夾</string>
           </property>
          </widget>
         </item>
