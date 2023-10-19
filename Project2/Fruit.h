@@ -3,10 +3,10 @@
 class Fruit {
 protected:
     std::wstring  fruitname;
-    ID2D1Bitmap* fruitBitmap; //繪圖圖片
     POINT fruitpoint;
 public:
     Fruit(const std::wstring& name) : fruitname(name), fruitBitmap(nullptr) { ; }
+    ID2D1Bitmap* fruitBitmap; //繪圖圖片
     ~Fruit();
     void Release_FruitBitmap()
     {

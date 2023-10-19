@@ -5,7 +5,6 @@
 #include "mian.h"
 #include "resource.h"
 //#include <afx.h>
-#pragma warning(disable : 4996)  //std::wstring_convert C++17中不推薦使用,並以報錯方式提醒, 以此忽略此報錯
 
 
 //防呆
@@ -13,18 +12,20 @@ bool Dialog_LoadTree_is_open = false;
 bool Dialog_Input_is_open = false;
 
 // Dialog相關
-std::vector<POINT> fruitpoint;
-POINT clickPoint = { 0 }; //主視窗點擊座標
-POINT treePoint = { 0 }; //Dialog樹木生成座標
-POINT treeclickPoint = { 0 }; //Dialog點擊座標
-POINT movePoint = { 0 }; //Dialog點擊座標
-json saveData; 
-//判斷是否重繪
+std::vector<POINT> fruit_Points;
+POINT Tree_Point = { 0 }; //Dialog樹木生成座標
+POINT Tree_clickPoint = { 0 }; //Dialog點擊座標
+POINT movePoint = { 0 }; //Dialog滑鼠當前座標
+json Tree_saveData; 
+//主視窗相關
+std::vector<POINT> Map_treepoints;
+POINT Map_clickPoint = { 0 }; //主視窗點擊座標
+json Map_saveData;
 
 //圖檔繪製大小 樹木圖檔為正方形,長寬為fixed_px, 
-int fixed_px = 200;
+int fixed_px = DIALOG_TREELOAD_TREE_PX;
 //圖檔繪製大小 水果圖檔為正方形,長寬為fixed_px_fruit, 
-int fixed_px_fruit = 30;
+int fixed_px_fruit = DIALOG_TREELOAD_FRUIT_PX;
 RECT TreeRect ;
 
 //Dialog繪圖
@@ -40,17 +41,20 @@ ID2D1HwndRenderTarget* Tree_RenderTarget;
 Tree* drawTree;
 FruitTree* drawFruitTree;
 ID2D1Factory* pD2DFactory;
-// C++ 17
-std::filesystem::path currentPath = std::filesystem::current_path();
+
+// 取得專案位置
+std::filesystem::path currentPath = std::filesystem::current_path(); // C++ 17
 
 
-std::wstring Load_File_Path;
+
+std::wstring Load_Tree_File_Path;
+std::wstring Load_Fruit_File_Path;
+
 std::wstring Save_File_Path;
 std::string Tree_File_Name;
 std::string Fruit_File_Name;
 std::string Save_Name;
 
-// 原本自己寫Dialog用以存放檔案 ,但發現使用Windows自帶的IShellItem 則更為輕便
 INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -123,11 +127,11 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 //用以還原控制項
 void Dialog_clear()
 {
-    if (!fruitpoint.empty())
-        fruitpoint.clear();
+    if (!fruit_Points.empty())
+        fruit_Points.clear();
     Dialog_do_Clear = 1;
     Dialog_do_TreeClear = 1;
-    treeclickPoint = { 0 };
+    Tree_clickPoint = { 0 };
 }
 INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -142,13 +146,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         {
 
             OutputDebugString(L"Dialog初始化\n");
-            treePoint.x = DIALOG_TREELOAD_POINT_X;
-            treePoint.y = DIALOG_TREELOAD_POINT_Y;
+            Tree_Point.x = DIALOG_TREELOAD_POINT_X;
+            Tree_Point.y = DIALOG_TREELOAD_POINT_Y;
             TreeRect = {
-            static_cast<LONG>(treePoint.x),
-            static_cast<LONG>(treePoint.y),
-            static_cast<LONG>(treePoint.x + fixed_px),
-            static_cast<LONG>(treePoint.y + fixed_px)
+            static_cast<LONG>(Tree_Point.x),
+            static_cast<LONG>(Tree_Point.y),
+            static_cast<LONG>(Tree_Point.x + fixed_px),
+            static_cast<LONG>(Tree_Point.y + fixed_px)
             };
             Dialog_is_Save = 0;
             Tree_Bitmap = NULL;
@@ -170,7 +174,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             ShowWindow(GetDlgItem(hwndDlg, ID_DATASAVE), SW_HIDE);
         }
 
-        std::string path = currentPath.string() + "/Images/saveData.json";
+        std::string path = currentPath.string() + "/Images/Tree_saveData.json";
         std::ifstream inFile(path);
         if (!inFile.is_open()) {
             //std::cerr << "無法打開 JSON 文件" << std::endl;
@@ -181,13 +185,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         }
         //else
             //OutputDebugString(L"JSON開啟成功\n");
-        json mapData;
-        inFile >> mapData;
+        json Data;
+        inFile >> Data;
         inFile.close();
-        saveData = mapData;
+        Tree_saveData = Data;
         std::vector<std::string> items;
 
-        for (auto it = mapData.begin(); it != mapData.end(); ++it) 
+        for (auto it = Data.begin(); it != Data.end(); ++it) 
         {
             items.push_back(it.key());
         }
@@ -225,21 +229,32 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 //OutputDebugString(L"儲存圖片\n");
                 //if (!Dialog_isfruit)//先處理一般樹
-                //{
-                //    // 自動帶入一般樹圖片
-                //    OutputDebugString(Load_File_Path.c_str());
-                //    IWICImagingFactory* pIWICFactory = NULL;
-                //    CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-                //    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_File_Path, 0, 0, &drawTree->treeBitmap);
-                //    pIWICFactory->Release();
-                //}
+                {
+                    // 將上一份繪圖結果儲存
+                    
+                    // 初始化主視窗相關
+                    if (!Map_treepoints.empty())
+                        Map_treepoints.clear();
+                    Map_clickPoint = { 0 };
+
+                    // 帶入水果樹圖片
+                    OutputDebugString(Load_Tree_File_Path.c_str());
+                    IWICImagingFactory* pIWICFactory = NULL;
+                    CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg);
+                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg);
+                    drawFruitTree->Set_fruit_Points(fruit_Points);
+                    pIWICFactory->Release();
+
+                    InvalidateRect(hWnd, NULL, TRUE);
+                }
                 //else
                 //{
                 //    if(!Dialog_is_Save)
                 //    {
                 //        drawFruitTree->Release();
                 //        Save_File_Path = L"./tree_save/auto_save.png";
-                //        Common::SaveWindowToImage(hwndDlg, Save_File_Path.c_str(), treePoint, fixed_px, fixed_px);
+                //        Common::SaveWindowToImage(hwndDlg, Save_File_Path.c_str(), Tree_Point, fixed_px, fixed_px);
                 //    }
                 //    // 自動帶入水果樹圖片      
                 //    IWICImagingFactory* pIWICFactory = NULL;
@@ -247,23 +262,21 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 //    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Save_File_Path, 0, 0, &drawFruitTree->treeBitmap);
                 //    pIWICFactory->Release();
                 //}
-                EndDialog(hwndDlg, IDOK);
+                //EndDialog(hwndDlg, IDOK);
             }
             break;
 
             case IDCANCEL:
             {
                 // 使用者按下了取消按鈕
-                Dialog_do_Clear = 1;
-                Dialog_do_TreeClear = 1;
-
+                Dialog_clear();
                 EndDialog(hwndDlg, IDCANCEL);
             }
             break;
             case ID_LOADTREE: // 選擇樹木
             {
                 std::wstring filename;
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_File_Path , filename);
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_Tree_File_Path, filename);
                 if (!filename.empty())
                 {
 
@@ -284,7 +297,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     break;
                 }
                 std::wstring filename;
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_File_Path , filename);
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename);
                 if (!filename.empty())
                 {
                     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -296,7 +309,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_DATASAVE: // 儲存檔案
             {
-                if (fruitpoint.empty() || !Fruit_Bitmap)
+                if (fruit_Points.empty() || !Fruit_Bitmap)
                 {
                     MessageBox(hwndDlg, L"無進行任何繪圖", L"錯誤", MB_OK);
                     break;
@@ -308,13 +321,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 json fruit;
                 // 創建一個 JSON array，用於存放 coordinates
                 json coordinatesArray;
-                // 將 fruitpoint 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-                for (const POINT& point : fruitpoint) 
+                // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
+                for (const POINT& point : fruit_Points) 
                 {
                     json pointObject = 
                     {
-                        {"X", point.x - treePoint.x},
-                        {"Y", point.y - treePoint.y}
+                        {"X", point.x},
+                        {"Y", point.y}
                     };
 
                     coordinatesArray.push_back(pointObject);
@@ -348,17 +361,17 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 //OutputDebugString(wideSaveName.c_str());
 
                 // 將 JSON 對象轉換為字串
-                saveData[Save_Name] = save_tree;
-                std::string jsonString = saveData.dump(4);
+                Tree_saveData[Save_Name] = save_tree;
+                std::string jsonString = Tree_saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
-                std::string path = currentPath.string() + "/Images/saveData.json";
+                std::string path = currentPath.string() + "/Images/Tree_saveData.json";
                 std::ofstream outFile(path);
                 if (outFile.is_open()) 
                 {
                     outFile << jsonString;
                     outFile.close();
-                    OutputDebugString(L"JSON 已保存到 saveData.json\n");
+                    OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
 
                     CComboBox pComboBox;
                     pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
@@ -376,7 +389,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 }
                 else 
                 {
-                    OutputDebugString(L"無法打開文件以保存 JSON\n");
+                    MessageBox(hwndDlg, L"無法打開文件保存JSON", L"錯誤", MB_OK);
                 }
 
 
@@ -407,7 +420,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     //OutputDebugString(selectedText);
                     // 
                     //刪除存檔
-                    saveData.erase(stdStr);
+                    Tree_saveData.erase(stdStr);
                     pComboBox.DeleteString(selectedIndex);
                     if (pComboBox.GetCount() == 0)
                         pComboBox.SetCurSel(-1);
@@ -415,15 +428,15 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                         pComboBox.SetCurSel(0);
 
 
-                    std::string jsonString = saveData.dump(4);
+                    std::string jsonString = Tree_saveData.dump(4);
                     // 將 JSON 字串保存到文件
-                    std::string path = currentPath.string() + "/Images/saveData.json";
+                    std::string path = currentPath.string() + "/Images/Tree_saveData.json";
                     std::ofstream outFile(path);
                     if (outFile.is_open())
                     {
                         outFile << jsonString;
                         outFile.close();
-                        OutputDebugString(L"JSON 已保存到 saveData.json\n");
+                        OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
                     }
                 }
                 else
@@ -463,19 +476,19 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     //OutputDebugString(selectedText);
                     // 
                     //讀取存檔
-                    json save_tree = saveData[stdStr];
+                    json save_tree = Tree_saveData[stdStr];
                     Dialog_clear();
 
                     json Fruit = save_tree["Fruit"];
                     json coordinatesArray = Fruit["coordinates"];
 
-                    // 將 JSON array 中的每個 object 轉換為 POINT 並添加到 fruitpoint 中
+                    // 將 JSON array 中的每個 object 轉換為 POINT 並添加到 fruit_Points 中
                     for (const auto& pointObject : coordinatesArray)
                     {
                         POINT point;
-                        point.x = pointObject["X"] + treePoint.x;
-                        point.y = pointObject["Y"] + treePoint.y;
-                        fruitpoint.push_back(point);
+                        point.x = pointObject["X"];
+                        point.y = pointObject["Y"];
+                        fruit_Points.push_back(point);
                     }
 
                     IWICImagingFactory* pIWICFactory = NULL;
@@ -486,11 +499,14 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     std::wstring Png = converter.from_bytes(stdStr);
                     std::wstring path = currentPath.wstring() + L"/Images/" + Png;
                     Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg);
+                    Load_Tree_File_Path = path;
+
 
                     stdStr = Fruit["image"];
                     Png =converter.from_bytes(stdStr);
                     path = currentPath.wstring() + L"/Images/" + Png;
                     Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg);
+                    Load_Fruit_File_Path = path;
 
                     if (pIWICFactory)
                         pIWICFactory->Release();
@@ -510,13 +526,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_RETURN:
             {
-                if (!fruitpoint.empty())
-                    fruitpoint.pop_back();
+                if (!fruit_Points.empty())
+                    fruit_Points.pop_back();
                 else
                     MessageBox(hwndDlg, L"已經沒有水果可以刪除", L"錯誤", MB_OK);
                 Dialog_do_Clear = 1;
                 Dialog_do_TreeClear = 1;
-                treeclickPoint = { 0 };
+                Tree_clickPoint = { 0 };
                 InvalidateRect(hwndDlg, NULL, TRUE);
             }
             break;
@@ -528,20 +544,21 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         int xPos = GET_X_LPARAM(lParam);
         int yPos = GET_Y_LPARAM(lParam);
         if (Fruit_Bitmap 
-            && xPos >= treePoint.x 
-            && yPos >= treePoint.y 
-            && xPos <= treePoint.x + fixed_px 
-            && yPos <= treePoint.y + fixed_px)
+            && xPos >= Tree_Point.x 
+            && yPos >= Tree_Point.y 
+            && xPos <= Tree_Point.x + fixed_px 
+            && yPos <= Tree_Point.y + fixed_px)
         {
             //越界判定
-            if (xPos + fixed_px_fruit > treePoint.x + fixed_px)
-                xPos = treePoint.x + fixed_px - fixed_px_fruit;
-            if (yPos + fixed_px_fruit > treePoint.y + fixed_px)
-                yPos = treePoint.y + fixed_px - fixed_px_fruit;
+            if (xPos + fixed_px_fruit > Tree_Point.x + fixed_px)
+                xPos = Tree_Point.x + fixed_px - fixed_px_fruit;
+            if (yPos + fixed_px_fruit > Tree_Point.y + fixed_px)
+                yPos = Tree_Point.y + fixed_px - fixed_px_fruit;
 
-            treeclickPoint.x = static_cast<FLOAT>(xPos);
-            treeclickPoint.y = static_cast<FLOAT>(yPos);
-            fruitpoint.push_back(treeclickPoint);
+            Tree_clickPoint.x = static_cast<FLOAT>(xPos) - Tree_Point.x;
+            Tree_clickPoint.y = static_cast<FLOAT>(yPos) - Tree_Point.y;
+
+            fruit_Points.push_back(Tree_clickPoint);
             InvalidateRect(hwndDlg, NULL, FALSE);
         }
     }
@@ -551,7 +568,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     {
         //int xPos = GET_X_LPARAM(lParam);
         //int yPos = GET_Y_LPARAM(lParam);
-        //if (xPos >= treePoint.x && yPos >= treePoint.y && xPos <= treePoint.x + fixed_px && yPos <= treePoint.y + fixed_px)
+        //if (xPos >= Tree_Point.x && yPos >= Tree_Point.y && xPos <= Tree_Point.x + fixed_px && yPos <= Tree_Point.y + fixed_px)
         //{
         //    movePoint.x = static_cast<FLOAT>(xPos);
         //    movePoint.y = static_cast<FLOAT>(yPos);
@@ -570,42 +587,43 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             //不重複清除是因為要保留繪製結果 //使用點擊陣列後即可每次清除
             if (Dialog_do_Clear)
             {
-                Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Gray));
+
+                Tree_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF(0.8f, 0.8f, 0.8f, 0.8f))); // dialog 背景色
                 Dialog_do_Clear = 0;
             }
 
             //有讀取樹木圖片
             if (Tree_Bitmap && Dialog_do_TreeClear)
             {
-                D2D1_COLOR_F white_Color = D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f);
+                D2D1_COLOR_F white_Color = D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f); //繪製區域背景色
                 ID2D1SolidColorBrush* pWhiteBrush;
                 Tree_RenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
                 //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-                Tree_RenderTarget->FillRectangle(D2D1::RectF(treePoint.x, treePoint.y, treePoint.x + fixed_px, treePoint.y + fixed_px), pWhiteBrush);
+                Tree_RenderTarget->FillRectangle(D2D1::RectF(Tree_Point.x, Tree_Point.y, Tree_Point.x + fixed_px, Tree_Point.y + fixed_px), pWhiteBrush);
                 D2D1_SIZE_U size = Tree_Bitmap->GetPixelSize();
                 UINT width = size.width;
                 UINT height = size.height;
-                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(treePoint.x, treePoint.y, treePoint.x + fixed_px, treePoint.y + fixed_px));
+                Tree_RenderTarget->DrawBitmap(Tree_Bitmap, D2D1::RectF(Tree_Point.x, Tree_Point.y, Tree_Point.x + fixed_px, Tree_Point.y + fixed_px));
                 Dialog_do_TreeClear = 0;
             }
             //有讀取水果圖片並點擊在樹上
-            //if (Fruit_Bitmap && treeclickPoint.x != 0 && treeclickPoint.y != 0)
+            //if (Fruit_Bitmap && Tree_clickPoint.x != 0 && Tree_clickPoint.y != 0)
             //{
             //    D2D1_SIZE_U size = Fruit_Bitmap->GetPixelSize();
             //    UINT width = size.width;
             //    UINT height = size.height;
-            //    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(treeclickPoint.x, treeclickPoint.y, treeclickPoint.x + fixed_px_fruit, treeclickPoint.y + fixed_px_fruit));
+            //    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(Tree_clickPoint.x, Tree_clickPoint.y, Tree_clickPoint.x + fixed_px_fruit, Tree_clickPoint.y + fixed_px_fruit));
             //}
             
             // 讀取點擊陣列並繪圖水果
-            for (const POINT& fruitPoint : fruitpoint)
+            for (const POINT& fruit_Point : fruit_Points)
             {
                 if (Fruit_Bitmap)
                 {
-                    D2D1_SIZE_U size = Fruit_Bitmap->GetPixelSize();
-                    UINT width = size.width;
-                    UINT height = size.height;
-                    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(fruitPoint.x, fruitPoint.y, fruitPoint.x + fixed_px_fruit, fruitPoint.y + fixed_px_fruit));
+                    UINT drawpoint_x = Tree_Point.x + fruit_Point.x;
+                    UINT drawpoint_y = Tree_Point.y + fruit_Point.y;
+
+                    Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
                 }
             }
             Tree_RenderTarget->EndDraw();
@@ -619,11 +637,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 Tree_Bitmap->Release();
             if (Fruit_Bitmap)
                 Fruit_Bitmap->Release();
-            if (!fruitpoint.empty())
-                fruitpoint.clear();
+            if (!fruit_Points.empty())
+                fruit_Points.clear();
             Dialog_do_Clear = 1;
             Dialog_do_TreeClear = 1;
-            treeclickPoint = { 0 };
+            Tree_clickPoint = { 0 };
             Tree_RenderTarget->Release();
             Dialog_LoadTree_is_open = 0;
         }

@@ -37,6 +37,8 @@
 #include <shobjidl.h>
 #include <filesystem>
 
+#pragma warning(disable : 4996)  //std::wstring_convert C++17中不推薦使用,並以報錯方式提醒, 以此忽略此報錯
+
 using json = nlohmann::json;
 
 template<class Interface>

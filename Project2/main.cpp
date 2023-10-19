@@ -60,8 +60,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     engine = new Engine();
-    //drawTree = new Tree("1");
-    //drawFruitTree = new FruitTree("2","apple");
+    engine->phWnd = hWnd;
+    drawTree = new Tree(L"1");
+    drawFruitTree = new FruitTree(L"2",L"apple");
     engine->InitializeD2D(hWnd); //繪製背景
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
 
@@ -116,24 +117,26 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 在此繪製按鈕會存在,但會被覆蓋,仍可以點選
             // 透過重繪事件,會先繪製背景再繪製按鈕
             // 設定字體
-
-            Start_Button = CreateWindow(
-                L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"選擇樹木",                            // 按鈕上顯示的文字
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH+10)*0, 10,
-                BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // 按鈕位置和大小 (x, y, width, height)
-                hWnd,                                   // 父窗口句柄
-                (HMENU)1,                               // 控制項 ID (可以用於識別按鈕)
-                GetModuleHandle(NULL),                  // 模組句柄
-                NULL                                    // 指定為 NULL
-            );
+            int buttomnumber = 0;
+            // 判斷不需要單純繪製樹木
+            // Start_Button = CreateWindow(
+            //    L"BUTTON",                              // 按鈕控制項的類別名稱
+            //    L"選擇樹木",                            // 按鈕上顯示的文字
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+            //    10 + (BUTTON_WIDTH+10)* buttomnumber, 10,
+            //    BUTTON_WIDTH, BUTTON_HEIGHT,
+            //                                            // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                   // 父窗口句柄
+            //    (HMENU)1,                               // 控制項 ID (可以用於識別按鈕)
+            //    GetModuleHandle(NULL),                  // 模組句柄
+            //    NULL                                    // 指定為 NULL
+            //);
+            //++buttomnumber;
             Difficulty_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"選擇水果樹",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * 1, 10,
+                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -141,11 +144,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
+            ++buttomnumber;
+
             Score_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"儲存地圖",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * 2, 10,
+                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -153,11 +158,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
+            ++buttomnumber;
+
             End_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"讀取地圖",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * 3, 10,
+                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -165,11 +172,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
+            ++buttomnumber;
+
             Clean_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"地圖清空",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * 4, 10,
+                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -185,6 +194,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 //檢查按鈕身分
                 switch (LOWORD(wParam))
                 {
+
                 case 1: // 選擇樹木
                 {
                     if (Dialog_LoadTree_is_open)
@@ -253,8 +263,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                 case 5: // 地圖清空
                 {
-                    clickPoint.x = static_cast<FLOAT>(0);
-                    clickPoint.y = static_cast<FLOAT>(0);
+                    Map_clickPoint.x = static_cast<FLOAT>(0);
+                    Map_clickPoint.y = static_cast<FLOAT>(0);
                     engine->do_clear = 1;
                     engine->Map_Bitmap = NULL;
 
@@ -276,12 +286,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 主選單畫面
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            int pxSize = 50;//50是長寬 測試用
-            if(!Dialog_isfruit)// 1改成判斷要畫樹還是水果樹
-                engine->Draw(clickPoint, 50, drawTree);
-            else
-                engine->Draw(clickPoint, 50, drawFruitTree);
-
+            //if(Dialog_isfruit)// 1改成判斷要畫樹還是水果樹
+                //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawTree , Map_saveData , Map_treepoints);
+            //else
+                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData, Tree_saveData,Map_treepoints);
+                
             EndPaint(hWnd, &ps);
         }
         break;
@@ -290,10 +299,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         {
             int xPos = GET_X_LPARAM(lParam);
             int yPos = GET_Y_LPARAM(lParam);
-            if (xPos >= 0 && yPos >= FUNCTION_COLUMN_HEIGHT)
+            if (xPos >= 0 
+                && yPos >= FUNCTION_COLUMN_HEIGHT)
             {
-                clickPoint.x = static_cast<FLOAT>(xPos);
-                clickPoint.y = static_cast<FLOAT>(yPos);
+                if (xPos + fixed_px_fruit > SCREEN_WIDTH)
+                    xPos = SCREEN_WIDTH - fixed_px_fruit;
+                if (yPos + fixed_px_fruit > SCREEN_HEIGHT)
+                    yPos = SCREEN_HEIGHT - fixed_px_fruit;
+
+                Map_clickPoint.x = static_cast<FLOAT>(xPos);
+                Map_clickPoint.y = static_cast<FLOAT>(yPos);
+                Map_treepoints.push_back(Map_clickPoint);
                 InvalidateRect(hWnd, NULL, TRUE);
             }
         }

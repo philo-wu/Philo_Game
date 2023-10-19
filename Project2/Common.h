@@ -12,6 +12,9 @@
 #define FUNCTION_COLUMN_HEIGHT 50
 #define DIALOG_TREELOAD_POINT_X 250
 #define DIALOG_TREELOAD_POINT_Y 10
+#define DIALOG_TREELOAD_TREE_PX 200
+#define DIALOG_TREELOAD_FRUIT_PX 30
+#define MAINDIALOG_TREE_PX 50
 
 // 遊戲相關
 #define CELL_SIZE 20
@@ -117,7 +120,11 @@ public:
         return hr;
     }
 
-    static void OpenFile(HWND hWnd,ID2D1RenderTarget* pRenderTarget, ID2D1Bitmap** ppBitmap, std::wstring& ploadPath , std::wstring& filename)
+    static void OpenFile(HWND hWnd,
+                        ID2D1RenderTarget* pRenderTarget, 
+                        ID2D1Bitmap** ppBitmap, 
+                        std::wstring& ploadPath , 
+                        std::wstring& filename)
     {
         //OutputDebugString(L"讀取檔案\n");
 
@@ -144,6 +151,7 @@ public:
             IWICImagingFactory* pIWICFactory = NULL;
             CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
             LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap , hWnd);
+            OutputDebugString(szFile);
             //將讀取路徑儲存
             ploadPath = szFile;
             filename = PathFindFileName(szFile);
@@ -251,40 +259,40 @@ public:
 
                                         GUID format = GUID_WICPixelFormat32bppPBGRA;
                                         pFrame->SetPixelFormat(&format);
-                                        if (IsEqualGUID(format, GUID_WICPixelFormat32bppBGRA))
-                                        {
-                                            //如果格式是 32bppBGRA，將白色視為透明
-                                            UINT width, height;
-                                            pWICBitmap->GetSize(&width, &height);
-                                            //UINT32 pixelCount = width * height;  //錯誤範例 * sizeof(UINT32)才為正確記憶體儲存空間
-                                            UINT32* pixelCount = (UINT32*)malloc(width * height * sizeof(UINT32));
+                                        // 目前不需要去背 20231019
+                                        //if (IsEqualGUID(format, GUID_WICPixelFormat32bppBGRA))
+                                        //{
+                                        //    //如果格式是 32bppBGRA，將白色視為透明
+                                        //    UINT width, height;
+                                        //    pWICBitmap->GetSize(&width, &height);
+                                        //    //UINT32 pixelCount = width * height;  //錯誤範例 * sizeof(UINT32)才為正確記憶體儲存空間
+                                        //    UINT32* pixelCount = (UINT32*)malloc(width * height * sizeof(UINT32));
 
-                                            pWICBitmap->CopyPixels(NULL, width * sizeof(UINT32), width * height * sizeof(UINT32), reinterpret_cast<BYTE*>(pixelCount));
+                                        //    pWICBitmap->CopyPixels(NULL, width * sizeof(UINT32), width * height * sizeof(UINT32), reinterpret_cast<BYTE*>(pixelCount));
 
-                                            for (int y = 0; y < height; ++y)
-                                            {
-                                                for (int x = 0; x < width; ++x)
-                                                {
-                                                    UINT32* pixelsize = pixelCount + y * width + x;
-                                                    BYTE* pixel = reinterpret_cast<BYTE*>(pixelsize);
+                                        //    for (int y = 0; y < height; ++y)
+                                        //    {
+                                        //        for (int x = 0; x < width; ++x)
+                                        //        {
+                                        //            UINT32* pixelsize = pixelCount + y * width + x;
+                                        //            BYTE* pixel = reinterpret_cast<BYTE*>(pixelsize);
 
-                                                    //wchar_t buffer[20];
-                                                    //swprintf_s(buffer, L"R=%d,G=%d B=%d\n", pixel[0], pixel[1] , pixel[2]);
-                                                    //OutputDebugString(buffer);
+                                        //            //wchar_t buffer[20];
+                                        //            //swprintf_s(buffer, L"R=%d,G=%d B=%d\n", pixel[0], pixel[1] , pixel[2]);
+                                        //            //OutputDebugString(buffer);
 
-                                                    if (pixel[0] == 255 && pixel[1] == 255 && pixel[2] == 255)
-                                                    {
-                                                        // 白色視為透明
-                                                        pixel[3] = 0;
-                                                        //OutputDebugString(L"將像素透明\n");
-                                                    }
-                                                }
-                                            }
+                                        //            if (pixel[0] == 255 && pixel[1] == 255 && pixel[2] == 255)
+                                        //            {
+                                        //                // 白色視為透明
+                                        //                pixel[3] = 0;
+                                        //                //OutputDebugString(L"將像素透明\n");
+                                        //            }
+                                        //        }
+                                        //    }
+                                        //    pWICFactory->CreateBitmapFromMemory(width, height, format, width * 4, width * height * 4, reinterpret_cast<BYTE*>(pixelCount), &pWICBitmap);
+                                        //    //OutputDebugString(L"開始編碼\n");
 
-                                            pWICFactory->CreateBitmapFromMemory(width, height, format, width * 4, width * height * 4, reinterpret_cast<BYTE*>(pixelCount), &pWICBitmap);
-                                            //OutputDebugString(L"開始編碼\n");
-
-                                        }
+                                        //}
                                         // 將位圖源編碼到編碼幀
                                         if (SUCCEEDED(pFrame->WriteSource(pWICBitmap, nullptr)))
                                         {
@@ -429,9 +437,9 @@ public:
 
 
     //TransparentBlt(hDCMem, 0, 0, fixed_px, fixed_px,
-    //    hDC, treePoint.x, treePoint.y, fixed_px, fixed_px, RGB(255, 255, 255)); // 將白色視為透明色 
+    //    hDC, Tree_Point.x, Tree_Point.y, fixed_px, fixed_px, RGB(255, 255, 255)); // 將白色視為透明色 
     ////BitBlt(hDCMem, 0, 0, fixed_px, fixed_px, 
-    ////        hDC, treePoint.x, treePoint.y, SRCCOPY);//將指定區域的屏幕DC圖象拷貝到兼容DC中
+    ////        hDC, Tree_Point.x, Tree_Point.y, SRCCOPY);//將指定區域的屏幕DC圖象拷貝到兼容DC中
     ////SetBkColor(hDCMem, RGB(255, 255, 255));  // 將白色視為透明色
 
     //CImage image;

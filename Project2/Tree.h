@@ -9,12 +9,10 @@
 class Tree {
 protected:
     std::wstring treename;
-    ID2D1Bitmap* treeBitmap; //繪圖圖片
-    POINT treepoint;
+    POINT tree_Point;
 public:
-    Tree(const std::wstring& name) : treename(name) {}
-    ID2D1Bitmap* Get_TreeBitmap() { return treeBitmap; }
-    void Set_TreeBitmap(ID2D1Bitmap* pBitmap) { treeBitmap = pBitmap; return; }
+    Tree(const std::wstring name) : treename(name) {}
+    ID2D1Bitmap* treeBitmap; //繪圖圖片 //原本想放protected ,但與D2DRenderTarget的依存關係不好處理
     void Release_TreeBitmap()
     {
         if (treeBitmap) {
@@ -30,17 +28,20 @@ public:
 // 子類別 FruitTree
 class FruitTree : public Tree , public  Fruit {
 private:
-    std::vector<POINT> fruitpoints;
+    std::vector<POINT> fruit_Points;
 public:
-    FruitTree(const std::wstring& name, std::wstring fruit) : Tree(name), Fruit(fruit) {}
-    FruitTree(Tree& tree, Fruit& fruit) : Tree(tree), Fruit(fruit) {
-
-        // MAYBE : 進行深度複製而不是使用&
-        // 
+    FruitTree(const std::wstring name, std::wstring fruit) : Tree(name), Fruit(fruit) {}
+    FruitTree(Tree& tree, Fruit& fruit) : Tree(tree), Fruit(fruit)
+    {
         // 在這裡可以使用基類的資訊進行初始化
         // 例如，可以從 Tree 和 Fruit 中獲取相關資訊來初始化 FruitTree
     }
-
+    void Set_fruit_Points(std::vector<POINT> Points) { 
+        fruit_Points  = Points;
+    }
+    std::vector<POINT> Get_fruit_Points() { 
+        return fruit_Points;
+    };
     void Release_Bitmap() {
         Release_TreeBitmap();
         Release_FruitBitmap();
