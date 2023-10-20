@@ -1,9 +1,9 @@
 #pragma once
-// ¥]§t°ò¥»ªºWindowsÀYÀÉ©MDirect3DÀY¤å¥ó
+// åŒ…å«åŸºæœ¬çš„Windowsé ­æª”å’ŒDirect3Dé ­æ–‡ä»¶
 #include <windows.h>
 #include <windowsx.h>
 #include <CommCtrl.h>
-#include <commdlg.h>        //Åª¨úÀÉ®×
+#include <commdlg.h>        //è®€å–æª”æ¡ˆ
 #include <wincodec.h>
 #include <locale>
 #include <iostream>
@@ -32,7 +32,7 @@
 using json = nlohmann::json;
 
 template<class Interface>
-// ÄÀ©ñ¸ê·½
+// é‡‹æ”¾è³‡æº
 inline void SafeRelease(Interface** ppInterfaceToRelease)
 {
     if (*ppInterfaceToRelease != NULL)

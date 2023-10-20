@@ -30,8 +30,8 @@ void Snake::Initialize(ID2D1HwndRenderTarget* m_pRenderTarget)
 	//	&m_pRedBrush
 	//);
 	
-	// ´«¦¨«Å§i¹Ï¤ù
-	// µLªk¨Ï¥Î°Ñ¦Ò¸ô®|,¥ı¨Ï¥Îµ´¹ï¸ô®|
+	// æ›æˆå®£å‘Šåœ–ç‰‡
+	// ç„¡æ³•ä½¿ç”¨åƒè€ƒè·¯å¾‘,å…ˆä½¿ç”¨çµ•å°è·¯å¾‘
 	LPCWSTR filePath;
 	IWICImagingFactory* pIWICFactory = NULL;
 	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
@@ -158,7 +158,7 @@ void Snake::Draw(ID2D1HwndRenderTarget* m_pRenderTarget)
 	//m_pRenderTarget->FillEllipse(&ellipseBall, m_pRedBrush);
 	
 	
-	// ´«¦¨Ã¸»s¹Ï¤ù
+	// æ›æˆç¹ªè£½åœ–ç‰‡
 	for (int i = 1; i < length - 1; i++)
 	{
 		D2D1_RECT_F destRect = D2D1::RectF(
@@ -170,7 +170,7 @@ void Snake::Draw(ID2D1HwndRenderTarget* m_pRenderTarget)
 		m_pRenderTarget->DrawBitmap(BodyBitmap, destRect);
 	}
 
-	// ³Dªº§À¤Ú
+	// è›‡çš„å°¾å·´
 	float tailRotationAngle = CalculateRotationAngle(position[length - 2], position[length - 1 ]);
 	D2D1_RECT_F destRectTail = D2D1::RectF(
 		position[length - 1].x * CELL_SIZE,
@@ -182,7 +182,7 @@ void Snake::Draw(ID2D1HwndRenderTarget* m_pRenderTarget)
 	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(tailRotationAngle, D2D1::Point2F(destRectTail.left + CELL_SIZE / 2, destRectTail.top + CELL_SIZE / 2)));
 	m_pRenderTarget->DrawBitmap(TailBitmap, destRectTail);
 
-	// ³DªºÀY³¡¤À
+	// è›‡çš„é ­éƒ¨åˆ†
 	float headRotationAngle = CalculateRotationAngle(position[0], position[1]);
 	D2D1_RECT_F destRectHead = D2D1::RectF(
 		position[0].x * CELL_SIZE,
@@ -195,11 +195,11 @@ void Snake::Draw(ID2D1HwndRenderTarget* m_pRenderTarget)
 	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(headRotationAngle, D2D1::Point2F(destRectHead.left + CELL_SIZE / 2, destRectHead.top + CELL_SIZE / 2)));
 	m_pRenderTarget->DrawBitmap(HeadBitmap, destRectHead);
 
-	// ÁÙ­ìÂà´«
+	// é‚„åŸè½‰æ›
 	m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 
-//®Ú¾Ú¤U¤@ÂI²¾°Ê¤è¦V¨M©wÂà¦V
+//æ ¹æ“šä¸‹ä¸€é»ç§»å‹•æ–¹å‘æ±ºå®šè½‰å‘
 float Snake::CalculateRotationAngle(POINT point1, POINT point2)
 {
 	float dx = point2.x - point1.x;

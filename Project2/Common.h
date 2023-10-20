@@ -2,17 +2,17 @@
 #include <wincodec.h>
 #include "Direct2D.h"
 
-// µøµ¡¬ÛÃö
+// è¦–çª—ç›¸é—œ
 #define SCREEN_WIDTH  1024  
 #define SCREEN_HEIGHT 768
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  200
 #define BUTTON_HEIGHT 50
 
-// ¹CÀ¸¬ÛÃö
+// éŠæˆ²ç›¸é—œ
 #define CELL_SIZE 20
 
-// ¨Æ¥ó©Î«ü¥O¬ÛÃö
+// äº‹ä»¶æˆ–æŒ‡ä»¤ç›¸é—œ
 #define ID_CUSTOM_COMMAND 1001
 #define WM_CUSTOM_GAMEEND WM_USER + 1
 #define WM_CUSTOM_GAMEWIN WM_USER + 2
@@ -21,7 +21,7 @@ class Common
 {
 public:
 
-    // Åª¨úÀÉ®×¨ÃÂà´«¦¨¹Ï¤ù
+    // è®€å–æª”æ¡ˆä¸¦è½‰æ›æˆåœ–ç‰‡
     static HRESULT LoadBitmapFromFile(
                     ID2D1RenderTarget* pRenderTarget,
                     IWICImagingFactory* pIWICFactory,
@@ -30,7 +30,7 @@ public:
                     UINT destinationHeight,
                     ID2D1Bitmap** ppBitmap)
     {
-        // ªì©l¤Æ WIC
+        // åˆå§‹åŒ– WIC
         IWICBitmapDecoder* pDecoder = NULL;
         IWICBitmapFrameDecode* pSource = NULL;
         IWICStream* pStream = NULL;
@@ -47,9 +47,9 @@ public:
         if (SUCCEEDED(hr))
         {
             hr = pDecoder->GetFrame(0, &pSource);
-            // ªì©l¤Æ WIC Âà´«¾¹
+            // åˆå§‹åŒ– WIC è½‰æ›å™¨
             hr = pIWICFactory->CreateFormatConverter(&pConverter);
-            // ³]©wÂà´«¾¹ÄÝ©Ê
+            // è¨­å®šè½‰æ›å™¨å±¬æ€§
             hr = pConverter->Initialize(
                 pSource,
                 GUID_WICPixelFormat32bppPBGRA,
@@ -58,7 +58,7 @@ public:
                 0.0,
                 WICBitmapPaletteTypeMedianCut
             );
-            // ³Ð«Ø D2D ¦ì¹Ï
+            // å‰µå»º D2D ä½åœ–
             hr = pRenderTarget->CreateBitmapFromWicBitmap(
                 pConverter,
                 NULL,
@@ -66,7 +66,7 @@ public:
             );
         }
 
-        // ÄÀ©ñ WIC ¸ê·½
+        // é‡‹æ”¾ WIC è³‡æº
         if (pDecoder != NULL)
             pDecoder->Release();
         if (pSource != NULL)

@@ -20,8 +20,8 @@ void Food::Initialize(ID2D1HwndRenderTarget* m_pRenderTarget)
 	//	&m_pBlueBrush
 	//);
 	
-	// ´«¦¨«Å§i¹Ï¤ù
-	// µLªk¨Ï¥Î°Ñ¦Ò¸ô®|,¥ı¨Ï¥Îµ´¹ï¸ô®|
+	// æ›æˆå®£å‘Šåœ–ç‰‡
+	// ç„¡æ³•ä½¿ç”¨åƒè€ƒè·¯å¾‘,å…ˆä½¿ç”¨çµ•å°è·¯å¾‘
 	LPCWSTR filePath = L"./Images/Food.png";;
 	IWICImagingFactory* pIWICFactory = NULL;
 	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
@@ -34,7 +34,7 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 {
 	srand((unsigned)time(NULL));
 	std::vector<std::pair<int, int>> validPositions;
-	// ¨Ï¥Îvector¬ö¿ı¥¼³Q¨Ï¥Î¹Lªº¦ì¤l,¨Ã±q¨ä¤¤¥Í¦¨·sªº­¹ª«
+	// ä½¿ç”¨vectorç´€éŒ„æœªè¢«ä½¿ç”¨éçš„ä½å­,ä¸¦å¾å…¶ä¸­ç”Ÿæˆæ–°çš„é£Ÿç‰©
 	//for (int x = 1; x < SCREEN_WIDTH / CELL_SIZE - 1; ++x)
 	//{
 	//	for (int y = 1; y < SCREEN_HEIGHT / CELL_SIZE - 1; ++y)
@@ -59,12 +59,12 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 
 	for (int y = 0; y < SCREEN_HEIGHT / CELL_SIZE; ++y)
 	{
-		// ÀË¬d¬O§_¦bÃä¬É
+		// æª¢æŸ¥æ˜¯å¦åœ¨é‚Šç•Œ
 		if (!isFoodOnBorderChecked)
 		{
 			if (y == 0 || y == SCREEN_HEIGHT / CELL_SIZE - 1)
 			{
-				continue;  // ¸õ¹LÃä¬É¤Wªº¦ì¸m
+				continue;  // è·³éé‚Šç•Œä¸Šçš„ä½ç½®
 			}
 		}
 
@@ -75,7 +75,7 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 			{
 				if (x == 0 || x == SCREEN_WIDTH / CELL_SIZE - 1)
 				{
-					continue;  // ¸õ¹LÃä¬É¤Wªº¦ì¸m
+					continue;  // è·³éé‚Šç•Œä¸Šçš„ä½ç½®
 				}
 			}
 			for (int i = 0; i < snake->length; ++i)
@@ -96,16 +96,16 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 	if (!validPositions.empty())
 	{
 		GameWin = 0;
-		// ÀH¾÷¿ï¾Ü¤@­Ó¦X¾Aªº¦ì¤l
+		// éš¨æ©Ÿé¸æ“‡ä¸€å€‹åˆé©çš„ä½å­
 		int randomIndex = rand() % validPositions.size();
 		position.x = validPositions[randomIndex].first;
 		position.y = validPositions[randomIndex].second;
 	}
 	else
 	{
-		// TODO:¹CÀ¸³Ó§Q
+		// TODO:éŠæˆ²å‹åˆ©
 		GameWin = 1;
-		// ¦bEngineÅª¨ú¦¹ÅÜ¼Æ
+		// åœ¨Engineè®€å–æ­¤è®Šæ•¸
 	}
 
 	
@@ -114,7 +114,7 @@ void Food::Reset(Snake* snake , bool isFoodOnBorderChecked)
 void Food::Draw(ID2D1HwndRenderTarget* m_pRenderTarget)
 {
 	// Draws the food using Direct2D
-	// ´«¦¨Ã¸»s¹Ï¤ù
+	// æ›æˆç¹ªè£½åœ–ç‰‡
 	//D2D1_ELLIPSE ellipseBall = D2D1::Ellipse(
 	//	D2D1::Point2F(position.x * CELL_SIZE + CELL_SIZE / 2, position.y * CELL_SIZE + CELL_SIZE / 2),
 	//	CELL_SIZE / 2, CELL_SIZE / 2

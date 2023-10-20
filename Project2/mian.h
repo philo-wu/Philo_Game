@@ -8,8 +8,8 @@
 #include "Engine.h"
 
 
-// ¥H¤U¬°­ì½Æ»s¹Ï¤ù«Å§i,¦ı¸g«ä¦Ò«á,¨M©w¾Ç²ßºô¸ô¤W«Å§i¦b¤ŞÀº¤º
-// ­ì¥»·Q«Å§i¦bDirect2D.h ,¦ıµo²{·|­«½Æ«Å§i,À³¥]¦¨ Class³B²z,
+// ä»¥ä¸‹ç‚ºåŸè¤‡è£½åœ–ç‰‡å®£å‘Š,ä½†ç¶“æ€è€ƒå¾Œ,æ±ºå®šå­¸ç¿’ç¶²è·¯ä¸Šå®£å‘Šåœ¨å¼•æ“å…§
+// åŸæœ¬æƒ³å®£å‘Šåœ¨Direct2D.h ,ä½†ç™¼ç¾æœƒé‡è¤‡å®£å‘Š,æ‡‰åŒ…æˆ Classè™•ç†,
 //ID2D1Factory* pD2DFactory;
 //ID2D1HwndRenderTarget* pRT;
 //ID2D1Bitmap* pBitmap;
@@ -20,7 +20,7 @@
 //D2D1_POINT_2F clickPoint = { 0 };
 //HRESULT InitD2D(HWND hwnd)
 //{
-//    // «Ø¥ßD2D¤u¼t
+//    // å»ºç«‹D2Då·¥å» 
 //    HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &pD2DFactory);
 //
 //    if (SUCCEEDED(hr))
@@ -39,10 +39,10 @@
 //    return hr;
 //};
 
-// ¥ş°ìÁn©ú
-HWND hWnd; // ¥u±NW¤j¼gÁ×§K¿ù»~©I¥s
+// å…¨åŸŸè²æ˜
+HWND hWnd; // åªå°‡Wå¤§å¯«é¿å…éŒ¯èª¤å‘¼å«
 bool GameRunning = 0;
-//  «ö¶s«Å§i
+//  æŒ‰éˆ•å®£å‘Š
 HWND Load_Button;
 HWND Clean_Button;
 HWND Start_Button;
@@ -51,23 +51,23 @@ HWND Score_Button;
 HWND End_Button;
 HWND hwndScrollBar;
 
-//µe­±§ó·s
-double targetFrameTime = 1.0 / 8; // ¥Ø¼Ğ¨C´V®É¶¡¡]³o¸Ì°²³] ¬° 8 FPS¡^
+//ç•«é¢æ›´æ–°
+double targetFrameTime = 1.0 / 8; // ç›®æ¨™æ¯å¹€æ™‚é–“ï¼ˆé€™è£¡å‡è¨­ ç‚º 8 FPSï¼‰
 double accumulatedTime = 0.0;
 int deltaTime = 0;
-// ¹CÀ¸¤ŞÀº
+// éŠæˆ²å¼•æ“
      Engine* engine;
-// ¨ç¼Æ­ì«¬
+// å‡½æ•¸åŸå‹
 // void OpenFile(void);
 // void DrawBitmap();
 // void ClearDraw();
 // void OnClick(int mouseX, int mouseY); 
 // void OnPaint(HWND hWnd);
-// ¥H¤W³g¦Y³D¨Ï¥Î¤£¨ì, ¨ÃÂà²¾µ¹¤ŞÀº«Å§i
+// ä»¥ä¸Šè²ªåƒè›‡ä½¿ç”¨ä¸åˆ°, ä¸¦è½‰ç§»çµ¦å¼•æ“å®£å‘Š
 
 void ShowButton(bool);
 
-//  «Å§iWindowProc
+//  å®£å‘ŠWindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
                             UINT message,
                             WPARAM wParam,
