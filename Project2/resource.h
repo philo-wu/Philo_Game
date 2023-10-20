@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ ²£¥Íªº Include ÀÉ®×¡C
-// ¥Ñ Philo_Snake1.rc ¨Ï¥Î
+// Microsoft Visual C++ ç”¢ç”Ÿçš„ Include æª”æ¡ˆã€‚
+// ç”± Philo_Snake1.rc ä½¿ç”¨
 //
 #define IDOK2                           2
 #define ID_LOADTREE                     3

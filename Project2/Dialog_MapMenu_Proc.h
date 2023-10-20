@@ -15,14 +15,14 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         std::string path = currentPath.string() + "/Images/Map_saveData.json";
         std::ifstream inFile(path);
         if (!inFile.is_open()) {
-            //std::cerr << "µLªk¥´¶} JSON ¤å¥ó" << std::endl;
-            //OutputDebugString(L"JSON¶}±Ò¦¨¥\\n");
-            MessageBox(hWnd, L"JSON¦sÀÉÅª¨ú¥¢±Ñ", L"¿ù»~", MB_OK);
+            //std::cerr << "ç„¡æ³•æ‰“é–‹ JSON æ–‡ä»¶" << std::endl;
+            //OutputDebugString(L"JSONé–‹å•ŸæˆåŠŸ\n");
+            MessageBox(hWnd, L"JSONå­˜æª”è®€å–å¤±æ•—", L"éŒ¯èª¤", MB_OK);
 
             return 1;
         }
         //else
-            //OutputDebugString(L"JSON¶}±Ò¦¨¥\\n");
+            //OutputDebugString(L"JSONé–‹å•ŸæˆåŠŸ\n");
         json Data;
         inFile >> Data;
         inFile.close();
@@ -33,16 +33,16 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         {
             items.push_back(it.key());
         }
-        //OutputDebugString(L"items§¹¦¨\n");
+        //OutputDebugString(L"itemså®Œæˆ\n");
 
         CComboBox pComboBox;
         pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
         CFont font;
-        font.CreatePointFont(120, _T("Verdana"));  // 120 ¬O¦rÅé¤j¤p¡A"Verdana" ¬O¦rÅé¦WºÙ
+        font.CreatePointFont(120, _T("Verdana"));  // 120 æ˜¯å­—é«”å¤§å°ï¼Œ"Verdana" æ˜¯å­—é«”åç¨±
         pComboBox.SetFont(&font);
 
         for (const auto& item : items) {
-            //±NstringÂà´«¨ìwstring //Cstring¹ï¤¤¤å¤ä´©¤£¦n
+            //å°‡stringè½‰æ›åˆ°wstring //Cstringå°ä¸­æ–‡æ”¯æ´ä¸å¥½
             std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
             std::wstring wideSaveName = converter.from_bytes(item);
             pComboBox.AddString(wideSaveName.c_str());
@@ -52,7 +52,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         }
 
         pComboBox.Detach();
-        //OutputDebugString(L"JSONÅª¨ú¦¨¥\\n");
+        //OutputDebugString(L"JSONè®€å–æˆåŠŸ\n");
 
 
     }
@@ -61,7 +61,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         switch (LOWORD(wParam))
         {
         case IDOK:
-            // ¨Ï¥ÎªÌ«ö¤U¤F½T©w«ö¶s
+            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†ç¢ºå®šæŒ‰éˆ•
         {
 
         }
@@ -69,18 +69,18 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
         case IDCANCEL:
         {
-            // ¨Ï¥ÎªÌ«ö¤U¤F¨ú®ø«ö¶s
+            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†å–æ¶ˆæŒ‰éˆ•
             EndDialog(hwndDlg, IDCANCEL);
         }
         break;
-        case ID_DATASAVE: // Àx¦sÀÉ®×
+        case ID_DATASAVE: // å„²å­˜æª”æ¡ˆ
         {
             // SAVE
             json save_map;
             json tree;
-            // ³Ğ«Ø¤@­Ó JSON array¡A¥Î©ó¦s©ñ coordinates
+            // å‰µå»ºä¸€å€‹ JSON arrayï¼Œç”¨æ–¼å­˜æ”¾ coordinates
             json coordinatesArray;
-            // ±N fruit_Points ¤¤ªº¨C­Ó POINT Âà´«¬° JSON object ¨Ã²K¥[¨ì array ¤¤
+            // å°‡ fruit_Points ä¸­çš„æ¯å€‹ POINT è½‰æ›ç‚º JSON object ä¸¦æ·»åŠ åˆ° array ä¸­
             for (const POINT& point : Map_treepoints)
             {
                 json pointObject =
@@ -92,15 +92,15 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 coordinatesArray.push_back(pointObject);
             }
 
-            // ±N coordinatesArray ¦s¤J JSON ¤¤ªº "coordinates"
+            // å°‡ coordinatesArray å­˜å…¥ JSON ä¸­çš„ "coordinates"
             tree["coordinates"] = coordinatesArray;
 
             save_map[TreeName] = tree;
             int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
             if (result == -1)
             {
-                // ¹ï¸Ü®Ø³Ğ«Ø¥¢±Ñ
-                MessageBox(NULL, L"¹ï¸Ü®Ø³Ğ«Ø¥¢±Ñ", L"¿ù»~", MB_OK | MB_ICONERROR);
+                // å°è©±æ¡†å‰µå»ºå¤±æ•—
+                MessageBox(NULL, L"å°è©±æ¡†å‰µå»ºå¤±æ•—", L"éŒ¯èª¤", MB_OK | MB_ICONERROR);
             }
             else
             {
@@ -111,32 +111,32 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             }
             //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
             //std::wstring wideName = converter.from_bytes(Save_Name);
-            //OutputDebugString(L"Åª¨ú«O¦s¦WºÙ\n");
+            //OutputDebugString(L"è®€å–ä¿å­˜åç¨±\n");
             //std::wstring wideSaveName(Save_Name.begin(), Save_Name.end());
             //OutputDebugString(wideSaveName.c_str());
 
-            // ±N JSON ¹ï¶HÂà´«¬°¦r¦ê
+            // å°‡ JSON å°è±¡è½‰æ›ç‚ºå­—ä¸²
             Map_saveData[Save_Name] = save_map;
             std::string jsonString = Map_saveData.dump(4);
 
-            // ±N JSON ¦r¦ê«O¦s¨ì¤å¥ó
+            // å°‡ JSON å­—ä¸²ä¿å­˜åˆ°æ–‡ä»¶
             std::string path = currentPath.string() + "/Images/Map_saveData.json";
             std::ofstream outFile(path);
             if (outFile.is_open())
             {
                 outFile << jsonString;
                 outFile.close();
-                OutputDebugString(L"JSON ¤w«O¦s¨ì Map_saveData.json\n");
+                OutputDebugString(L"JSON å·²ä¿å­˜åˆ° Map_saveData.json\n");
 
                 CComboBox pComboBox;
                 pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 std::wstring wideSaveName = converter.from_bytes(Save_Name);
-                //§PÂ_¬O§_¦³¦s¦b¦P¦W¿ï¶µ
+                //åˆ¤æ–·æ˜¯å¦æœ‰å­˜åœ¨åŒåé¸é …
                 int index = pComboBox.FindString(-1, wideSaveName.c_str());
                 if (index == CB_ERR) {
-                    // ¬Û¦Pªº¿ï¶µ¤£¦s¦b¡A¥i¥H·s¼W
+                    // ç›¸åŒçš„é¸é …ä¸å­˜åœ¨ï¼Œå¯ä»¥æ–°å¢
                     pComboBox.AddString(wideSaveName.c_str());
                 }
                 pComboBox.Detach();
@@ -144,16 +144,16 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             }
             else
             {
-                MessageBox(hwndDlg, L"µLªk¥´¶}¤å¥ó«O¦sJSON", L"¿ù»~", MB_OK);
+                MessageBox(hwndDlg, L"ç„¡æ³•æ‰“é–‹æ–‡ä»¶ä¿å­˜JSON", L"éŒ¯èª¤", MB_OK);
             }
 
 
 
         }
         break;
-        case ID_DATADELETE:  //§R°£¦sÀÉ
+        case ID_DATADELETE:  //åˆªé™¤å­˜æª”
         {
-            OutputDebugString(L"§R°£¦sÀÉ\n");
+            OutputDebugString(L"åˆªé™¤å­˜æª”\n");
 
             CComboBox pComboBox;
             pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
@@ -162,7 +162,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
             if (selectedIndex != CB_ERR)
             {
-                // ¦³¶µ¥Ø³Q¿ï¤¤
+                // æœ‰é …ç›®è¢«é¸ä¸­
 
                 CString selectedText;
                 pComboBox.GetLBText(selectedIndex, selectedText);
@@ -174,7 +174,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 //OutputDebugString(selectedText);
                 // 
-                //§R°£¦sÀÉ
+                //åˆªé™¤å­˜æª”
                 Map_saveData.erase(stdStr);
                 pComboBox.DeleteString(selectedIndex);
                 if (pComboBox.GetCount() == 0)
@@ -184,30 +184,30 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
 
                 std::string jsonString = Map_saveData.dump(4);
-                // ±N JSON ¦r¦ê«O¦s¨ì¤å¥ó
+                // å°‡ JSON å­—ä¸²ä¿å­˜åˆ°æ–‡ä»¶
                 std::string path = currentPath.string() + "/Images/Map_saveData.json";
                 std::ofstream outFile(path);
                 if (outFile.is_open())
                 {
                     outFile << jsonString;
                     outFile.close();
-                    OutputDebugString(L"JSON ¤w«O¦s¨ì Map_saveData.json\n");
+                    OutputDebugString(L"JSON å·²ä¿å­˜åˆ° Map_saveData.json\n");
                 }
             }
             else
             {
-                // ¨S¦³¶µ¥Ø³Q¿ï¤¤
-                //OutputDebugString(L"¨S¦³¶µ¥Ø³Q¿ï¤¤\n");
-                MessageBox(hwndDlg, L"¨S¦³¶µ¥Ø³Q¿ï¤¤", L"¿ù»~", MB_OK);
+                // æ²’æœ‰é …ç›®è¢«é¸ä¸­
+                //OutputDebugString(L"æ²’æœ‰é …ç›®è¢«é¸ä¸­\n");
+                MessageBox(hwndDlg, L"æ²’æœ‰é …ç›®è¢«é¸ä¸­", L"éŒ¯èª¤", MB_OK);
             }
             pComboBox.Detach();
             InvalidateRect(hWnd, NULL, TRUE);
 
         }
         break;
-        case ID_DATALOAD: //¸ü¤J¦sÀÉ
+        case ID_DATALOAD: //è¼‰å…¥å­˜æª”
         {
-            OutputDebugString(L"¸ü¤J¦sÀÉ\n");
+            OutputDebugString(L"è¼‰å…¥å­˜æª”\n");
 
             CComboBox pComboBox;
             pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
@@ -216,7 +216,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
             if (selectedIndex != CB_ERR)
             {
-                // ¦³¶µ¥Ø³Q¿ï¤¤
+                // æœ‰é …ç›®è¢«é¸ä¸­
 
                 CString selectedText;
                 pComboBox.GetLBText(selectedIndex, selectedText);
@@ -230,28 +230,28 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 //OutputDebugString(selectedText);
                 // 
-                //Åª¨ú¦sÀÉ
+                //è®€å–å­˜æª”
                 MapName = stdStr;
                 Map_saveData_using = Map_saveData[MapName];
 
             }
             else
             {
-                // ¨S¦³¶µ¥Ø³Q¿ï¤¤
-                //OutputDebugString(L"¨S¦³¶µ¥Ø³Q¿ï¤¤\n");
-                MessageBox(hwndDlg, L"¨S¦³¶µ¥Ø³Q¿ï¤¤", L"¿ù»~", MB_OK);
+                // æ²’æœ‰é …ç›®è¢«é¸ä¸­
+                //OutputDebugString(L"æ²’æœ‰é …ç›®è¢«é¸ä¸­\n");
+                MessageBox(hwndDlg, L"æ²’æœ‰é …ç›®è¢«é¸ä¸­", L"éŒ¯èª¤", MB_OK);
             }
             pComboBox.Detach();
             InvalidateRect(hWnd, NULL, TRUE);
 
         }
         break;
-        case ID_RETURN: //§R°£³Ì«áÃ¸¹Ï¸ê®Æ
+        case ID_RETURN: //åˆªé™¤æœ€å¾Œç¹ªåœ–è³‡æ–™
         {
             if (!Map_treepoints.empty())
                 Map_treepoints.pop_back();
             else
-                MessageBox(hwndDlg, L"¦¹¤¸¥ó¤w¸gµLª«¥ó¥i§R°£", L"¿ù»~", MB_OK);
+                MessageBox(hwndDlg, L"æ­¤å…ƒä»¶å·²ç¶“ç„¡ç‰©ä»¶å¯åˆªé™¤", L"éŒ¯èª¤", MB_OK);
             Map_clickPoint = { 0 };
             InvalidateRect(hWnd, NULL, TRUE);
         }
@@ -265,8 +265,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
         MapMenu_RenderTarget->BeginDraw();
         MapMenu_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-        //¤£­«½Æ²M°£¬O¦]¬°­n«O¯dÃ¸»sµ²ªG //¨Ï¥Î°}¦CÀx¦s®y¼Ğ«á §ï¦^¨C¦¸²M°£
-        MapMenu_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF(0.8f, 0.8f, 0.8f, 0.8f))); // dialog ­I´º¦â
+        //ä¸é‡è¤‡æ¸…é™¤æ˜¯å› ç‚ºè¦ä¿ç•™ç¹ªè£½çµæœ //ä½¿ç”¨é™£åˆ—å„²å­˜åº§æ¨™å¾Œ æ”¹å›æ¯æ¬¡æ¸…é™¤
+        MapMenu_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF(0.8f, 0.8f, 0.8f, 0.8f))); // dialog èƒŒæ™¯è‰²
         MapMenu_RenderTarget->EndDraw();
 
         EndPaint(hwndDlg, &ps);

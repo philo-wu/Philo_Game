@@ -10,11 +10,11 @@ public:
 
 
 	HRESULT InitializeD2D(HWND m_hwnd);
-	void Logic(double elapsedTime);																			//ºØ¾ğµLÅŞ¿è «O¯d¬[ºc
+	void Logic(double elapsedTime);																			//ç¨®æ¨¹ç„¡é‚è¼¯ ä¿ç•™æ¶æ§‹
 	void ClearDraw(HWND hWnd);
 
-	D2D1_RECT_F Rect_functionColumn = D2D1::RectF(0, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);				//µøµ¡¤W¤è¥\¯à¦C
-	D2D1_RECT_F Rect_drawingArea = D2D1::RectF(0, FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);		//µøµ¡¤U¤èÃ¸¹Ï°Ï°ì
+	D2D1_RECT_F Rect_functionColumn = D2D1::RectF(0, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);				//è¦–çª—ä¸Šæ–¹åŠŸèƒ½åˆ—
+	D2D1_RECT_F Rect_drawingArea = D2D1::RectF(0, FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);		//è¦–çª—ä¸‹æ–¹ç¹ªåœ–å€åŸŸ
 
 	HRESULT Draw(POINT point ,int OriginalSize,int pxSize, FruitTree* tree ,
 		json Map_saveData, json Tree_saveData,std::vector<POINT> Map_treepoints);

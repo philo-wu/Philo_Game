@@ -5,27 +5,27 @@
 #include "Fruit.h"
 
 
-// ¤÷Ãş§O Tree
+// çˆ¶é¡åˆ¥ Tree
 class Tree {
 protected:
     std::wstring treename;
     POINT tree_Point;
 public:
     Tree(const std::wstring name) : treename(name) {}
-    ID2D1Bitmap* treeBitmap; //Ã¸¹Ï¹Ï¤ù //­ì¥»·Q©ñprotected ,¦ı»PD2DRenderTargetªº¨Ì¦sÃö«Y¤£¦n³B²z
+    ID2D1Bitmap* treeBitmap; //ç¹ªåœ–åœ–ç‰‡ //åŸæœ¬æƒ³æ”¾protected ,ä½†èˆ‡D2DRenderTargetçš„ä¾å­˜é—œä¿‚ä¸å¥½è™•ç†
     void Release_TreeBitmap()
     {
         if (treeBitmap) {
             treeBitmap->Release();
-            //­«·s½á­È
+            //é‡æ–°è³¦å€¼
             treeBitmap = NULL;
         }
-        std::wstring message = treename + L"ÄÀ©ñBitmap\n";
+        std::wstring message = treename + L"é‡‹æ”¾Bitmap\n";
         OutputDebugString(message.c_str());
     }
 };
 
-// ¤lÃş§O FruitTree
+// å­é¡åˆ¥ FruitTree
 class FruitTree : public Tree , public  Fruit {
 private:
     std::vector<POINT> fruit_Points;
@@ -33,8 +33,8 @@ public:
     FruitTree(const std::wstring name, std::wstring fruit) : Tree(name), Fruit(fruit) {}
     FruitTree(Tree& tree, Fruit& fruit) : Tree(tree), Fruit(fruit)
     {
-        // ¦b³o¸Ì¥i¥H¨Ï¥Î°òÃşªº¸ê°T¶i¦æªì©l¤Æ
-        // ¨Ò¦p¡A¥i¥H±q Tree ©M Fruit ¤¤Àò¨ú¬ÛÃö¸ê°T¨Óªì©l¤Æ FruitTree
+        // åœ¨é€™è£¡å¯ä»¥ä½¿ç”¨åŸºé¡çš„è³‡è¨Šé€²è¡Œåˆå§‹åŒ–
+        // ä¾‹å¦‚ï¼Œå¯ä»¥å¾ Tree å’Œ Fruit ä¸­ç²å–ç›¸é—œè³‡è¨Šä¾†åˆå§‹åŒ– FruitTree
     }
     void Set_fruit_Points(std::vector<POINT> Points) { 
         fruit_Points  = Points;

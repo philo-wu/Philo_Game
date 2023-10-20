@@ -5,9 +5,9 @@
 //#include "Direct3D.h"
 #include "resource.h"
 
-// �����n��
-HWND hWnd; // �u�NW�j�g�קK���~�I�s
-//  ���s�ŧi
+// 全域聲明
+HWND hWnd; // 只將W大寫避免錯誤呼叫
+//  按鈕宣告
 HWND Load_Button;
 HWND Clean_Button;
 HWND Start_Button;
@@ -15,21 +15,21 @@ HWND Difficulty_Button;
 HWND Score_Button;
 HWND End_Button;
 
-//�e����s
-//double targetFrameTime = 1.0 / 8; // �ؼШC�V�ɶ��]�o�̰��] �� 8 FPS�^
+//畫面更新
+//double targetFrameTime = 1.0 / 8; // 目標每幀時間（這裡假設 為 8 FPS）
 //double accumulatedTime = 0.0;
 
-// �C������
+// 遊戲引擎
 Engine* engine;
 Common* common;
 
 IFileSaveDialog* pFileSaveDlg = NULL;
 
 
-// ��ƭ쫬
+// 函數原型
 void ShowButton(bool);
 void InitButtom();
-//  �ŧiWindowProc
+//  宣告WindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
                             UINT message,
                             WPARAM wParam,
@@ -60,22 +60,22 @@ void ShowButton(bool show)
 
 void InitButtom()
 {
-    // �r��Τj�p
+    // 字體及大小
     HFONT hFont = CreateFont(
-        18,                                     // �r�骺����
-        0,                                      // �r�骺�e��
-        0,                                      // �r�骺���ਤ��
-        0,                                      // �r�骺���騤��
-        FW_NORMAL,                              // �r�骺�ʲӫ�
-        FALSE,                                  // �O�_�O����r��
-        FALSE,                                  // �O�_�O�U���u�r��
-        FALSE,                                  // �O�_�O�R���u�r��
-        DEFAULT_CHARSET,                        // �r�Ŷ�
-        OUT_OUTLINE_PRECIS,                     // ��X���
-        CLIP_DEFAULT_PRECIS,                    // �ŵ����
-        ANTIALIASED_QUALITY,                    // ��t���ƫ�
-        DEFAULT_PITCH | FF_SWISS,               // �r��a�کM�r��W
-        L"Verdana"                              // �r��W
+        18,                                     // 字體的高度
+        0,                                      // 字體的寬度
+        0,                                      // 字體的旋轉角度
+        0,                                      // 字體的斜體角度
+        FW_NORMAL,                              // 字體的粗細度
+        FALSE,                                  // 是否是斜體字體
+        FALSE,                                  // 是否是下劃線字體
+        FALSE,                                  // 是否是刪除線字體
+        DEFAULT_CHARSET,                        // 字符集
+        OUT_OUTLINE_PRECIS,                     // 輸出精度
+        CLIP_DEFAULT_PRECIS,                    // 剪裁精度
+        ANTIALIASED_QUALITY,                    // 邊緣平滑度
+        DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
+        L"Verdana"                              // 字體名
     );
 
     SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));

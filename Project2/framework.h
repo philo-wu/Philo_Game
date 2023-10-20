@@ -1,13 +1,13 @@
 #pragma once
-// ¥]§t°ò¥»ªºWindowsÀYÀÉ©MDirect3DÀY¤å¥ó
+// åŒ…å«åŸºæœ¬çš„Windowsé ­æª”å’ŒDirect3Dé ­æ–‡ä»¶
 
-#include <afxwin.h>  // ¥]§t MFC ªº¥D­nÀY¤å¥ó
+#include <afxwin.h>  // åŒ…å« MFC çš„ä¸»è¦é ­æ–‡ä»¶
 #include <windows.h>
 #include <windowsx.h>
 
 
 #include <CommCtrl.h>/*
-#include <commdlg.h>  */      //Åª¨úÀÉ®×
+#include <commdlg.h>  */      //è®€å–æª”æ¡ˆ
 //#include <wincodec.h>
 //#include <locale>
 #include <iostream>/*
@@ -29,7 +29,7 @@
 #include <sstream>
 #include <chrono>
 
-#include "Common.h"             //¦Û©w¸q«ü¥O
+#include "Common.h"             //è‡ªå®šç¾©æŒ‡ä»¤
 #include "nlohmann/json.hpp"    //Json
 #include <fstream>
 #include <atlimage.h>  
@@ -37,12 +37,12 @@
 #include <shobjidl.h>
 #include <filesystem>
 
-#pragma warning(disable : 4996)  //std::wstring_convert C++17¤¤¤£±ÀÂË¨Ï¥Î,¨Ã¥H³ø¿ù¤è¦¡´£¿ô, ¥H¦¹©¿²¤¦¹³ø¿ù
+#pragma warning(disable : 4996)  //std::wstring_convert C++17ä¸­ä¸æ¨è–¦ä½¿ç”¨,ä¸¦ä»¥å ±éŒ¯æ–¹å¼æé†’, ä»¥æ­¤å¿½ç•¥æ­¤å ±éŒ¯
 
 using json = nlohmann::json;
 
 template<class Interface>
-// ÄÀ©ñ¸ê·½
+// é‡‹æ”¾è³‡æº
 inline void SafeRelease(Interface** ppInterfaceToRelease)
 {
     if (*ppInterfaceToRelease != NULL)

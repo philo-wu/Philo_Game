@@ -1,21 +1,21 @@
 #pragma once
-// ¤÷Ãş§O Fruit
+// çˆ¶é¡åˆ¥ Fruit
 class Fruit {
 protected:
     std::wstring  fruitname;
     POINT fruitpoint;
 public:
     Fruit(const std::wstring& name) : fruitname(name), fruitBitmap(nullptr) { ; }
-    ID2D1Bitmap* fruitBitmap; //Ã¸¹Ï¹Ï¤ù
+    ID2D1Bitmap* fruitBitmap; //ç¹ªåœ–åœ–ç‰‡
     ~Fruit();
     void Release_FruitBitmap()
     {
         if (fruitBitmap) {
             fruitBitmap->Release();
-            //­«·s½á­È
+            //é‡æ–°è³¦å€¼
             fruitBitmap = NULL;
         }
-        std::wstring message = fruitname + L"ÄÀ©ñBitmap\n";
+        std::wstring message = fruitname + L"é‡‹æ”¾Bitmap\n";
         OutputDebugString(message.c_str());
     }
 };

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <wincodec.h>
 #include "Direct2D.h"
 //#include <Shlobj.h>
