@@ -3,6 +3,7 @@
 
 #include "mian.h"
 #include "Dialog_LoadTree_Proc.h"
+#include "Dialog_MapMenu_Proc.h"
 
 //提供Dialog句柄
 HINSTANCE HINSTANCE1;
@@ -134,7 +135,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             //++buttomnumber;
             Difficulty_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"選擇水果樹",                            // 按鈕上顯示的文字
+                L"繪畫選單",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
                 10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
@@ -148,7 +149,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             Score_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"儲存地圖",                            // 按鈕上顯示的文字
+                L"地圖選單",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
                 10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
@@ -160,32 +161,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             );
             ++buttomnumber;
 
-            End_Button = CreateWindow(
-                L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"讀取地圖",                            // 按鈕上顯示的文字
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
-                BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // 按鈕位置和大小 (x, y, width, height)
-                hWnd,                                   // 父窗口句柄
-                (HMENU)4,                               // 控制項 ID (可以用於識別按鈕)
-                GetModuleHandle(NULL),                  // 模組句柄
-                NULL                                    // 指定為 NULL
-            );
-            ++buttomnumber;
+            //End_Button = CreateWindow(
+            //    L"BUTTON",                              // 按鈕控制項的類別名稱
+            //    L"讀取地圖",                            // 按鈕上顯示的文字
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+            //    10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
+            //    BUTTON_WIDTH, BUTTON_HEIGHT,
+            //                                            // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                   // 父窗口句柄
+            //    (HMENU)4,                               // 控制項 ID (可以用於識別按鈕)
+            //    GetModuleHandle(NULL),                  // 模組句柄
+            //    NULL                                    // 指定為 NULL
+            //);
+            //++buttomnumber;
 
-            Clean_Button = CreateWindow(
-                L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"地圖清空",                            // 按鈕上顯示的文字
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
-                BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // 按鈕位置和大小 (x, y, width, height)
-                hWnd,                                   // 父窗口句柄
-                (HMENU)5,                               // 控制項 ID (可以用於識別按鈕)
-                GetModuleHandle(NULL),                  // 模組句柄
-                NULL                                    // 指定為 NULL
-            );
+            //Clean_Button = CreateWindow(
+            //    L"BUTTON",                              // 按鈕控制項的類別名稱
+            //    L"地圖清空",                            // 按鈕上顯示的文字
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+            //    10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
+            //    BUTTON_WIDTH, BUTTON_HEIGHT,
+            //                                            // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                   // 父窗口句柄
+            //    (HMENU)5,                               // 控制項 ID (可以用於識別按鈕)
+            //    GetModuleHandle(NULL),                  // 模組句柄
+            //    NULL                                    // 指定為 NULL
+            //);
+            //++buttomnumber;
+
         }
         break;
         case WM_COMMAND:// 檢查按鈕事件
@@ -202,7 +205,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
                         break;
                     }
-                    Dialog_isfruit = 0;
+                    Dialog_is_fruit = 0;
                     DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }
                 break;
@@ -214,37 +217,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
                         break;
                     }
-                    Dialog_isfruit = 1;
+                    Dialog_is_fruit = 1;
                     DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }                    
                 break;
 
                 case 3: // 儲存地圖
                 {   
-                    
-                    //int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
-                    //if (result == -1)
-                    //{
-                    //    // 對話框創建失敗
-                    //    MessageBox(NULL, L"對話框創建失敗", L"錯誤", MB_OK | MB_ICONERROR);
-                    //}
-                    //else
-                    //{
-                    //    if (result == IDCANCEL)
-                    //    {
-                    //        break;
-                    //    }
-                    //}
-                    //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                    //std::wstring wideName = converter.from_bytes(Save_Name);
-                    // 原本使用Common::OpenFolder 但FileSaveDialog明顯更優 以上淘汰
+                    //std::wstring filePath ;
+                    //Common::FileSaveDialog(filePath);
+                    //// 拼接字串
 
-                    std::wstring filePath ;
-                    Common::FileSaveDialog(filePath);
-                    // 拼接字串
+                    //OutputDebugString(filePath.c_str());
+                    //Common::SaveWindowToImage(hWnd, filePath.c_str(), { 0,FUNCTION_COLUMN_HEIGHT }, SCREEN_WIDTH,SCREEN_HEIGHT - FUNCTION_COLUMN_HEIGHT);
 
-                    OutputDebugString(filePath.c_str());
-                    Common::SaveWindowToImage(hWnd, filePath.c_str(), { 0,FUNCTION_COLUMN_HEIGHT }, SCREEN_WIDTH,SCREEN_HEIGHT - FUNCTION_COLUMN_HEIGHT);
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_MapMenu_Proc);
+
                 }
                 break;
 
@@ -286,10 +274,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 主選單畫面
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            //if(Dialog_isfruit)// 1改成判斷要畫樹還是水果樹
+            //if(Dialog_is_fruit)// 1改成判斷要畫樹還是水果樹
                 //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawTree , Map_saveData , Map_treepoints);
             //else
-                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData, Tree_saveData,Map_treepoints);
+                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData[MapName], Tree_saveData,Map_treepoints);
                 
             EndPaint(hWnd, &ps);
         }

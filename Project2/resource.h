@@ -10,6 +10,7 @@
 #define ID_DATADELETE                   7
 #define ID_DATALOAD                     8
 #define ID_RETURN                       9
+#define ID_DATASAVE_QUICK               10
 
 #define IDB_BITMAP1                     101
 #define IDD_DIFFICULTY                  105
