@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Snake.h"
 #include "framework.h"
 

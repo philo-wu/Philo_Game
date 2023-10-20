@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // 包含基本的Windows頭檔和Direct3D頭文件
 #include <windows.h>
 #include <windowsx.h>

@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include "framework.h"
 
-// ¥]§tDirect2D®w¤å¥ó
+// åŒ…å«Direct2Dåº«æ–‡ä»¶
 #pragma comment (lib, "d2d1.lib")
 #pragma comment (lib, "windowscodecs.lib")
 #pragma comment(lib, "dwrite")

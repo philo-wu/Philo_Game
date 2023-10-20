@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ 產生的 Include 檔案。
 // 由 Philo_Snake1.rc 使用
 //
