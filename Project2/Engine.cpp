@@ -142,7 +142,6 @@ HRESULT Engine::Draw(POINT point, int OriginalSize, int pxSize, FruitTree* tree 
         std::string treeName = tree.key();
         std::cout << "樹名稱: " << treeName << std::endl;
         std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        std::string stdStr ;
         IWICImagingFactory* pIWICFactory = NULL;
         CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
 
@@ -150,12 +149,12 @@ HRESULT Engine::Draw(POINT point, int OriginalSize, int pxSize, FruitTree* tree 
         if (Tree_saveData.contains(treeName)) {
             ID2D1Bitmap* tree_Bitmap;
             //樹圖片: Tree_saveData[treeName]["image"]
-            std::wstring Png = converter.from_bytes(stdStr);
-            std::wstring path = currentPath.wstring() + L"/Images/" + Png;
+            std::wstring image = converter.from_bytes(Map_saveData[treeName]["image"]);
+            std::wstring path = currentPath.wstring() + L"\\Images\\" + image;
             Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd);
 
             //樹座標:  Tree_saveData[treeName]["coordinates"]
-            for (const auto& coordinate : Tree_saveData[treeName]["coordinates"])
+            for (const auto& coordinate : Map_saveData[treeName]["coordinates"])
             {
                 POINT tree_Point;
                 tree_Point.x = coordinate["X"];
@@ -167,8 +166,8 @@ HRESULT Engine::Draw(POINT point, int OriginalSize, int pxSize, FruitTree* tree 
                     if (Tree_saveData[treeName].contains("Fruit")) {
                         ID2D1Bitmap* fruit_Bitmap;
                         //水果圖片:  Tree_saveData[treeName]["Fruit"]["image"]
-                        Png = converter.from_bytes(stdStr);
-                        path = currentPath.wstring() + L"/Images/" + Png;
+                        image = converter.from_bytes(Map_saveData[treeName]["Fruit"]["image"]);
+                        path = currentPath.wstring() + L"\\Images\\" + image;
                         Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd);
                         //水果座標:  Tree_saveData[treeName]["Fruit"]["coordinates"]
                         for (auto& coordinate : Tree_saveData[treeName]["Fruit"]["coordinates"]) {

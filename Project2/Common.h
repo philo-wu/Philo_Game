@@ -79,9 +79,11 @@ public:
         }
         else
         {
-            std::wstring path = PathFindFileName(uri.c_str());
+            std::wstring path = (uri.c_str());
             path += L"\n圖檔不存在";
+            OutputDebugString(path.c_str());
             MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
+
         }
 
             // 釋放 WIC 資源

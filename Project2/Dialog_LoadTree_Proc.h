@@ -220,7 +220,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
-            case IDOK:// 使用者按下了確定按鈕
+            case IDOK: //匯入主選單
             {
                 
                 //OutputDebugString(L"儲存圖片\n");
@@ -253,18 +253,58 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                         // 將 coordinatesArray 存入 JSON 中的 "coordinates"
                         tree["coordinates"] = coordinatesArray;
-                        Map_saveData_using[using_TreeName] = tree;
-                        Map_treepoints.clear();
+                        save_map[using_TreeName] = tree;
+                        std::string jsonString = save_map.dump(4);
+
+                        // 將 JSON 字串保存到文件
+                        std::string path = currentPath.string() + "/Images/USING_Tree_saveData.json";
+                        std::ofstream outFile(path);
+                        if (outFile.is_open())
+                        {
+                            outFile << jsonString;
+                            outFile.close();
+                            OutputDebugString(L"JSON 已保存到 USING_Tree_saveData.json\n");
+
+                            CComboBox pComboBox;
+                            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+
+                            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                            std::wstring wideSaveName = converter.from_bytes(using_TreeName);
+                            //判斷是否有存在同名選項
+                            int index = pComboBox.FindString(-1, wideSaveName.c_str());
+                            if (index == CB_ERR) {
+                                // 相同的選項不存在，可以新增
+                                pComboBox.AddString(wideSaveName.c_str());
+                            }
+                            pComboBox.Detach();
+
+                        }
+                        else
+                        {
+                            MessageBox(hwndDlg, L"無法打開文件保存USING_Tree_saveData", L"錯誤", MB_OK);
+                        }
                     }
                     Map_clickPoint = { 0 };
 
                     // 帶入水果樹圖片
+                    OutputDebugString(L"匯入主選單\n");
+                    OutputDebugString(L"樹木位置\n");
                     OutputDebugString(Load_Tree_File_Path.c_str());
+                    OutputDebugString(L"\n");
+
                     IWICImagingFactory* pIWICFactory = NULL;
                     CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+                    drawFruitTree->treeBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg);
+                    OutputDebugString(L"水果位置\n");
+                    OutputDebugString(Load_Fruit_File_Path.c_str());
+                    OutputDebugString(L"\n");
+
+                    drawFruitTree->fruitBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg);
                     drawFruitTree->Set_fruit_Points(fruit_Points);
+                    OutputDebugString(L"匯入結束\n");
+
                     pIWICFactory->Release();
 
                     InvalidateRect(hWnd, NULL, TRUE);
@@ -419,7 +459,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
             }
             break;
-            case ID_DATASAVE_QUICK: // 儲存檔案
+            case ID_DATASAVE_QUICK: // 快速儲存_
             {
                 if (fruit_Points.empty() || !Fruit_Bitmap)
                 {
@@ -580,7 +620,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 if (selectedIndex != CB_ERR) 
                 {
                     // 有項目被選中
-                    break; // 尚未開始做
+                    //break; // 尚未開始做
                     CString selectedText;
                     pComboBox.GetLBText(selectedIndex, selectedText);
                     OutputDebugString(selectedText);
@@ -596,7 +636,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     //讀取存檔
                     json save_tree = Tree_saveData[stdStr];
                     Dialog_clear();
-                    //using_TreeName = stdStr;
+                    using_TreeName = stdStr;
                     json Fruit = save_tree["Fruit"];
                     json coordinatesArray = Fruit["coordinates"];
 
@@ -614,15 +654,19 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                     // 讀取圖檔
                     stdStr = save_tree["image"];
+                    Tree_File_Name = save_tree["image"];
                     std::wstring Png = converter.from_bytes(stdStr);
-                    std::wstring path = currentPath.wstring() + L"/Images/" + Png;
+                    std::wstring path = currentPath.wstring() + L"\\Images\\" + Png;
+                    Tree_Bitmap = NULL;
                     Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg);
                     Load_Tree_File_Path = path;
 
-
                     stdStr = Fruit["image"];
+                    Fruit_File_Name = Fruit["image"];
                     Png =converter.from_bytes(stdStr);
-                    path = currentPath.wstring() + L"/Images/" + Png;
+                    path = currentPath.wstring() + L"\\Images\\" + Png;
+                    Fruit_Bitmap = NULL;
+
                     Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg);
                     Load_Fruit_File_Path = path;
 

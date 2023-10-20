@@ -1,6 +1,33 @@
 {
-    "": null,
-    "蘋果樹": {
+    "123": {
+        "Fruit": {
+            "coordinates": [
+                {
+                    "X": 91,
+                    "Y": 55
+                },
+                {
+                    "X": 83,
+                    "Y": 104
+                },
+                {
+                    "X": 23,
+                    "Y": 74
+                },
+                {
+                    "X": 150,
+                    "Y": 91
+                }
+            ],
+            "image": "banana.png"
+        },
+        "coordinates": {
+            "X": 0,
+            "Y": 0
+        },
+        "image": "tree_1.png"
+    },
+    "456": {
         "Fruit": {
             "coordinates": [
                 {
@@ -23,6 +50,58 @@
             "Y": 0
         },
         "image": "tree_2.png"
+    },
+    "55": {
+        "Fruit": {
+            "coordinates": [
+                {
+                    "X": 62,
+                    "Y": 134
+                },
+                {
+                    "X": 128,
+                    "Y": 79
+                },
+                {
+                    "X": 144,
+                    "Y": 42
+                },
+                {
+                    "X": 72,
+                    "Y": 31
+                }
+            ],
+            "image": "banana.png"
+        },
+        "coordinates": {
+            "X": 0,
+            "Y": 0
+        },
+        "image": "tree_1.png"
+    },
+    "蘋果樹": {
+        "Fruit": {
+            "coordinates": [
+                {
+                    "X": 75,
+                    "Y": 79
+                },
+                {
+                    "X": 111,
+                    "Y": 50
+                },
+                {
+                    "X": 138,
+                    "Y": 34
+                }
+            ],
+            "image": "apple.png"
+        },
+        "coordinates": {
+            "X": 0,
+            "Y": 0
+        },
+        "image": "tree_1.png"
     },
     "香蕉樹": {
         "Fruit": {
