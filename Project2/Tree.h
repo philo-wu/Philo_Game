@@ -8,10 +8,10 @@
 // 父類別 Tree
 class Tree {
 protected:
-    std::wstring using_TreeName;
+    std::wstring using_Dialog_TreeName;
     POINT tree_Point;
 public:
-    Tree(const std::wstring name) : using_TreeName(name) {}
+    Tree(const std::wstring name) : using_Dialog_TreeName(name) {}
     ID2D1Bitmap* treeBitmap; //繪圖圖片 //原本想放protected ,但與D2DRenderTarget的依存關係不好處理
     void Release_TreeBitmap()
     {
@@ -20,7 +20,7 @@ public:
             //重新賦值
             treeBitmap = NULL;
         }
-        std::wstring message = using_TreeName + L"釋放Bitmap\n";
+        std::wstring message = using_Dialog_TreeName + L"釋放Bitmap\n";
         OutputDebugString(message.c_str());
     }
 };

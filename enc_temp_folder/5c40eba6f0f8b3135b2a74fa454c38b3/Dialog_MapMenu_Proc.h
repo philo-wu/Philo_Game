@@ -112,26 +112,6 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             }
 
             // 將 JSON 對象轉換為字串
-            json tree;
-            // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-            for (const POINT& point : Map_treepoints)
-            {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-            Map_treepoints.clear();
-            // 將 coordinatesArray 存入 JSON 中的 "coordinates"
-            tree["coordinates"] = coordinatesArray;
-            // 將未儲存元件使用中地圖
-            Map_saveData_using[using_Dialog_TreeName] = tree;
-            // 將使用中地圖寫入存檔
             Map_saveData[Save_Name] = Map_saveData_using;
             using_MapName = Save_Name;
             std::string jsonString = Map_saveData.dump(4);
@@ -186,27 +166,6 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 using_MapName = Save_Name;
             }
             // 將 JSON 對象轉換為字串
-            json tree;
-            // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-            for (const POINT& point : Map_treepoints)
-            {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-            Map_treepoints.clear();
-
-            // 將 coordinatesArray 存入 JSON 中的 "coordinates"
-            tree["coordinates"] = coordinatesArray;
-            // 將未儲存元件使用中地圖
-            Map_saveData_using[using_Dialog_TreeName] = tree;
-            // 將使用中地圖寫入存檔
             Map_saveData[using_MapName] = Map_saveData_using;
             std::string jsonString = Map_saveData.dump(4);
 

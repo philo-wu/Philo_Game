@@ -97,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             //if (engine->playing)
             //{
             //    // Drawing
-            //    engine->Draw();
+            //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree, Map_saveData_using, Tree_saveData, Map_treepoints);
             //}
         }
     }
@@ -288,7 +288,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             int xPos = GET_X_LPARAM(lParam);
             int yPos = GET_Y_LPARAM(lParam);
             if (xPos >= 0 
-                && yPos >= FUNCTION_COLUMN_HEIGHT)
+                && yPos >= FUNCTION_COLUMN_HEIGHT
+                && drawFruitTree->treeBitmap)
             {
                 if (xPos + fixed_px_fruit > SCREEN_WIDTH)
                     xPos = SCREEN_WIDTH - fixed_px_fruit;
@@ -298,7 +299,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 Map_clickPoint.x = static_cast<FLOAT>(xPos);
                 Map_clickPoint.y = static_cast<FLOAT>(yPos);
                 Map_treepoints.push_back(Map_clickPoint);
-                InvalidateRect(hWnd, NULL, TRUE);
+                InvalidateRect(hWnd, NULL, FALSE);
             }
         }
         break;

@@ -24,7 +24,8 @@ POINT Map_clickPoint = { 0 }; //主視窗點擊座標
 json Map_saveData;   //所有地圖存檔
 json Map_saveData_using; //正在讀取的Map
 std::string using_MapName; //正在讀取的存檔名稱
-std::string using_TreeName ; //正在讀取的元件名稱
+std::string using_Dialog_TreeName ; //正在讀取的元件名稱
+std::string using_Main_TreeName ; //正在主視窗繪畫的元件名稱
 
 //圖檔繪製大小 樹木圖檔為正方形,長寬為fixed_px, 
 int fixed_px = DIALOG_TREELOAD_TREE_PX;
@@ -236,9 +237,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     // 初始化主視窗相關
                     if (!Map_treepoints.empty())
                     {
-                        json save_map;
                         json tree;
-                        json coordinatesArray;
+                        auto it = Map_saveData_using.find(using_Main_TreeName);
+
+                        if (it != Map_saveData_using.end())
+                            tree = Map_saveData_using[using_Main_TreeName];
+                        json coordinatesArray = tree["coordinates"];
                         // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
                         for (const POINT& point : Map_treepoints)
                         {
@@ -250,55 +254,41 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                             coordinatesArray.push_back(pointObject);
                         }
-
+                        Map_treepoints.clear();
                         // 將 coordinatesArray 存入 JSON 中的 "coordinates"
                         tree["coordinates"] = coordinatesArray;
-                        save_map[using_TreeName] = tree;
-                        std::string jsonString = save_map.dump(4);
+                        Map_saveData_using[using_Main_TreeName] = tree;
+                        //std::string jsonString = Map_saveData_using.dump(4);
+                        //// 將 JSON 字串保存到文件
+                        //std::string path = currentPath.string() + "/Images/USING_Tree_saveData.json";
+                        //std::ofstream outFile(path);
+                        //if (outFile.is_open())
+                        //{
+                        //    outFile << jsonString;
+                        //    outFile.close();
+                        //    OutputDebugString(L"JSON 已保存到 USING_Tree_saveData.json\n");
+                        //}
+                        //else
+                        //{
+                        //    MessageBox(hwndDlg, L"無法打開文件保存USING_Tree_saveData", L"錯誤", MB_OK);
+                        //}
 
-                        // 將 JSON 字串保存到文件
-                        std::string path = currentPath.string() + "/Images/USING_Tree_saveData.json";
-                        std::ofstream outFile(path);
-                        if (outFile.is_open())
-                        {
-                            outFile << jsonString;
-                            outFile.close();
-                            OutputDebugString(L"JSON 已保存到 USING_Tree_saveData.json\n");
-
-                            CComboBox pComboBox;
-                            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
-
-                            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                            std::wstring wideSaveName = converter.from_bytes(using_TreeName);
-                            //判斷是否有存在同名選項
-                            int index = pComboBox.FindString(-1, wideSaveName.c_str());
-                            if (index == CB_ERR) {
-                                // 相同的選項不存在，可以新增
-                                pComboBox.AddString(wideSaveName.c_str());
-                            }
-                            pComboBox.Detach();
-
-                        }
-                        else
-                        {
-                            MessageBox(hwndDlg, L"無法打開文件保存USING_Tree_saveData", L"錯誤", MB_OK);
-                        }
                     }
                     Map_clickPoint = { 0 };
-
+                    using_Main_TreeName = using_Dialog_TreeName;
                     // 帶入水果樹圖片
-                    OutputDebugString(L"匯入主選單\n");
-                    OutputDebugString(L"樹木位置\n");
-                    OutputDebugString(Load_Tree_File_Path.c_str());
-                    OutputDebugString(L"\n");
+                    //OutputDebugString(L"匯入主選單\n");
+                    //OutputDebugString(L"樹木位置\n");
+                    //OutputDebugString(Load_Tree_File_Path.c_str());
+                    //OutputDebugString(L"\n");
 
                     IWICImagingFactory* pIWICFactory = NULL;
                     CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
                     drawFruitTree->treeBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg);
-                    OutputDebugString(L"水果位置\n");
+  /*                  OutputDebugString(L"水果位置\n");
                     OutputDebugString(Load_Fruit_File_Path.c_str());
-                    OutputDebugString(L"\n");
+                    OutputDebugString(L"\n");*/
 
                     drawFruitTree->fruitBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg);
@@ -416,7 +406,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                         break;
                     }
                 }
-                using_TreeName = Save_Name;
+                using_Dialog_TreeName = Save_Name;
                 //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 //std::wstring wideName = converter.from_bytes(Save_Name);
                 //OutputDebugString(L"讀取保存名稱\n");
@@ -424,7 +414,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 //OutputDebugString(wideSaveName.c_str());
 
                 // 將 JSON 對象轉換為字串
-                Tree_saveData[using_TreeName] = save_tree;
+                Tree_saveData[using_Dialog_TreeName] = save_tree;
                 std::string jsonString = Tree_saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
@@ -440,7 +430,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
                     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                    std::wstring wideSaveName = converter.from_bytes(using_TreeName);
+                    std::wstring wideSaveName = converter.from_bytes(using_Dialog_TreeName);
                     //判斷是否有存在同名選項
                     int index = pComboBox.FindString(-1, wideSaveName.c_str());
                     if (index == CB_ERR) {
@@ -500,7 +490,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 //OutputDebugString(wideSaveName.c_str());
 
                 // 將 JSON 對象轉換為字串
-                if (using_TreeName.empty()) // 檢查是否從存檔讀取
+                if (using_Dialog_TreeName.empty()) // 檢查是否從存檔讀取
                 {
                     int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
                     if (result == -1)
@@ -515,11 +505,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                             break;
                         }
                     }
-                    using_TreeName = Save_Name;
+                    using_Dialog_TreeName = Save_Name;
                 }
 
 
-                Tree_saveData[using_TreeName] = save_tree;
+                Tree_saveData[using_Dialog_TreeName] = save_tree;
                 std::string jsonString = Tree_saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
@@ -535,7 +525,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
                     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                    std::wstring wideSaveName = converter.from_bytes(using_TreeName);
+                    std::wstring wideSaveName = converter.from_bytes(using_Dialog_TreeName);
                     //判斷是否有存在同名選項
                     int index = pComboBox.FindString(-1, wideSaveName.c_str());
                     if (index == CB_ERR) {
@@ -636,7 +626,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     //讀取存檔
                     json save_tree = Tree_saveData[stdStr];
                     Dialog_clear();
-                    using_TreeName = stdStr;
+                    using_Dialog_TreeName = stdStr;
                     json Fruit = save_tree["Fruit"];
                     json coordinatesArray = Fruit["coordinates"];
 
@@ -721,7 +711,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             Tree_clickPoint.y = static_cast<FLOAT>(yPos) - Tree_Point.y;
 
             fruit_Points.push_back(Tree_clickPoint);
-            //using_TreeName = "";
+            //using_Dialog_TreeName = "";
             Dialog_Tree_has_newaction = 1;
             InvalidateRect(hwndDlg, NULL, FALSE);
         }
