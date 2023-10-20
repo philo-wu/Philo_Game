@@ -322,6 +322,22 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 using_MapName = stdStr;
                 Map_saveData_using = Map_saveData[using_MapName];
 
+                //清理陣列
+                Map_treepoints.clear();
+                auto it = Map_saveData_using.find(using_Main_TreeName);
+
+                // 將地圖中符合元件拿出寫入正在繪製中
+                if (it != Map_saveData_using.end())
+                { 
+                    for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"])
+                    {
+                        POINT tree_Point;
+                        tree_Point.x = coordinate["X"];
+                        tree_Point.y = coordinate["Y"];
+                        Map_treepoints.push_back(tree_Point);
+                    }
+                    Map_saveData_using.erase(using_Main_TreeName);
+                }
             }
             else
             {

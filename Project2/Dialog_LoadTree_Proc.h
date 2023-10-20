@@ -254,26 +254,29 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                             coordinatesArray.push_back(pointObject);
                         }
-                        Map_treepoints.clear();
                         // 將 coordinatesArray 存入 JSON 中的 "coordinates"
                         tree["coordinates"] = coordinatesArray;
                         Map_saveData_using[using_Main_TreeName] = tree;
-                        //std::string jsonString = Map_saveData_using.dump(4);
-                        //// 將 JSON 字串保存到文件
-                        //std::string path = currentPath.string() + "/Images/USING_Tree_saveData.json";
-                        //std::ofstream outFile(path);
-                        //if (outFile.is_open())
-                        //{
-                        //    outFile << jsonString;
-                        //    outFile.close();
-                        //    OutputDebugString(L"JSON 已保存到 USING_Tree_saveData.json\n");
-                        //}
-                        //else
-                        //{
-                        //    MessageBox(hwndDlg, L"無法打開文件保存USING_Tree_saveData", L"錯誤", MB_OK);
-                        //}
 
                     }
+
+                    Map_treepoints.clear();
+
+                    // 將地圖中符合元件拿出寫入正在繪製中
+                    auto it = Map_saveData_using.find(using_Main_TreeName);
+
+                    if (it != Map_saveData_using.end())
+                    {
+                        for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"])
+                        {
+                            POINT tree_Point;
+                            tree_Point.x = coordinate["X"];
+                            tree_Point.y = coordinate["Y"];
+                            Map_treepoints.push_back(tree_Point);
+                        }
+                        Map_saveData_using.erase(using_Main_TreeName);
+                    }
+
                     Map_clickPoint = { 0 };
                     using_Main_TreeName = using_Dialog_TreeName;
                     // 帶入水果樹圖片
@@ -286,9 +289,9 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
                     drawFruitTree->treeBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg);
-  /*                  OutputDebugString(L"水果位置\n");
-                    OutputDebugString(Load_Fruit_File_Path.c_str());
-                    OutputDebugString(L"\n");*/
+                    //OutputDebugString(L"水果位置\n");
+                    //OutputDebugString(Load_Fruit_File_Path.c_str());
+                    //OutputDebugString(L"\n");
 
                     drawFruitTree->fruitBitmap = NULL;
                     Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg);
