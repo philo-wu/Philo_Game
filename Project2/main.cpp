@@ -1,29 +1,29 @@
-
+ï»¿
 //#include <afx.h>
 
 #include "mian.h"
 #include "Dialog_LoadTree_Proc.h"
 #include "Dialog_MapMenu_Proc.h"
 
-//´£¨ÑDialog¥y¬`
+//æä¾›Dialogå¥æŸ„
 HINSTANCE HINSTANCE1;
 
 
 
-//¤J¤fÂI
+//å…¥å£é»
 int WINAPI WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine,
     int nCmdShow)   
 {
 
-    // µøµ¡¥y¬`¡A¥Ñ¨ç¼Æ¶ñ¥R
-    // ³o­Óµ²ºcÅé¥Î¨Ó«O¦sµøµ¡Ãş§O¬ÛÃöªº°T®§
+    // è¦–çª—å¥æŸ„ï¼Œç”±å‡½æ•¸å¡«å……
+    // é€™å€‹çµæ§‹é«”ç”¨ä¾†ä¿å­˜è¦–çª—é¡åˆ¥ç›¸é—œçš„è¨Šæ¯
     WNDCLASSEX wc;
 
-    // ²MªÅµøµ¡Ãş§O¥H¨Ñ¨Ï¥Î
+    // æ¸…ç©ºè¦–çª—é¡åˆ¥ä»¥ä¾›ä½¿ç”¨
     ZeroMemory(&wc, sizeof(WNDCLASSEX));
-    // ¦bµ²ºcÅé¤¤¶ñ¼g©Ò»İªºµøµ¡Ãş§O«H®§
+    // åœ¨çµæ§‹é«”ä¸­å¡«å¯«æ‰€éœ€çš„è¦–çª—é¡åˆ¥ä¿¡æ¯
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW;
     wc.lpfnWndProc = WindowProc;
@@ -32,68 +32,68 @@ int WINAPI WinMain(HINSTANCE hInstance,
     wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
     wc.lpszClassName = L"WindowClass1";
 
-    // µù¥Uµøµ¡
+    // è¨»å†Šè¦–çª—
     RegisterClassEx(&wc);
-    //®Ú¾Ú«È¤áºİ¨ú±oµøµ¡¤j¤p¨Ã°µ³B²z
+    //æ ¹æ“šå®¢æˆ¶ç«¯å–å¾—è¦–çª—å¤§å°ä¸¦åšè™•ç†
     HINSTANCE1 = hInstance;
-    RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // ?¸m¤Ø¤o¡A¦Ó¤£¬O¦ì¸m
-    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // ½Õ¾ã¤j¤p
+    RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // ?ç½®å°ºå¯¸ï¼Œè€Œä¸æ˜¯ä½ç½®
+    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // èª¿æ•´å¤§å°
 
-    // «Ø¥ßµ¡¤f¡A¨Ã±N¶Ç¦^ªºµ²ªG§@¬°¥y¬`
+    // å»ºç«‹çª—å£ï¼Œä¸¦å°‡å‚³å›çš„çµæœä½œç‚ºå¥æŸ„
     hWnd = CreateWindowEx(
         NULL,
-        L"WindowClass1",                 // µøµ¡Ãş§Oªº¦W¦r
-        L"ºØ¾ğ±o¾ğ",   // µøµ¡ªº¼ĞÃD
-        WS_OVERLAPPEDWINDOW,             // µøµ¡ªº¼Ë¦¡
-        510,                             // µøµ¡ªºx®y¼Ğ
-        100,                             // µøµ¡ªºy®y¼Ğ
-        wr.right - wr.left,              // µøµ¡ªº¼e«× //®Ú¾Ú«È¤áºİ¤j¤p¨Ó­pºâ¾A¦Xªºµøµ¡¤j¤p
-        wr.bottom - wr.top,              // µøµ¡ªº°ª«×
-        NULL,                            // ¨S¦³¤÷µ¡¤f¡A³]©w¬°NULL
-        NULL,                            // ¤£¨Ï¥Î¿ï³æ¡A³]©w¬°NULL
-        hInstance,                       // À³¥Îµ{¦¡¥y¬`
-        NULL);                           // »P¦h­Óµøµ¡¤@°_¨Ï¥Î¡A³]©w¬°NULL
+        L"WindowClass1",                 // è¦–çª—é¡åˆ¥çš„åå­—
+        L"ç¨®æ¨¹å¾—æ¨¹",   // è¦–çª—çš„æ¨™é¡Œ
+        WS_OVERLAPPEDWINDOW,             // è¦–çª—çš„æ¨£å¼
+        510,                             // è¦–çª—çš„xåº§æ¨™
+        100,                             // è¦–çª—çš„yåº§æ¨™
+        wr.right - wr.left,              // è¦–çª—çš„å¯¬åº¦ //æ ¹æ“šå®¢æˆ¶ç«¯å¤§å°ä¾†è¨ˆç®—é©åˆçš„è¦–çª—å¤§å°
+        wr.bottom - wr.top,              // è¦–çª—çš„é«˜åº¦
+        NULL,                            // æ²’æœ‰çˆ¶çª—å£ï¼Œè¨­å®šç‚ºNULL
+        NULL,                            // ä¸ä½¿ç”¨é¸å–®ï¼Œè¨­å®šç‚ºNULL
+        hInstance,                       // æ‡‰ç”¨ç¨‹å¼å¥æŸ„
+        NULL);                           // èˆ‡å¤šå€‹è¦–çª—ä¸€èµ·ä½¿ç”¨ï¼Œè¨­å®šç‚ºNULL
 
-    //«ö¶s¬ÛÃö¼Ë¦¡
+    //æŒ‰éˆ•ç›¸é—œæ¨£å¼
     InitButtom();
 
-    // Åã¥Üµøµ¡
+    // é¡¯ç¤ºè¦–çª—
     ShowWindow(hWnd, nCmdShow);
-    // ³]©w¨Ãªì©l¤Æ Direct
+    // è¨­å®šä¸¦åˆå§‹åŒ– Direct
     engine = new Engine();
     engine->phWnd = hWnd;
     drawTree = new Tree(L"1");
     drawFruitTree = new FruitTree(L"2",L"apple");
-    engine->InitializeD2D(hWnd); //Ã¸»s­I´º
-    //Common::InitD2D(hWnd , Tree_RenderTarget); //Ã¸»s
+    engine->InitializeD2D(hWnd); //ç¹ªè£½èƒŒæ™¯
+    //Common::InitD2D(hWnd , Tree_RenderTarget); //ç¹ªè£½
 
     //   InitD3D(hWnd);
-    // ¶i¤J¥D­n°j°é:
+    // é€²å…¥ä¸»è¦è¿´åœˆ:
     
-    // ³o­Óµ²ºcÅé¥]§tWindows¨Æ¥ó°T®§
+    // é€™å€‹çµæ§‹é«”åŒ…å«Windowsäº‹ä»¶è¨Šæ¯
     MSG msg = { 0 };    
-    // °T®§°j°é
+    // è¨Šæ¯è¿´åœˆ
     while (TRUE)
     {
 
 
-        // ?¬d?¦C¤¤¬O§_¦³®ø®§¥¿¦bµ¥«İ
+        // ?æŸ¥?åˆ—ä¸­æ˜¯å¦æœ‰æ¶ˆæ¯æ­£åœ¨ç­‰å¾…
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            // ±N«öÁä°T®§Âà´«¬°¥¿½Tªº®æ¦¡
+            // å°‡æŒ‰éµè¨Šæ¯è½‰æ›ç‚ºæ­£ç¢ºçš„æ ¼å¼
             TranslateMessage(&msg);
-            // ±N°T®§¶Ç°e¨ìWindowProc¨ç¼Æ
+            // å°‡è¨Šæ¯å‚³é€åˆ°WindowProcå‡½æ•¸
             DispatchMessage(&msg);
 
-            // ÀË¬d¬O§_¨ì¤F°h¥Xªº®É¶¡
+            // æª¢æŸ¥æ˜¯å¦åˆ°äº†é€€å‡ºçš„æ™‚é–“
             if (msg.message == WM_QUIT)
                 break;
-            // ¬İ¨ì¦³¤H¥Îreturn 0, ¦ı¦]¬°§Ú±NClean¼g¦b«á¤è,¬G¥u¥Îbreak
+            // çœ‹åˆ°æœ‰äººç”¨return 0, ä½†å› ç‚ºæˆ‘å°‡Cleanå¯«åœ¨å¾Œæ–¹,æ•…åªç”¨break
         }
         else
         {
-            // ¹CÀ¸¤º®e //¬°¤£°±­«·sÃ¸»sªº¦a¤è
-            // ¦]ºØ¾ğµ{¦¡¤£»İ­«½ÆÃ¸¹Ï¬G¤£¨Ï¥Î
+            // éŠæˆ²å…§å®¹ //ç‚ºä¸åœé‡æ–°ç¹ªè£½çš„åœ°æ–¹
+            // å› ç¨®æ¨¹ç¨‹å¼ä¸éœ€é‡è¤‡ç¹ªåœ–æ•…ä¸ä½¿ç”¨
             //if (engine->playing)
             //{
             //    // Drawing
@@ -102,107 +102,107 @@ int WINAPI WinMain(HINSTANCE hInstance,
         }
     }
     
-    // ±NWM_QUIT°T®§ªº³o¤@³¡¤À¶Ç¦^µ¹Windows
+    // å°‡WM_QUITè¨Šæ¯çš„é€™ä¸€éƒ¨åˆ†å‚³å›çµ¦Windows
     return msg.wParam;
 }
 
-// °T®§³B²z¨ç¼Æ
+// è¨Šæ¯è™•ç†å‡½æ•¸
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    // ±Æ§Ç¨Ã§ä¨ì°w¹ïµ¹©w°T®§¹B¦æ­ş¨Çµ{¦¡½X
+    // æ’åºä¸¦æ‰¾åˆ°é‡å°çµ¦å®šè¨Šæ¯é‹è¡Œå“ªäº›ç¨‹å¼ç¢¼
     switch(message)
     {
         case WM_CREATE:
         {
-            // ¦b WM_CREATE ®ø®§¤¤³Ğ«Ø«ö¶s
-            // ¦b¦¹Ã¸»s«ö¶s·|¦s¦b,¦ı·|³QÂĞ»\,¤´¥i¥HÂI¿ï
-            // ³z¹L­«Ã¸¨Æ¥ó,·|¥ıÃ¸»s­I´º¦AÃ¸»s«ö¶s
-            // ³]©w¦rÅé
+            // åœ¨ WM_CREATE æ¶ˆæ¯ä¸­å‰µå»ºæŒ‰éˆ•
+            // åœ¨æ­¤ç¹ªè£½æŒ‰éˆ•æœƒå­˜åœ¨,ä½†æœƒè¢«è¦†è“‹,ä»å¯ä»¥é»é¸
+            // é€éé‡ç¹ªäº‹ä»¶,æœƒå…ˆç¹ªè£½èƒŒæ™¯å†ç¹ªè£½æŒ‰éˆ•
+            // è¨­å®šå­—é«”
             int buttomnumber = 0;
-            // §PÂ_¤£»İ­n³æ¯ÂÃ¸»s¾ğ¤ì
+            // åˆ¤æ–·ä¸éœ€è¦å–®ç´”ç¹ªè£½æ¨¹æœ¨
             // Start_Button = CreateWindow(
-            //    L"BUTTON",                              // «ö¶s±±¨î¶µªºÃş§O¦WºÙ
-            //    L"¿ï¾Ü¾ğ¤ì",                            // «ö¶s¤WÅã¥Üªº¤å¦r
-            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // «ö¶s¼Ë¦¡
+            //    L"BUTTON",                              // æŒ‰éˆ•æ§åˆ¶é …çš„é¡åˆ¥åç¨±
+            //    L"é¸æ“‡æ¨¹æœ¨",                            // æŒ‰éˆ•ä¸Šé¡¯ç¤ºçš„æ–‡å­—
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // æŒ‰éˆ•æ¨£å¼
             //    10 + (BUTTON_WIDTH+10)* buttomnumber, 10,
             //    BUTTON_WIDTH, BUTTON_HEIGHT,
-            //                                            // «ö¶s¦ì¸m©M¤j¤p (x, y, width, height)
-            //    hWnd,                                   // ¤÷µ¡¤f¥y¬`
-            //    (HMENU)1,                               // ±±¨î¶µ ID (¥i¥H¥Î©óÃÑ§O«ö¶s)
-            //    GetModuleHandle(NULL),                  // ¼Ò²Õ¥y¬`
-            //    NULL                                    // «ü©w¬° NULL
+            //                                            // æŒ‰éˆ•ä½ç½®å’Œå¤§å° (x, y, width, height)
+            //    hWnd,                                   // çˆ¶çª—å£å¥æŸ„
+            //    (HMENU)1,                               // æ§åˆ¶é … ID (å¯ä»¥ç”¨æ–¼è­˜åˆ¥æŒ‰éˆ•)
+            //    GetModuleHandle(NULL),                  // æ¨¡çµ„å¥æŸ„
+            //    NULL                                    // æŒ‡å®šç‚º NULL
             //);
             //++buttomnumber;
             Difficulty_Button = CreateWindow(
-                L"BUTTON",                              // «ö¶s±±¨î¶µªºÃş§O¦WºÙ
-                L"Ã¸µe¿ï³æ",                            // «ö¶s¤WÅã¥Üªº¤å¦r
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // «ö¶s¼Ë¦¡
+                L"BUTTON",                              // æŒ‰éˆ•æ§åˆ¶é …çš„é¡åˆ¥åç¨±
+                L"ç¹ªç•«é¸å–®",                            // æŒ‰éˆ•ä¸Šé¡¯ç¤ºçš„æ–‡å­—
+                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // æŒ‰éˆ•æ¨£å¼
                 10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // «ö¶s¦ì¸m©M¤j¤p (x, y, width, height)
-                hWnd,                                   // ¤÷µ¡¤f¥y¬`
-                (HMENU)2,                               // ±±¨î¶µ ID (¥i¥H¥Î©óÃÑ§O«ö¶s)
-                GetModuleHandle(NULL),                  // ¼Ò²Õ¥y¬`
-                NULL                                    // «ü©w¬° NULL
+                                                        // æŒ‰éˆ•ä½ç½®å’Œå¤§å° (x, y, width, height)
+                hWnd,                                   // çˆ¶çª—å£å¥æŸ„
+                (HMENU)2,                               // æ§åˆ¶é … ID (å¯ä»¥ç”¨æ–¼è­˜åˆ¥æŒ‰éˆ•)
+                GetModuleHandle(NULL),                  // æ¨¡çµ„å¥æŸ„
+                NULL                                    // æŒ‡å®šç‚º NULL
             );
             ++buttomnumber;
 
             Score_Button = CreateWindow(
-                L"BUTTON",                              // «ö¶s±±¨î¶µªºÃş§O¦WºÙ
-                L"¦a¹Ï¿ï³æ",                            // «ö¶s¤WÅã¥Üªº¤å¦r
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // «ö¶s¼Ë¦¡
+                L"BUTTON",                              // æŒ‰éˆ•æ§åˆ¶é …çš„é¡åˆ¥åç¨±
+                L"åœ°åœ–é¸å–®",                            // æŒ‰éˆ•ä¸Šé¡¯ç¤ºçš„æ–‡å­—
+                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // æŒ‰éˆ•æ¨£å¼
                 10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
                 BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // «ö¶s¦ì¸m©M¤j¤p (x, y, width, height)
-                hWnd,                                   // ¤÷µ¡¤f¥y¬`
-                (HMENU)3,                               // ±±¨î¶µ ID (¥i¥H¥Î©óÃÑ§O«ö¶s)
-                GetModuleHandle(NULL),                  // ¼Ò²Õ¥y¬`
-                NULL                                    // «ü©w¬° NULL
+                                                        // æŒ‰éˆ•ä½ç½®å’Œå¤§å° (x, y, width, height)
+                hWnd,                                   // çˆ¶çª—å£å¥æŸ„
+                (HMENU)3,                               // æ§åˆ¶é … ID (å¯ä»¥ç”¨æ–¼è­˜åˆ¥æŒ‰éˆ•)
+                GetModuleHandle(NULL),                  // æ¨¡çµ„å¥æŸ„
+                NULL                                    // æŒ‡å®šç‚º NULL
             );
             ++buttomnumber;
 
             //End_Button = CreateWindow(
-            //    L"BUTTON",                              // «ö¶s±±¨î¶µªºÃş§O¦WºÙ
-            //    L"Åª¨ú¦a¹Ï",                            // «ö¶s¤WÅã¥Üªº¤å¦r
-            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // «ö¶s¼Ë¦¡
+            //    L"BUTTON",                              // æŒ‰éˆ•æ§åˆ¶é …çš„é¡åˆ¥åç¨±
+            //    L"è®€å–åœ°åœ–",                            // æŒ‰éˆ•ä¸Šé¡¯ç¤ºçš„æ–‡å­—
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // æŒ‰éˆ•æ¨£å¼
             //    10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
             //    BUTTON_WIDTH, BUTTON_HEIGHT,
-            //                                            // «ö¶s¦ì¸m©M¤j¤p (x, y, width, height)
-            //    hWnd,                                   // ¤÷µ¡¤f¥y¬`
-            //    (HMENU)4,                               // ±±¨î¶µ ID (¥i¥H¥Î©óÃÑ§O«ö¶s)
-            //    GetModuleHandle(NULL),                  // ¼Ò²Õ¥y¬`
-            //    NULL                                    // «ü©w¬° NULL
+            //                                            // æŒ‰éˆ•ä½ç½®å’Œå¤§å° (x, y, width, height)
+            //    hWnd,                                   // çˆ¶çª—å£å¥æŸ„
+            //    (HMENU)4,                               // æ§åˆ¶é … ID (å¯ä»¥ç”¨æ–¼è­˜åˆ¥æŒ‰éˆ•)
+            //    GetModuleHandle(NULL),                  // æ¨¡çµ„å¥æŸ„
+            //    NULL                                    // æŒ‡å®šç‚º NULL
             //);
             //++buttomnumber;
 
             //Clean_Button = CreateWindow(
-            //    L"BUTTON",                              // «ö¶s±±¨î¶µªºÃş§O¦WºÙ
-            //    L"¦a¹Ï²MªÅ",                            // «ö¶s¤WÅã¥Üªº¤å¦r
-            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // «ö¶s¼Ë¦¡
+            //    L"BUTTON",                              // æŒ‰éˆ•æ§åˆ¶é …çš„é¡åˆ¥åç¨±
+            //    L"åœ°åœ–æ¸…ç©º",                            // æŒ‰éˆ•ä¸Šé¡¯ç¤ºçš„æ–‡å­—
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // æŒ‰éˆ•æ¨£å¼
             //    10 + (BUTTON_WIDTH + 10) * buttomnumber, 10,
             //    BUTTON_WIDTH, BUTTON_HEIGHT,
-            //                                            // «ö¶s¦ì¸m©M¤j¤p (x, y, width, height)
-            //    hWnd,                                   // ¤÷µ¡¤f¥y¬`
-            //    (HMENU)5,                               // ±±¨î¶µ ID (¥i¥H¥Î©óÃÑ§O«ö¶s)
-            //    GetModuleHandle(NULL),                  // ¼Ò²Õ¥y¬`
-            //    NULL                                    // «ü©w¬° NULL
+            //                                            // æŒ‰éˆ•ä½ç½®å’Œå¤§å° (x, y, width, height)
+            //    hWnd,                                   // çˆ¶çª—å£å¥æŸ„
+            //    (HMENU)5,                               // æ§åˆ¶é … ID (å¯ä»¥ç”¨æ–¼è­˜åˆ¥æŒ‰éˆ•)
+            //    GetModuleHandle(NULL),                  // æ¨¡çµ„å¥æŸ„
+            //    NULL                                    // æŒ‡å®šç‚º NULL
             //);
             //++buttomnumber;
 
         }
         break;
-        case WM_COMMAND:// ÀË¬d«ö¶s¨Æ¥ó
+        case WM_COMMAND:// æª¢æŸ¥æŒ‰éˆ•äº‹ä»¶
             if (HIWORD(wParam) == BN_CLICKED )
             {
-                //ÀË¬d«ö¶s¨­¤À
+                //æª¢æŸ¥æŒ‰éˆ•èº«åˆ†
                 switch (LOWORD(wParam))
                 {
 
-                case 1: // ¿ï¾Ü¾ğ¤ì
+                case 1: // é¸æ“‡æ¨¹æœ¨
                 {
                     if (Dialog_LoadTree_is_open)
                     {
-                        MessageBox(hWnd, L"µøµ¡¤w¥´¶}", L"¿ù»~", MB_OK);
+                        MessageBox(hWnd, L"è¦–çª—å·²æ‰“é–‹", L"éŒ¯èª¤", MB_OK);
                         break;
                     }
                     Dialog_is_fruit = 0;
@@ -210,11 +210,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }
                 break;
 
-                case 2: // ¿ï¾Ü¤ôªG¾ğ
+                case 2: // é¸æ“‡æ°´æœæ¨¹
                 {
                     if (Dialog_LoadTree_is_open)
                     {
-                        MessageBox(hWnd, L"µøµ¡¤w¥´¶}", L"¿ù»~", MB_OK);
+                        MessageBox(hWnd, L"è¦–çª—å·²æ‰“é–‹", L"éŒ¯èª¤", MB_OK);
                         break;
                     }
                     Dialog_is_fruit = 1;
@@ -222,11 +222,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }                    
                 break;
 
-                case 3: // Àx¦s¦a¹Ï
+                case 3: // å„²å­˜åœ°åœ–
                 {   
                     //std::wstring filePath ;
                     //Common::FileSaveDialog(filePath);
-                    //// «÷±µ¦r¦ê
+                    //// æ‹¼æ¥å­—ä¸²
 
                     //OutputDebugString(filePath.c_str());
                     //Common::SaveWindowToImage(hWnd, filePath.c_str(), { 0,FUNCTION_COLUMN_HEIGHT }, SCREEN_WIDTH,SCREEN_HEIGHT - FUNCTION_COLUMN_HEIGHT);
@@ -236,9 +236,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }
                 break;
 
-                case 4: // Åª¨ú¦a¹Ï
+                case 4: // è®€å–åœ°åœ–
                 {
-                    std::wstring  NULLPATH ;//¤£«O¦sÀÉ®×¸ô®|
+                    std::wstring  NULLPATH ;//ä¸ä¿å­˜æª”æ¡ˆè·¯å¾‘
                     std::wstring  fileName ;
                     Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, fileName);
                     if (fileName.empty())
@@ -249,7 +249,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 }
                 break;
 
-                case 5: // ¦a¹Ï²MªÅ
+                case 5: // åœ°åœ–æ¸…ç©º
                 {
                     Map_clickPoint.x = static_cast<FLOAT>(0);
                     Map_clickPoint.y = static_cast<FLOAT>(0);
@@ -259,31 +259,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     InvalidateRect(hWnd, NULL, TRUE);
                 }
                 break;
-                case ID_CUSTOM_COMMAND: // ¦Û©w¸q©R¥Oªº³B²z
-                    //±`¥Î«ü¥O
-                    //MessageBox(hWnd, L"¹CÀ¸µ²§ô \n±o¤À¬°X", L"µ²ºâ", MB_OK);
-                    //SendMessage(hWnd, WM_COMMAND, ID_CUSTOM_COMMAND, 0);  //¦¹¬°¦Û©w¸q©R¥O
-                    //SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);           //¦¹¬°¦Û©w¸q¨Æ¥ó
-                    //SendMessage(hWnd, WM_CLOSE, 0, 0);                      //µøµ¡Ãö³¬
+                case ID_CUSTOM_COMMAND: // è‡ªå®šç¾©å‘½ä»¤çš„è™•ç†
+                    //å¸¸ç”¨æŒ‡ä»¤
+                    //MessageBox(hWnd, L"éŠæˆ²çµæŸ \nå¾—åˆ†ç‚ºX", L"çµç®—", MB_OK);
+                    //SendMessage(hWnd, WM_COMMAND, ID_CUSTOM_COMMAND, 0);  //æ­¤ç‚ºè‡ªå®šç¾©å‘½ä»¤
+                    //SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);           //æ­¤ç‚ºè‡ªå®šç¾©äº‹ä»¶
+                    //SendMessage(hWnd, WM_CLOSE, 0, 0);                      //è¦–çª—é—œé–‰
                  break;
                 }
             }
         break;
         case WM_PAINT:
         {
-            // ¥D¿ï³æµe­±
+            // ä¸»é¸å–®ç•«é¢
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            //if(Dialog_is_fruit)// 1§ï¦¨§PÂ_­nµe¾ğÁÙ¬O¤ôªG¾ğ
+            //if(Dialog_is_fruit)// 1æ”¹æˆåˆ¤æ–·è¦ç•«æ¨¹é‚„æ˜¯æ°´æœæ¨¹
                 //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawTree , Map_saveData , Map_treepoints);
             //else
-                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData[MapName], Tree_saveData,Map_treepoints);
+                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData_using, Tree_saveData,Map_treepoints);
                 
             EndPaint(hWnd, &ps);
         }
         break;
         
-        case WM_LBUTTONDOWN: // ³B²z·Æ¹«¥ªÁä
+        case WM_LBUTTONDOWN: // è™•ç†æ»‘é¼ å·¦éµ
         {
             int xPos = GET_X_LPARAM(lParam);
             int yPos = GET_Y_LPARAM(lParam);
@@ -307,16 +307,16 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         }
         break;
 
-        case WM_DESTROY: // ·íµøµ¡Ãö³¬®É·|Åª¨ú¦¹°T®§
+        case WM_DESTROY: // ç•¶è¦–çª—é—œé–‰æ™‚æœƒè®€å–æ­¤è¨Šæ¯
         {
-                // §¹¥şÃö³¬À³¥Îµ{¦¡
+                // å®Œå…¨é—œé–‰æ‡‰ç”¨ç¨‹å¼
                 PostQuitMessage(0);
                 return 0;
         } 
         break;
     }
 
-    // ³B²z switch »y¥y¥¼ÄdºI°T®§
+    // è™•ç† switch èªå¥æœªæ””æˆªè¨Šæ¯
     return DefWindowProc (hWnd, message, wParam, lParam);
 }
 
@@ -327,7 +327,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 ////////////////////////////////////////////////////////////////
 
 
-// Dialog¬[ºc«O¯d
+// Dialogæ¶æ§‹ä¿ç•™
 //INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //{
 //    DWORD dwID = wParam;
@@ -335,33 +335,33 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //    switch (uMsg) {
 //    case WM_INITDIALOG:
 //        {
-//            // ³]©w·Æ¶ô½d³ò
+//            // è¨­å®šæ»‘å¡Šç¯„åœ
 //            HWND hListView = GetDlgItem(hwndDlg, IDC_LIST4);
 //            DWORD dwStyle = GetWindowLong(hListView, GWL_STYLE);
 //            SetWindowLong(hListView, GWL_STYLE, dwStyle | LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP);
 //
-//            // ²K¥[¤T¦C¼ĞÃD
+//            // æ·»åŠ ä¸‰åˆ—æ¨™é¡Œ
 //            LVCOLUMN lvColumn = { 0 };
 //            lvColumn.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
 //
-//            // ²Ä¤@¦C¡G©m¦W
-//            const wchar_t* myConstString = L"©m¦W";
+//            // ç¬¬ä¸€åˆ—ï¼šå§“å
+//            const wchar_t* myConstString = L"å§“å";
 //            wchar_t* myNonConstString = const_cast<wchar_t*>(myConstString);
 //            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
 //            lvColumn.iSubItem = 0;
-//            lvColumn.cx = 150;  // ³]©w¦C¼e«×
+//            lvColumn.cx = 150;  // è¨­å®šåˆ—å¯¬åº¦
 //            ListView_InsertColumn(hListView, 0, &lvColumn);
 //
-//            // ²Ä¤G¦C¡G¤À¼Æ
-//            myConstString = L"¤À¼Æ";
+//            // ç¬¬äºŒåˆ—ï¼šåˆ†æ•¸
+//            myConstString = L"åˆ†æ•¸";
 //            myNonConstString = const_cast<wchar_t*>(myConstString);
 //            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
 //            lvColumn.iSubItem = 1;
 //            lvColumn.cx = 150;
 //            ListView_InsertColumn(hListView, 1, &lvColumn);
 //
-//            // ²Ä¤T¦C¡GÃø«×
-//            myConstString = L"Ãø«×";
+//            // ç¬¬ä¸‰åˆ—ï¼šé›£åº¦
+//            myConstString = L"é›£åº¦";
 //            myNonConstString = const_cast<wchar_t*>(myConstString);
 //            lvColumn.pszText = const_cast<wchar_t*>(myConstString);
 //            lvColumn.iSubItem = 2;
@@ -376,28 +376,28 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //                json j;
 //                file >> j;
 //
-//                // ³B²z¸ÑªR«áªº¸ê®Æ
+//                // è™•ç†è§£æå¾Œçš„è³‡æ–™
 //                for (const auto& entry : j["Ranklist"]) {
 //                    std::string name = entry["name"];
 //                    int score = entry["score"];
 //                    int difficulty = entry["difficulty"];
 //
-//                    // ¦b³o¸Ì³B²z¤¤¤å½s½X°İÃD
+//                    // åœ¨é€™è£¡è™•ç†ä¸­æ–‡ç·¨ç¢¼å•é¡Œ
 //                    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 //                    std::wstring nameText = converter.from_bytes(name);
 //
 //                    LVITEM lvi;
 //                    lvi.mask = LVIF_TEXT;
 //                    lvi.pszText = const_cast<wchar_t*>(nameText.c_str());
-//                    lvi.iItem = ListView_GetItemCount(hListView);  // ·s¼W¶µ¥Øªº¯Á¤Ş
+//                    lvi.iItem = ListView_GetItemCount(hListView);  // æ–°å¢é …ç›®çš„ç´¢å¼•
 //                    lvi.iSubItem = 0;
 //                    ListView_InsertItem(hListView, &lvi);
 //
-//                    // ³]¸m¤À¼Æ
+//                    // è¨­ç½®åˆ†æ•¸
 //                    std::wstring scoreText = std::to_wstring(score);
 //                    ListView_SetItemText(hListView, lvi.iItem, 1, const_cast<wchar_t*>(scoreText.c_str()));
 //
-//                    // ³]¸mÃø«×
+//                    // è¨­ç½®é›£åº¦
 //                    std::wstring difficultyText = std::to_wstring(difficulty);
 //                    ListView_SetItemText(hListView, lvi.iItem, 2, const_cast<wchar_t*>(difficultyText.c_str()));
 //
@@ -416,13 +416,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //        switch (LOWORD(wParam))
 //        {
 //        case IDOK:
-//            // ¨Ï¥ÎªÌ«ö¤U¤F½T©w«ö¶s
+//            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†ç¢ºå®šæŒ‰éˆ•
 //        {
 //            EndDialog(hwndDlg, IDOK);
 //        }
 //        break;
 //        case IDCANCEL:
-//            // ¨Ï¥ÎªÌ«ö¤U¤F¨ú®ø«ö¶s
+//            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†å–æ¶ˆæŒ‰éˆ•
 //            EndDialog(hwndDlg, IDCANCEL);
 //            break;
 //        }
@@ -442,20 +442,20 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //        switch (LOWORD(wParam))
 //        {
 //        case IDOK:
-//            // ¨Ï¥ÎªÌ«ö¤U¤F½T©w«ö¶s
+//            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†ç¢ºå®šæŒ‰éˆ•
 //        {
-//            // ¨ú±oª±®a¦WºÙ
+//            // å–å¾—ç©å®¶åç¨±
 //            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
 //            if (textLength == 0)
 //            {
-//                // ¿é¤J¬°ªÅ
-//                MessageBox(hWnd, L"¥¼¿é¤Jª±®a¦WºÙ", L"¿ù»~", MB_OK);
-//                // ¼u¥Xµ²§ôµe­±
+//                // è¼¸å…¥ç‚ºç©º
+//                MessageBox(hWnd, L"æœªè¼¸å…¥ç©å®¶åç¨±", L"éŒ¯èª¤", MB_OK);
+//                // å½ˆå‡ºçµæŸç•«é¢
 //                SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
 //            }
 //            else
 //            {
-//                wchar_t buffer[100]; // ­n¦s©ñ¸ê®Æªº½w½Ä°Ï
+//                wchar_t buffer[100]; // è¦å­˜æ”¾è³‡æ–™çš„ç·©è¡å€
 //                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
 //                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 //                std::string newName = converter.to_bytes(buffer);
@@ -475,7 +475,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //                };
 //                jsonData["Ranklist"].push_back(newEntry);
 //                std::ofstream outFile("./Ranklist.json");
-//                outFile << jsonData.dump(4);  // 4 ¬OÁY±Æªº¼Æ¶q
+//                outFile << jsonData.dump(4);  // 4 æ˜¯ç¸®æ’çš„æ•¸é‡
 //                outFile.close();
 //                
 //            }
@@ -485,7 +485,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //        break;
 //
 //        case IDCANCEL:
-//            // ¨Ï¥ÎªÌ«ö¤U¤F¨ú®ø«ö¶s
+//            // ä½¿ç”¨è€…æŒ‰ä¸‹äº†å–æ¶ˆæŒ‰éˆ•
 //            EndDialog(hwndDlg, IDCANCEL);
 //            break;
 //        }

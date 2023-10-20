@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 // 父類別 Fruit
 class Fruit {
 protected:

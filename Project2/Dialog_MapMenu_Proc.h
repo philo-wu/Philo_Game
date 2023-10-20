@@ -1,8 +1,29 @@
-#pragma once
+﻿#pragma once
 #include "Dialog_LoadTree_Proc.h"
 
 ID2D1HwndRenderTarget* MapMenu_RenderTarget;
+std::string AnsiToUtf8(const std::string& ansiStr)
+{
+    int wstrLen = MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, nullptr, 0);
+    if (wstrLen == 0) {
+        // Handle error
+        return std::string();
+    }
 
+    std::wstring wstr(wstrLen, L'\0');
+    MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, &wstr[0], wstrLen);
+
+    int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+    if (utf8Len == 0) {
+        // Handle error
+        return std::string();
+    }
+
+    std::string utf8Str(utf8Len, '\0');
+    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &utf8Str[0], utf8Len, nullptr, nullptr);
+
+    return utf8Str;
+}
 
 INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -95,7 +116,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             // 將 coordinatesArray 存入 JSON 中的 "coordinates"
             tree["coordinates"] = coordinatesArray;
 
-            save_map[TreeName] = tree;
+            save_map[using_TreeName] = tree;
             int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
             if (result == -1)
             {
@@ -231,8 +252,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 //OutputDebugString(selectedText);
                 // 
                 //讀取存檔
-                MapName = stdStr;
-                Map_saveData_using = Map_saveData[MapName];
+                using_MapName = stdStr;
+                Map_saveData_using = Map_saveData[using_MapName];
 
             }
             else
@@ -240,6 +261,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
                 MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+
             }
             pComboBox.Detach();
             InvalidateRect(hWnd, NULL, TRUE);
@@ -283,3 +305,4 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
     return FALSE;
 }
+
