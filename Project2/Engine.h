@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "Food.h"
-#include "Snake.h"
 #include <chrono>
 
 
@@ -17,15 +15,15 @@ public:
 	void Logic(double elapsedTime);
 	void ClearDraw(HWND hWnd);
 	int getscore() { return score; };
-	int FPS = 0;
-	void fps_count();
+	//void fps_count();
 	std::chrono::system_clock::time_point lastTime;
+
+	int run_second = 10; //每圈執行秒數 
+
 
 	HRESULT Draw();
 	bool playing = 0;
 	int difficulty = 5;
-	double UpdateFrameSleep(int difficulty);
-	bool isFoodOnBorderChecked = 0;
 
 private:
 	ID2D1Factory* m_pDirect2dFactory ;
@@ -35,8 +33,8 @@ private:
 	IDWriteTextFormat* m_pTextFormat;
 	ID2D1SolidColorBrush* m_pWhiteBrush;
 
-	Snake* snake;
-	Food* food;	
+	//Snake* snake;
+	//Food* food;	
 
 	int score;
 	int highScore;

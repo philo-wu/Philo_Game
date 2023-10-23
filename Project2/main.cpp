@@ -20,10 +20,10 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
         SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
 
         // 設定 "食物生成於邊界" 勾選框的初始狀態
-        if(engine->isFoodOnBorderChecked)
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
-        else
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
+        //if(engine->isFoodOnBorderChecked)
+        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
+        //else
+        //    CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED);
 
         return TRUE;
 
@@ -37,9 +37,9 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
                 int sliderValue = SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_GETPOS, 0, 0);
                 BOOL isFoodOnBorderChecked = IsDlgButtonChecked(hwndDlg, IDC_CHECK1) == BST_CHECKED;
                 // 將資料存入引擎
-                engine->difficulty = sliderValue;
-                targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
-                engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
+                //engine->difficulty = sliderValue;
+                //targetFrameTime = engine->UpdateFrameSleep(engine->difficulty);
+                //engine->isFoodOnBorderChecked = isFoodOnBorderChecked;
 
                 EndDialog(hwndDlg, IDOK);
             }   
@@ -264,8 +264,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
         L"WindowClass1",                 // 視窗類別的名字
         L"Philo_Snake",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
-        300,                             // 視窗的x座標
-        100,                             // 視窗的y座標
+        1980 / 2 - SCREEN_WIDTH/2,         // 視窗的x座標 //畫面置中 = 1980/2 - SCREEN_WIDTH-2
+        0,                               // 視窗的y座標
         wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
         wr.bottom - wr.top,              // 視窗的高度
         NULL,                            // 沒有父窗口，設定為NULL
@@ -323,8 +323,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
         accumulatedTime += elapsed_secs;
         //顯示 FPS 從Logic中搬出來
-        if (engine->playing)
-            engine->fps_count();
+        //if (engine->playing)
+        //    engine->fps_count();
 
         while (accumulatedTime >= targetFrameTime)
 
@@ -512,7 +512,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             SetBkColor(hdc, RGB(240, 240, 240));
 
             WCHAR Str[64];
-            swprintf_s(Str, L"%s", L"小精靈吃漢堡");
+            swprintf_s(Str, L"%s", L"超級小瑪莉777");
             TextOut(hdc, 310, 100, Str, wcslen(Str));
 
             // 釋放字體資源

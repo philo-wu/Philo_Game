@@ -4,7 +4,7 @@
 
 // 視窗相關
 #define SCREEN_WIDTH  1024  
-#define SCREEN_HEIGHT 768
+#define SCREEN_HEIGHT 980
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  200
 #define BUTTON_HEIGHT 50

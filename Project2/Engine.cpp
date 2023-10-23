@@ -4,9 +4,9 @@
 
 Engine::Engine() : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrush(NULL)
 {
-    snake = new Snake();
-    food = new Food();
-    food->Reset(snake , isFoodOnBorderChecked );
+    //snake = new Snake();
+    //food = new Food();
+    //food->Reset(snake , isFoodOnBorderChecked );
 
     playing = false;
     keyPressed = false;
@@ -60,8 +60,8 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
         &m_pWhiteBrush
     );
 
-    snake->Initialize(m_pRenderTarget);
-    food->Initialize(m_pRenderTarget);
+    //snake->Initialize(m_pRenderTarget);
+    //food->Initialize(m_pRenderTarget);
 
     return S_OK;
 }
@@ -70,14 +70,14 @@ void Engine::KeyUp(WPARAM wParam)
 {
     if (!keyPressed)
     {
-        if (wParam == VK_UP)
-            snake->GoUp();
-        if (wParam == VK_DOWN)
-            snake->GoDown();
-        if (wParam == VK_LEFT)
-            snake->GoLeft();
-        if (wParam == VK_RIGHT)
-            snake->GoRight();
+        //if (wParam == VK_UP)
+        //    snake->GoUp();
+        //if (wParam == VK_DOWN)
+        //    snake->GoDown();
+        //if (wParam == VK_LEFT)
+        //    snake->GoLeft();
+        //if (wParam == VK_RIGHT)
+        //    snake->GoRight();
         keyPressed = true;
     }
 }
@@ -87,8 +87,8 @@ void Engine::Reset()
     // This method reset the game, given that the game was won or lost
     if (!playing)
     {
-        snake->Reset();
-        food->Reset(snake, isFoodOnBorderChecked );
+        //snake->Reset();
+        //food->Reset(snake, isFoodOnBorderChecked );
         score = 5;
     }
 }
@@ -96,33 +96,29 @@ void Engine::Reset()
 void Engine::Logic(double elapsedTime)
 {
     // This is the logic part of the engine.
-    if (playing)
-    {
-        snake->Advance();
-        if (snake->CheckFoodCollision(food->position.x, food->position.y))
-        {
-            food->Reset(snake, isFoodOnBorderChecked);
-            snake->Grow();
-            score++;
-            if (score > highScore)
-                highScore = score;
-        }
+    //if (playing)
+    //{
+    //    snake->Advance();
+    //    if (snake->CheckFoodCollision(food->position.x, food->position.y))
+    //    {
+    //        food->Reset(snake, isFoodOnBorderChecked);
+    //        snake->Grow();
+    //        score++;
+    //        if (score > highScore)
+    //            highScore = score;
+    //    }
 
-        if (snake->CheckSelfCollision())
-        {
-            playing = false;
-        }
-        else if (food->GameWin)
-        {
-            playing = false;
-            //TODO:寫入勝利畫面
-        }
+    //    if (snake->CheckSelfCollision())
+    //    {
+    //        playing = false;
+    //    }
+    //    else if (food->GameWin)
+    //    {
+    //        playing = false;
+    //        //TODO:寫入勝利畫面
+    //    }
 
-        keyPressed = false;
-    }
-    //int frame_sleep = 200;
-    //frame_sleep = UpdateFrameSleep(difficulty);
-    //Sleep(frame_sleep);
+    //}
 }
 
 HRESULT Engine::Draw()
@@ -136,8 +132,6 @@ HRESULT Engine::Draw()
 
     m_pRenderTarget->BeginDraw();
 
-    m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-
 
     m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
@@ -148,28 +142,28 @@ HRESULT Engine::Draw()
     m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
 
     // Draw score
-    D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
-    D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
-    WCHAR scoreStr[64];
-    swprintf_s(scoreStr, L"分數: %d            最高分數: %d              ", score, highScore);
-    m_pRenderTarget->DrawText(
-        scoreStr,
-        35,
-        m_pTextFormat,
-        rectangle2,
-        m_pWhiteBrush
-    );
-    swprintf_s(scoreStr, L"FPS : %d                           ",FPS);
+    //D2D1_RECT_F rectangle2 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 200);
+    //D2D1_RECT_F rectangle3 = D2D1::RectF(SCREEN_WIDTH / 2, 0, 100, 300);
+    //WCHAR scoreStr[64];
+    //swprintf_s(scoreStr, L"分數: %d            最高分數: %d              ", score, highScore);
+    //m_pRenderTarget->DrawText(
+    //    scoreStr,
+    //    35,
+    //    m_pTextFormat,
+    //    rectangle2,
+    //    m_pWhiteBrush
+    //);
+    //swprintf_s(scoreStr, L"FPS : %d                           ",FPS);
     //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-    m_pRenderTarget->DrawText(
-        scoreStr,
-        35,
-        m_pTextFormat,
-        rectangle3,
-        m_pWhiteBrush
-    );
-    snake->Draw(m_pRenderTarget);
-    food->Draw(m_pRenderTarget);
+    //m_pRenderTarget->DrawText(
+    //    scoreStr,
+    //    35,
+    //    m_pTextFormat,
+    //    rectangle3,
+    //    m_pWhiteBrush
+    //);
+    //snake->Draw(m_pRenderTarget);
+    //food->Draw(m_pRenderTarget);
 
     m_pRenderTarget->EndDraw();
 
@@ -184,58 +178,3 @@ void Engine::ClearDraw(HWND hWnd)
     m_pRenderTarget->EndDraw();
     InvalidateRect(hWnd, NULL, TRUE);
 }
-
-double Engine::UpdateFrameSleep(int difficulty)
-{
-    double result ;
-    switch (difficulty)
-    {
-    case 1:
-        result = 3;  // 難度1，速度最慢
-        break;
-    case 2:
-        result = 4;
-        break;
-    case 3:
-        result = 5;
-        break;
-    case 4:
-        result = 6;
-        break;
-    case 5:
-        result = 8;  // 難度5，中等速度
-        break;
-    case 6:
-        result = 20;
-        break;
-    case 7:
-        result = 40;
-        break;
-    case 8:
-        result = 50;
-        break;
-    case 9:
-        result = 60;   // 難度9，速度最快
-        break;
-    default:
-        result = 8;  // 預設為中等速度
-        break;
-    }
-    return 1 / result ;
-};
-void Engine::fps_count()
-{
-    //lastTime = std::chrono::system_clock::now(); // 當前時間
-    static int frameCount = 0;
-    ++frameCount;
-    auto curTime = std::chrono::system_clock::now(); // 当前时间点
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(curTime - lastTime).count(); // 毫秒
-
-    if (elapsedTime > 1000) // 取固定时间间隔为1秒
-    {
-        FPS = frameCount;
-        frameCount = 0;
-        lastTime = curTime;
-    }
-}
-
