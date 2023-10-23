@@ -1,10 +1,7 @@
 ﻿#pragma once
 
 #include "Direct2D.h"
-//#include "Direct3D.h"
-#include "framework.h"
-//#include "Food.h"
-//#include "Snake.h"
+//#include "framework.h"
 #include "Engine.h"
 
 
@@ -57,6 +54,7 @@ double accumulatedTime = 0.0;
 int deltaTime = 0;
 // 遊戲引擎
      Engine* engine;
+     Common* common;
 // 函數原型
 // void OpenFile(void);
 // void DrawBitmap();

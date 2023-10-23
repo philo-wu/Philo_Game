@@ -15,17 +15,21 @@
 
 // 遊戲相關
 #define CELL_SIZE 20
-#define GAME_SIZE 7
+#define GAME_SIZE 7 //遊戲區域分成7*7
+#define BET_SIZE  8 //遊戲區域分成7*7
 
 // 事件或指令相關
 #define ID_CUSTOM_COMMAND 1001
 #define WM_CUSTOM_GAMEEND WM_USER + 1
 #define WM_CUSTOM_GAMEWIN WM_USER + 2
 
+
 class Common
 {
 public:
     // 依據uri路徑讀取檔案並轉換成圖片
+    std::filesystem::path currentPath = std::filesystem::current_path(); // C++ 17
+
     static HRESULT LoadBitmapFromFile(
         ID2D1RenderTarget* pRenderTarget,
         IWICImagingFactory* pIWICFactory,
@@ -82,7 +86,7 @@ public:
             std::wstring path = (uri.c_str());
             path += L"\n圖檔不存在\n";
             OutputDebugString(path.c_str());
-            //MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
+            MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
             result = 1;
         }
 

@@ -6,9 +6,10 @@
 class Engine
 {
 public:
-	Engine();
+	Engine(Common* pcommon);
 	~Engine();
 
+	Common* common;
 	HRESULT InitializeD2D(HWND m_hwnd);
 	void KeyUp(WPARAM wParam);
 	void Reset();
@@ -35,7 +36,15 @@ private:
 
 	//Snake* snake;
 	//Food* food;	
-
+	ID2D1Bitmap* AppleBitmap;
+	ID2D1Bitmap* BarBitmap;
+	ID2D1Bitmap* BellBitmap;
+	ID2D1Bitmap* LemonBitmap;
+	ID2D1Bitmap* OrangeBitmap;
+	ID2D1Bitmap* SevenBitmap;
+	ID2D1Bitmap* StarBitmap;
+	ID2D1Bitmap* WatermelonBitmap;
+	json BettingTable;
 	int score;
 	int highScore;
 

@@ -298,8 +298,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
-    engine = new Engine();
-
+    common = new Common();
+    engine = new Engine(common);
     engine->InitializeD2D(hWnd);
     //InitD2D(hWnd);
 
