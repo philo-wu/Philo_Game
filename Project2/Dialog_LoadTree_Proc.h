@@ -263,18 +263,18 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     Map_treepoints.clear();
 
                     // 將地圖中符合元件拿出寫入正在繪製中
-                    auto it = Map_saveData_using.find(using_Main_TreeName);
+                    auto it = Map_saveData_using.find(using_Dialog_TreeName);
 
                     if (it != Map_saveData_using.end())
                     {
-                        for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"])
+                        for (const auto& coordinate : Map_saveData_using[using_Dialog_TreeName]["coordinates"])
                         {
                             POINT tree_Point;
                             tree_Point.x = coordinate["X"];
                             tree_Point.y = coordinate["Y"];
                             Map_treepoints.push_back(tree_Point);
                         }
-                        Map_saveData_using.erase(using_Main_TreeName);
+                        Map_saveData_using.erase(using_Dialog_TreeName);
                     }
 
                     Map_clickPoint = { 0 };
@@ -288,18 +288,20 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     IWICImagingFactory* pIWICFactory = NULL;
                     CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
                     drawFruitTree->treeBitmap = NULL;
-                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg);
+                    int errorcode;
+
+                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg , errorcode);
                     //OutputDebugString(L"水果位置\n");
                     //OutputDebugString(Load_Fruit_File_Path.c_str());
                     //OutputDebugString(L"\n");
+                    if (!Load_Fruit_File_Path.empty()) {
+                        drawFruitTree->fruitBitmap = NULL;
+                        Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg , errorcode);
+                        drawFruitTree->Set_fruit_Points(fruit_Points);
+                    }
 
-                    drawFruitTree->fruitBitmap = NULL;
-                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg);
-                    drawFruitTree->Set_fruit_Points(fruit_Points);
                     OutputDebugString(L"匯入結束\n");
-
                     pIWICFactory->Release();
-
                     InvalidateRect(hWnd, NULL, TRUE);
                 }
                 //else
@@ -363,11 +365,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_DATASAVE: // 儲存檔案
             {
-                if (fruit_Points.empty() || !Fruit_Bitmap)
-                {
-                    MessageBox(hwndDlg, L"無進行任何繪圖", L"錯誤", MB_OK);
-                    break;
-                }
+                //if (fruit_Points.empty() || !Fruit_Bitmap)
+                //{
+                //    MessageBox(hwndDlg, L"無進行任何繪圖", L"錯誤", MB_OK);
+                //    break;
+                //}
                 Dialog_is_Save = 1;
                 Dialog_Tree_has_newaction = 0;
 
@@ -390,10 +392,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 // 將 coordinatesArray 存入 JSON 中的 "coordinates"
                 fruit["coordinates"] = coordinatesArray;
-                fruit["image"] = Fruit_File_Name;
+                if (Fruit_File_Name != "")
+                    fruit["image"] = Fruit_File_Name;
 
                 save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
                 save_tree["image"] = Tree_File_Name;
+
                 save_tree["Fruit"] = fruit;
 
                 int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
@@ -454,11 +458,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             break;
             case ID_DATASAVE_QUICK: // 快速儲存_
             {
-                if (fruit_Points.empty() || !Fruit_Bitmap)
-                {
-                    MessageBox(hwndDlg, L"無進行任何繪圖", L"錯誤", MB_OK);
-                    break;
-                }
+                //if (fruit_Points.empty() || !Fruit_Bitmap)
+                //{
+                //    MessageBox(hwndDlg, L"無進行任何繪圖", L"錯誤", MB_OK);
+                //    break;
+                //}
                 Dialog_is_Save = 1;
                 Dialog_Tree_has_newaction = 0;
                 // SAVE
@@ -484,7 +488,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
                 save_tree["image"] = Tree_File_Name;
-                save_tree["Fruit"] = fruit;
+                if(Fruit_File_Name != "")
+                    save_tree["Fruit"] = fruit;
 
                 //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 //std::wstring wideName = converter.from_bytes(Save_Name);
@@ -651,18 +656,34 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     std::wstring Png = converter.from_bytes(stdStr);
                     std::wstring path = currentPath.wstring() + L"\\Images\\" + Png;
                     Tree_Bitmap = NULL;
-                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg);
+                    int errorcode;
+                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg , errorcode);
                     Load_Tree_File_Path = path;
+                    if (errorcode != 0) { //errorcode用來示警圖檔不存在的狀況
+                        std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
+                        MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                        Load_Tree_File_Path = L"";
+                    }
 
-                    stdStr = Fruit["image"];
-                    Fruit_File_Name = Fruit["image"];
-                    Png =converter.from_bytes(stdStr);
-                    path = currentPath.wstring() + L"\\Images\\" + Png;
-                    Fruit_Bitmap = NULL;
+                    if (Fruit["image"].empty()) { //排除存檔中無水果的狀況
+                        Fruit_Bitmap = NULL;
+                        Load_Fruit_File_Path = L"";
+                    }
+                    else {
+                        stdStr = Fruit["image"];
+                        Fruit_File_Name = Fruit["image"];
+                        Png = converter.from_bytes(stdStr);
+                        path = currentPath.wstring() + L"\\Images\\" + Png;
+                        Fruit_Bitmap = NULL;
 
-                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg);
-                    Load_Fruit_File_Path = path;
-
+                        Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg , errorcode);
+                        Load_Fruit_File_Path = path;
+                        if (errorcode != 0) {
+                            std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
+                            MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                            Load_Fruit_File_Path = L"";
+                        }
+                    }
                     if (pIWICFactory)
                         pIWICFactory->Release();
 
@@ -675,6 +696,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
                 }
                 pComboBox.Detach();
+                OutputDebugString(L"載入結束\n");
+
                 InvalidateRect(hwndDlg, NULL, TRUE);
 
             }

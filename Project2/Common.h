@@ -35,9 +35,11 @@ public:
                     UINT destinationWidth,
                     UINT destinationHeight,
                     ID2D1Bitmap** ppBitmap,
-                    HWND hwnd)
+                    HWND hwnd ,
+                    int& result)
     {
         // 初始化 WIC
+        result = 0;
         IWICBitmapDecoder* pDecoder = NULL;
         IWICBitmapFrameDecode* pSource = NULL;
         //IWICStream* pStream = NULL;
@@ -80,10 +82,10 @@ public:
         else
         {
             std::wstring path = (uri.c_str());
-            path += L"\n圖檔不存在";
+            path += L"\n圖檔不存在\n";
             OutputDebugString(path.c_str());
-            MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
-
+            //MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
+            result = 1;
         }
 
             // 釋放 WIC 資源
@@ -152,7 +154,10 @@ public:
             // 檔案是可寫的
             IWICImagingFactory* pIWICFactory = NULL;
             CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap , hWnd);
+            int errorcode;
+            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap , hWnd, errorcode);
+            if (errorcode != 0)
+                return;
             OutputDebugString(szFile);
             //將讀取路徑儲存
             ploadPath = szFile;
@@ -425,6 +430,37 @@ public:
         // 釋放 COM
         CoUninitialize();
     }
+
+    static std::wstring string2wstring(std::string str)
+    {
+        std::wstring result;
+
+        //製作緩衝區
+        int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
+        TCHAR* buffer = new TCHAR[len + 1]; 
+        
+        //多字節編碼轉換寬字節編碼
+        MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
+        //添加字符串结尾  
+        buffer[len] = '\0';             
+
+        result.append(buffer);
+        //删除緩衝區  
+        delete[] buffer;
+        return result;
+        
+        //另一個方法
+        //#include <comutil.h>  
+        //#pragma comment(lib, "comsuppw.lib")
+
+
+        //_bstr_t t = str.c_str();
+        //wchar_t* pwchar = (wchar_t*)t;
+        //result = pwchar;
+        //return result;
+
+    }
+
     //void 截圖(); //另一種截圖方式但未使用
     //{
     //HWND hwnd = hwndDlg;

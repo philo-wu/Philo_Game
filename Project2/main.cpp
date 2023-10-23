@@ -277,7 +277,20 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             //if(Dialog_is_fruit)// 1改成判斷要畫樹還是水果樹
                 //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawTree , Map_saveData , Map_treepoints);
             //else
-                engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree , Map_saveData_using, Tree_saveData,Map_treepoints);
+            //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+            //std::wstring wstr = converter.from_bytes(using_MapName);
+            //OutputDebugString(L"測試\n");
+
+            //OutputDebugString(wstr.c_str());
+            //OutputDebugString(L"\n");
+
+            //wstr = converter.from_bytes(using_Main_TreeName);
+            //OutputDebugString(wstr.c_str());
+            //OutputDebugString(L"\n");
+
+                engine->Draw(hWnd, Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree ,
+                    Map_saveData_using, Tree_saveData , Map_treepoints ,
+                    using_MapName , using_Main_TreeName);
                 
             EndPaint(hWnd, &ps);
         }

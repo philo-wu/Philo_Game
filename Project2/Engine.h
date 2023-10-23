@@ -13,11 +13,14 @@ public:
 	void Logic(double elapsedTime);																			//種樹無邏輯 保留架構
 	void ClearDraw(HWND hWnd);
 
-	D2D1_RECT_F Rect_functionColumn = D2D1::RectF(0, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);				//視窗上方功能列
+	D2D1_RECT_F Rect_functionColumn		  = D2D1::RectF(0, 0, 230, FUNCTION_COLUMN_HEIGHT);					//視窗上方功能列 //230為兩個按鈕所使用寬度
+	D2D1_RECT_F Rect_functionColumn_right = D2D1::RectF(230, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);	//視窗上方功能列右側空白
 	D2D1_RECT_F Rect_drawingArea = D2D1::RectF(0, FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);		//視窗下方繪圖區域
 
-	HRESULT Draw(POINT point ,int OriginalSize,int pxSize, FruitTree* tree ,
-		json Map_saveData, json Tree_saveData,std::vector<POINT> Map_treepoints);
+	HRESULT Draw(HWND hWnd, POINT point ,int OriginalSize,int pxSize, FruitTree* tree ,
+		json Map_saveData, json Tree_saveData,
+		std::vector<POINT> Map_treepoints,
+		std::string using_MapName, std::string using_Main_TreeName);
 	bool frist_start = 1;
 	bool do_clear = 1;
 	bool do_drawMap = 0;

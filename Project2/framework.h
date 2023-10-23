@@ -9,9 +9,12 @@
 #include <CommCtrl.h>/*
 #include <commdlg.h>  */      //讀取檔案
 //#include <wincodec.h>
-//#include <locale>
+#include <locale>
 #include <iostream>/*
 #include <shobjidl.h>*/
+#include <charconv>
+//#include <comutil.h>  
+//#pragma comment(lib, "comsuppw.lib")
 
 
 //#include <stdlib.h>
@@ -22,6 +25,7 @@
 //#include <math.h>
 //#include <vector>
 #include <codecvt>
+#include <locale>
 
 
 #include <ctime>

@@ -32,6 +32,23 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_INITDIALOG:
     {
         Common::InitD2D(hwndDlg, pD2DFactory, &MapMenu_RenderTarget);
+        if (Tree_saveData.empty()) {
+            std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+            std::ifstream inFile(path);
+            if (!inFile.is_open()) {
+                //std::cerr << "無法打開 JSON 文件" << std::endl;
+                //OutputDebugString(L"JSON開啟成功\n");
+                MessageBox(hWnd, L"存檔讀取失敗", L"錯誤", MB_OK);
+
+                return 1;
+            }
+            //else
+                //OutputDebugString(L"JSON開啟成功\n");
+            json Data;
+            inFile >> Data;
+            inFile.close();
+            Tree_saveData = Data;
+        }
 
         std::string path = currentPath.string() + "/Images/Map_saveData.json";
         std::ifstream inFile(path);
@@ -223,7 +240,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideSaveName = converter.from_bytes(Save_Name);
+                std::wstring wideSaveName = converter.from_bytes(using_MapName);
                 //判斷是否有存在同名選項
                 int index = pComboBox.FindString(-1, wideSaveName.c_str());
                 if (index == CB_ERR) {
@@ -325,18 +342,45 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 //清理陣列
                 Map_treepoints.clear();
                 auto it = Map_saveData_using.find(using_Main_TreeName);
-
                 // 將地圖中符合元件拿出寫入正在繪製中
-                if (it != Map_saveData_using.end())
-                { 
-                    for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"])
-                    {
+                if (it != Map_saveData_using.end()) { 
+                    for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"]) {
                         POINT tree_Point;
                         tree_Point.x = coordinate["X"];
                         tree_Point.y = coordinate["Y"];
                         Map_treepoints.push_back(tree_Point);
                     }
                     Map_saveData_using.erase(using_Main_TreeName);
+                }
+                OutputDebugString(L"檢查樹木\n");
+                if (Tree_saveData.empty()) {
+                    ;
+                }
+                else {
+                    //for (const auto& tree : Map_saveData_using.items()) {// 檢查所有種類的樹
+                    //    std::string key = tree.key();
+                    //    auto it = Tree_saveData.find(key);
+                    //    if (it == Tree_saveData.end()) {
+                    //        std::wstring str = converter.from_bytes(key);
+                    //        std::wstring str1 = L"無法在元件存檔找到" + str;
+                    //        MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                    //        Map_saveData_using.erase(key);
+                    //    }
+                    //} 
+                    // 上面 erase以後 會超出容範圍
+                    for (auto it = Map_saveData_using.begin(); it != Map_saveData_using.end();) {
+                        std::string key = it.key();
+                        auto treeIt = Tree_saveData.find(key);
+                        if (treeIt == Tree_saveData.end()) {
+                            std::wstring str = converter.from_bytes(key);
+                            std::wstring str1 = L"無法在元件存檔找到" + str;
+                            MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                            it = Map_saveData_using.erase(it); // 更新迭代器
+                        }
+                        else {
+                            ++it; // 移到下一個元素
+                        }
+                    }
                 }
             }
             else
@@ -355,10 +399,12 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         {
             if (!Map_treepoints.empty())
                 Map_treepoints.pop_back();
+            else if (using_Main_TreeName.empty())
+                MessageBox(hwndDlg, L"未選擇元件", L"錯誤", MB_OK);
             else
                 MessageBox(hwndDlg, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
             Map_clickPoint = { 0 };
-            InvalidateRect(hWnd, NULL, TRUE);
+            InvalidateRect(hWnd, NULL, FALSE);
         }
         break;
         }
