@@ -3,7 +3,7 @@
 #include "Direct2D.h"
 
 // 視窗相關
-#define SCREEN_WIDTH  1024  
+#define SCREEN_WIDTH  720  
 #define SCREEN_HEIGHT 980
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  200
@@ -11,6 +11,7 @@
 
 // 遊戲相關
 #define CELL_SIZE 20
+#define GAME_SIZE 7
 
 // 事件或指令相關
 #define ID_CUSTOM_COMMAND 1001

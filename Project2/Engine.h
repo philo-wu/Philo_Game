@@ -19,7 +19,7 @@ public:
 	std::chrono::system_clock::time_point lastTime;
 
 	int run_second = 10; //每圈執行秒數 
-
+	int position ; //當前運行位置
 
 	HRESULT Draw();
 	bool playing = 0;

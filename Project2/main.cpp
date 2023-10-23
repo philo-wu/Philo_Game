@@ -513,7 +513,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             WCHAR Str[64];
             swprintf_s(Str, L"%s", L"超級小瑪莉777");
-            TextOut(hdc, 310, 100, Str, wcslen(Str));
+            TextOut(hdc, SCREEN_WIDTH/2 -210, 100, Str, wcslen(Str));
 
             // 釋放字體資源
             DeleteObject(hFont);
