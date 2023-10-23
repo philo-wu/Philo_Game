@@ -28,6 +28,10 @@
 #include "Common.h"
 #include "nlohmann/json.hpp"
 #include <fstream>
+// 移動到Common
+//#include <atlimage.h>  
+//#include <shobjidl.h>
+//#include <filesystem>
 
 using json = nlohmann::json;
 
