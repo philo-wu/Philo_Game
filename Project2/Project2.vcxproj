@@ -160,7 +160,6 @@
     <ClInclude Include="Direct2D.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Fruit.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="mian.h" />
     <ClInclude Include="resource.h" />

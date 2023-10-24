@@ -2,6 +2,8 @@
 #include "Dialog_LoadTree_Proc.h"
 
 ID2D1HwndRenderTarget* MapMenu_RenderTarget;
+bool Dialog_MapMenu_is_open = false;
+
 std::string AnsiToUtf8(const std::string& ansiStr)
 {
     int wstrLen = MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, nullptr, 0);
@@ -31,15 +33,16 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     switch (uMsg) {
     case WM_INITDIALOG:
     {
+        OutputDebugString(L"地圖選單開啟\n");
+        Dialog_MapMenu_is_open = 1;
         Common::InitD2D(hwndDlg, pD2DFactory, &MapMenu_RenderTarget);
         if (Tree_saveData.empty()) {
-            std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+            std::string path = currentPath.parent_path().string() + "/種樹/Images/Tree_saveData.json";
             std::ifstream inFile(path);
             if (!inFile.is_open()) {
                 //std::cerr << "無法打開 JSON 文件" << std::endl;
                 //OutputDebugString(L"JSON開啟成功\n");
                 MessageBox(hWnd, L"存檔讀取失敗", L"錯誤", MB_OK);
-
                 return 1;
             }
             //else
@@ -49,8 +52,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             inFile.close();
             Tree_saveData = Data;
         }
+        std::string path = currentPath.parent_path().string() + "/種樹/Images/Map_saveData.json";
 
-        std::string path = currentPath.string() + "/Images/Map_saveData.json";
         std::ifstream inFile(path);
         if (!inFile.is_open()) {
             //std::cerr << "無法打開 JSON 文件" << std::endl;
@@ -146,15 +149,37 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             Map_treepoints.clear();
             // 將 coordinatesArray 存入 JSON 中的 "coordinates"
             tree["coordinates"] = coordinatesArray;
+
             // 將未儲存元件使用中地圖
             Map_saveData_using[using_Dialog_TreeName] = tree;
             // 將使用中地圖寫入存檔
             Map_saveData[Save_Name] = Map_saveData_using;
+
+            Map_Remarks = Save_Remarks;
+            Map_saveData_using["remarks"] = Map_Remarks;
+            std::wstring widestr;
+            std::string stdStr;
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
+            if (!Map_saveData_using["remarks"].empty()) {
+                stdStr = Map_saveData_using["remarks"];
+                widestr = converter.from_bytes(stdStr);
+            }
+            else {
+                widestr = L"";
+            }
+            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+            SetWindowText(hStatic, widestr.c_str());
+
             using_MapName = Save_Name;
             std::string jsonString = Map_saveData.dump(4);
 
             // 將 JSON 字串保存到文件
-            std::string path = currentPath.string() + "/Images/Map_saveData.json";
+            std::string path = currentPath.parent_path().string() + "/種樹/Images/Map_saveData.json";
+            //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+            //std::wstring widepath = converter.from_bytes(path);
+            //OutputDebugString(widepath.c_str());
+
             std::ofstream outFile(path);
             if (outFile.is_open())
             {
@@ -173,12 +198,17 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     // 相同的選項不存在，可以新增
                     pComboBox.AddString(wideSaveName.c_str());
                 }
+                index = pComboBox.FindString(-1, wideSaveName.c_str());
+                pComboBox.SetCurSel(index);
+
                 pComboBox.Detach();
 
             }
             else
             {
-                MessageBox(hwndDlg, L"無法打開文件保存JSON", L"錯誤", MB_OK);
+
+
+                MessageBox(hwndDlg, L"無法另存新檔案", L"地圖選單", MB_OK);
             }
 
 
@@ -224,11 +254,29 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             // 將未儲存元件使用中地圖
             Map_saveData_using[using_Dialog_TreeName] = tree;
             // 將使用中地圖寫入存檔
+
+            Map_Remarks = Save_Remarks;
+            Map_saveData_using["remarks"] = Map_Remarks;
+
+            std::wstring widestr;
+            std::string stdStr;
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
+            if (!Map_saveData_using["remarks"].empty()) {
+                stdStr = Map_saveData_using["remarks"];
+                widestr = converter.from_bytes(stdStr);
+            }
+            else {
+                widestr = L"";
+            }
+            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+            SetWindowText(hStatic, widestr.c_str());
+
             Map_saveData[using_MapName] = Map_saveData_using;
             std::string jsonString = Map_saveData.dump(4);
 
             // 將 JSON 字串保存到文件
-            std::string path = currentPath.string() + "/Images/Map_saveData.json";
+            std::string path = currentPath.parent_path().string() + "/種樹/Images/Map_saveData.json";
             std::ofstream outFile(path);
             if (outFile.is_open())
             {
@@ -247,6 +295,9 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     // 相同的選項不存在，可以新增
                     pComboBox.AddString(wideSaveName.c_str());
                 }
+                index = pComboBox.FindString(-1, wideSaveName.c_str());
+                pComboBox.SetCurSel(index);
+
                 pComboBox.Detach();
 
             }
@@ -291,7 +342,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 std::string jsonString = Map_saveData.dump(4);
                 // 將 JSON 字串保存到文件
-                std::string path = currentPath.string() + "/Images/Map_saveData.json";
+                std::string path = currentPath.parent_path().string() + "/種樹/Images/Map_saveData.json";
                 std::ofstream outFile(path);
                 if (outFile.is_open())
                 {
@@ -332,12 +383,14 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 std::wstring wideselectedText(selectedText);
                 std::string stdStr = converter.to_bytes(wideselectedText);
+                std::wstring widestr;
 
                 //OutputDebugString(selectedText);
                 // 
                 //讀取存檔
                 using_MapName = stdStr;
                 Map_saveData_using = Map_saveData[using_MapName];
+
 
                 //清理陣列
                 Map_treepoints.clear();
@@ -352,6 +405,19 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     }
                     Map_saveData_using.erase(using_Main_TreeName);
                 }
+                // 顯示備註
+                if (!Map_saveData_using["remarks"].empty()) {
+                    Map_Remarks = Map_saveData_using["remarks"];
+                    widestr = converter.from_bytes(Map_Remarks);
+
+                }
+                else {
+                    widestr = L"";
+                }
+                HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+                SetWindowText(hStatic, widestr.c_str());
+
+
                 OutputDebugString(L"檢查樹木\n");
                 if (Tree_saveData.empty()) {
                     ;
@@ -370,10 +436,15 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     // 上面 erase以後 會超出容範圍
                     for (auto it = Map_saveData_using.begin(); it != Map_saveData_using.end();) {
                         std::string key = it.key();
+                        if (key == "remarks") { 
+                            ++it;
+                            continue; 
+                        }
                         auto treeIt = Tree_saveData.find(key);
                         if (treeIt == Tree_saveData.end()) {
                             std::wstring str = converter.from_bytes(key);
-                            std::wstring str1 = L"無法在元件存檔找到" + str;
+                            std::wstring str1 = L"無法在元件存檔找到" + str + L"\n請到元件存檔重建," + str + L"\n再讀取一次地圖存檔即可." ;
+                            str1 += L"\n若無重建元件,直接存檔地圖,\n則會將" + str +L"從地圖存檔中刪除";
                             MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
                             it = Map_saveData_using.erase(it); // 更新迭代器
                         }
@@ -425,7 +496,9 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     break;
     case WM_DESTROY:
     {
-
+        MapMenu_RenderTarget->Release();
+        Dialog_MapMenu_is_open = 0;
+        OutputDebugString(L"地圖選單關閉\n");
     }
     break;
     case WM_ERASEBKGND:

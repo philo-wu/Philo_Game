@@ -45,7 +45,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         L"WindowClass1",                 // 視窗類別的名字
         L"種樹得樹",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
-        510,                             // 視窗的x座標
+        625,                             // 視窗的x座標
         100,                             // 視窗的y座標
         wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
         wr.bottom - wr.top,              // 視窗的高度
@@ -62,7 +62,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 設定並初始化 Direct
     engine = new Engine();
     engine->phWnd = hWnd;
-    drawTree = new Tree(L"1");
+    //drawTree = new Tree(L"1");
+    OutputDebugString(L"drawFruitTree2\n");
+
+    drawFruitTree2 = new FruitTree(L"3", L"apple");
+    OutputDebugString(L"drawFruitTree\n");
+
     drawFruitTree = new FruitTree(L"2",L"apple");
     engine->InitializeD2D(hWnd); //繪製背景
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
@@ -214,7 +219,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 {
                     if (Dialog_LoadTree_is_open)
                     {
-                        MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
+                        MessageBox(hWnd, L"繪畫選單已打開", L"錯誤", MB_OK);
                         break;
                     }
                     Dialog_is_fruit = 1;
@@ -230,8 +235,12 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                     //OutputDebugString(filePath.c_str());
                     //Common::SaveWindowToImage(hWnd, filePath.c_str(), { 0,FUNCTION_COLUMN_HEIGHT }, SCREEN_WIDTH,SCREEN_HEIGHT - FUNCTION_COLUMN_HEIGHT);
-
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_RANKLIST), NULL, Dialog_MapMenu_Proc);
+                    if (Dialog_MapMenu_is_open)
+                    {
+                        MessageBox(hWnd, L"地圖選單已打開", L"錯誤", MB_OK);
+                        break;
+                    }
+                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_MAPMENU), NULL, Dialog_MapMenu_Proc);
 
                 }
                 break;
@@ -302,7 +311,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             int yPos = GET_Y_LPARAM(lParam);
             if (xPos >= 0 
                 && yPos >= FUNCTION_COLUMN_HEIGHT
-                && drawFruitTree->treeBitmap)
+                && drawFruitTree->Get_fruitBitmap())
             {
                 if (xPos + fixed_px_fruit > SCREEN_WIDTH)
                     xPos = SCREEN_WIDTH - fixed_px_fruit;

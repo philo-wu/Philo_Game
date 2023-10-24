@@ -50,9 +50,6 @@
     <ClInclude Include="Dialog_LoadTree_Proc.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="Fruit.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="Dialog_MapMenu_Proc.h">
       <Filter>標頭檔</Filter>
     </ClInclude>

@@ -148,6 +148,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
     for (auto& tree : Map_saveData.items()) {
         //OutputDebugString(L"迴圈開始\n");
         std::string treeName = tree.key();
+        if (treeName == "remarks") continue;
 
         //std::wstring wideTreeName(treeName.begin(), treeName.end());
         //LPCWSTR treeNameCStr = wideTreeName.c_str();
@@ -178,7 +179,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
                         ID2D1Bitmap* fruit_Bitmap;
                         //水果圖片:  Tree_saveData[treeName]["Fruit"]["image"]
                         image = converter.from_bytes(Tree_saveData[treeName]["Fruit"]["image"]);
-                        path = currentPath.wstring() + L"\\Images\\" + image;
+                        path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + image;
                         Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd , errorcode);
                         if (errorcode != 0) {
                             std::wstring str1 = path + L"圖檔不存在" + L"\n";
@@ -242,19 +243,19 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
     );
     // 再繪製正在當前元件
     //OutputDebugString(L"繪製未儲存元件\n");
-    if (tree->treeBitmap) {
+    if (tree->Get_treeBitmap()) {
         for (const POINT& tree_Point : Map_treepoints){
             // 繪製樹
-            if (tree->treeBitmap)
-                m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
+            if (tree->Get_treeBitmap())
+                m_pRenderTarget->DrawBitmap(tree->Get_treeBitmap(), D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
             // 水果座標
             for (const POINT& coordinate : tree->Get_fruit_Points())
             {
                 UINT drawpoint_x = tree_Point.x + coordinate.x* scalingRatio;
                 UINT drawpoint_y = tree_Point.y + coordinate.y* scalingRatio;
                 // 繪製水果
-                if(tree->fruitBitmap)
-                    m_pRenderTarget->DrawBitmap(tree->fruitBitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + scalingPx, drawpoint_y + scalingPx));
+                if(tree->Get_fruitBitmap())
+                    m_pRenderTarget->DrawBitmap(tree->Get_fruitBitmap(), D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + scalingPx, drawpoint_y + scalingPx));
 
             }
         }
