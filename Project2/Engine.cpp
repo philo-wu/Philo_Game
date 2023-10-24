@@ -68,7 +68,7 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
     // 將讀取所有圖檔
     std::wstring path = common->currentPath.wstring() + L"\\Images\\Apple.png";
     Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &AppleBitmap,m_hwnd, errorcode);
-    if (errorcode != 0) {
+    if (errorcode != 0) { //TODO::error處理
         ;
     }
     path = common->currentPath.wstring() + L"\\Images\\Bar.png";
@@ -106,7 +106,11 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
     if (errorcode != 0) {
         ;
     }
-
+    path = common->currentPath.wstring() + L"\\Images\\Background.png";
+    Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BackgroundBitmap, m_hwnd, errorcode);
+    if (errorcode != 0) {
+        ;
+    }
     // 讀取倍率表
     std::string path1 = common->currentPath.string() + "/Images/倍率表.json";
     std::ifstream inFile(path1);
@@ -288,11 +292,29 @@ HRESULT Engine::Draw()
     D2D1_RECT_F bet_rectangle = D2D1::RectF(bet_x, bet_y, bet_x + bet_width *8, bet_y+200);
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
     m_pRenderTarget->FillRectangle(&bet_rectangle, pBrush);
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
 
     for (int i = 0; i < BET_SIZE; ++i) { //下注區域為8種選項
-        D2D1_RECT_F grid_rectangle = D2D1::RectF(bet_x + bet_width * (i+1)-1, bet_y,
-            bet_x + bet_width *(i + 1), bet_y + 200);
+
+
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBrush);
+        D2D1_RECT_F grid_top_rectangle = D2D1::RectF(bet_x + bet_width * (i) , bet_y ,
+            bet_x + bet_width * (i + 1), bet_y + 50);
+        m_pRenderTarget->FillRectangle(&grid_top_rectangle, pBrush);
+
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
+        D2D1_RECT_F grid_png_rectangle = D2D1::RectF(bet_x + bet_width * (i) , bet_y + 50,
+            bet_x + bet_width * (i + 1), bet_y + 124);
+        m_pRenderTarget->FillRectangle(&grid_png_rectangle, pBrush);
+
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+        D2D1_RECT_F grid_bottom_rectangle = D2D1::RectF(bet_x + bet_width * (i) , bet_y + 124,
+            bet_x + bet_width * (i + 1), bet_y + 200);
+        m_pRenderTarget->FillRectangle(&grid_bottom_rectangle, pBrush);
+
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
+
+        D2D1_RECT_F grid_rectangle = D2D1::RectF(bet_x + bet_width * (i + 1) - 1, bet_y,
+            bet_x + bet_width * (i + 1), bet_y + 200);
         m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
 
         if (1) { //TODO 判斷是否旋轉到此號碼

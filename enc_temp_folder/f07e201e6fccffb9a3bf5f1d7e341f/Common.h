@@ -85,7 +85,7 @@ public:
         {
             std::wstring path = uri;
             path += L"\n圖檔不存在\n";
-            std::wstring path1 =  L"圖檔不存在" ;
+            std::wstring path1 =  L"圖檔不存" ;
             wprintf(L"%s", path1.c_str());
             OutputDebugString(path1.c_str());
 

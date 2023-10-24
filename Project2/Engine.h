@@ -44,6 +44,9 @@ private:
 	ID2D1Bitmap* SevenBitmap;
 	ID2D1Bitmap* StarBitmap;
 	ID2D1Bitmap* WatermelonBitmap;
+
+	ID2D1Bitmap* BackgroundBitmap;
+
 	json BettingTable;
 	int score;
 	int highScore;
