@@ -172,8 +172,18 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
             
         }
+        HWND hwndStatic = CreateWindowEx(0, L"STATIC", L"水果圖片",
+            WS_CHILD | WS_VISIBLE | SS_NOTIFY,
+            10, 49, 34, 8, hwndDlg,
+            (HMENU)IDC_STATIC,
+            GetModuleHandle(NULL), NULL);
 
-        std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+        if (hwndStatic)
+        {
+            // 設置靜態控制透明
+            SendMessage(hwndStatic, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)GetStockObject(NULL_BRUSH));
+        }
+        std::string path ="../種樹/Images/Tree_saveData.json";
         std::ifstream inFile(path);
         if (!inFile.is_open()) {
             //std::cerr << "無法打開 JSON 文件" << std::endl;
@@ -219,11 +229,19 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     }
     break;
     case WM_COMMAND:
+    {
+        if (LOWORD(wParam) == IDC_COMBO1 && HIWORD(wParam) == CBN_SELCHANGE) //偵測Combobox改變
+        {
+            // 在這裡處理選擇改變後的邏輯
+            // 直接呼叫LOADSAVE
+            SendMessage(hwndDlg, WM_COMMAND, ID_DATALOAD, 0); 
+
+        }
         switch (LOWORD(wParam))
         {
             case IDOK: //匯入主選單
             {
-                
+
                 //OutputDebugString(L"儲存圖片\n");
                 //if (!Dialog_is_fruit)//先處理一般樹
                 {
@@ -290,13 +308,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     drawFruitTree->treeBitmap = NULL;
                     int errorcode;
 
-                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path , 0, 0, &drawFruitTree->treeBitmap , hwndDlg , errorcode);
+                    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path, 0, 0, &drawFruitTree->treeBitmap, hwndDlg, errorcode);
                     //OutputDebugString(L"水果位置\n");
                     //OutputDebugString(Load_Fruit_File_Path.c_str());
                     //OutputDebugString(L"\n");
                     if (!Load_Fruit_File_Path.empty()) {
                         drawFruitTree->fruitBitmap = NULL;
-                        Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg , errorcode);
+                        Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->fruitBitmap, hwndDlg, errorcode);
                         drawFruitTree->Set_fruit_Points(fruit_Points);
                     }
 
@@ -332,7 +350,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             case ID_LOADTREE: // 選擇樹木
             {
                 std::wstring filename;
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_Tree_File_Path, filename);
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_Tree_File_Path, filename, currentPath);
                 if (!filename.empty())
                 {
 
@@ -353,7 +371,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     break;
                 }
                 std::wstring filename;
-                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename);
+                Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename, currentPath);
                 if (!filename.empty())
                 {
                     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -379,9 +397,9 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 // 創建一個 JSON array，用於存放 coordinates
                 json coordinatesArray;
                 // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-                for (const POINT& point : fruit_Points) 
+                for (const POINT& point : fruit_Points)
                 {
-                    json pointObject = 
+                    json pointObject =
                     {
                         {"X", point.x},
                         {"Y", point.y}
@@ -425,9 +443,9 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 std::string jsonString = Tree_saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
-                std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+                std::string path = currentPath.string() + "../種樹/Images/Tree_saveData.json";
                 std::ofstream outFile(path);
-                if (outFile.is_open()) 
+                if (outFile.is_open())
                 {
                     outFile << jsonString;
                     outFile.close();
@@ -447,7 +465,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     pComboBox.Detach();
 
                 }
-                else 
+                else
                 {
                     MessageBox(hwndDlg, L"無法打開文件保存JSON", L"錯誤", MB_OK);
                 }
@@ -488,7 +506,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
                 save_tree["image"] = Tree_File_Name;
-                if(Fruit_File_Name != "")
+                if (Fruit_File_Name != "")
                     save_tree["Fruit"] = fruit;
 
                 //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -521,7 +539,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 std::string jsonString = Tree_saveData.dump(4);
 
                 // 將 JSON 字串保存到文件
-                std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+                std::string path = currentPath.string() + "../種樹/Images/Tree_saveData.json";
                 std::ofstream outFile(path);
                 if (outFile.is_open())
                 {
@@ -586,7 +604,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                     std::string jsonString = Tree_saveData.dump(4);
                     // 將 JSON 字串保存到文件
-                    std::string path = currentPath.string() + "/Images/Tree_saveData.json";
+                    std::string path = currentPath.string() + "../種樹/Images/Tree_saveData.json";
                     std::ofstream outFile(path);
                     if (outFile.is_open())
                     {
@@ -615,7 +633,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
                 int selectedIndex = pComboBox.GetCurSel();
 
-                if (selectedIndex != CB_ERR) 
+                if (selectedIndex != CB_ERR)
                 {
                     // 有項目被選中
                     //break; // 尚未開始做
@@ -654,10 +672,10 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                     stdStr = save_tree["image"];
                     Tree_File_Name = save_tree["image"];
                     std::wstring Png = converter.from_bytes(stdStr);
-                    std::wstring path = currentPath.wstring() + L"\\Images\\" + Png;
+                    std::wstring path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + Png;
                     Tree_Bitmap = NULL;
                     int errorcode;
-                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap , hwndDlg , errorcode);
+                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap, hwndDlg, errorcode);
                     Load_Tree_File_Path = path;
                     if (errorcode != 0) { //errorcode用來示警圖檔不存在的狀況
                         std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
@@ -673,10 +691,10 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                         stdStr = Fruit["image"];
                         Fruit_File_Name = Fruit["image"];
                         Png = converter.from_bytes(stdStr);
-                        path = currentPath.wstring() + L"\\Images\\" + Png;
+                        path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + Png;
                         Fruit_Bitmap = NULL;
 
-                        Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg , errorcode);
+                        Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg, errorcode);
                         Load_Fruit_File_Path = path;
                         if (errorcode != 0) {
                             std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
@@ -689,7 +707,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
 
                 }
-                else 
+                else
                 {
                     // 沒有項目被選中
                     //OutputDebugString(L"沒有項目被選中\n");
@@ -715,6 +733,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             }
             break;
         }
+    }
         break;
     case WM_LBUTTONDOWN:
         // 處理滑鼠左鍵
@@ -827,6 +846,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         }
     break;
     case WM_ERASEBKGND:
+    break;
+
+    case WM_CTLCOLORSTATIC:
+    {
+        HDC hdcStatic = (HDC)wParam;
+        SetBkColor(hdcStatic, RGB(255, 0, 0)); // 設置背景顏色
+    }
     break;
     }
 

@@ -240,7 +240,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 {
                     std::wstring  NULLPATH ;//不保存檔案路徑
                     std::wstring  fileName ;
-                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, fileName);
+                    Common::OpenFile(hWnd, engine->m_pRenderTarget, &engine->Map_Bitmap, NULLPATH, fileName , currentPath);
                     if (fileName.empty())
                         break;
                     engine->do_clear = 1;

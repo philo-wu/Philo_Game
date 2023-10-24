@@ -2,6 +2,7 @@
 #include <wincodec.h>
 #include "Direct2D.h"
 //#include <Shlobj.h>
+#include <filesystem>
 
 // 視窗相關
 #define SCREEN_WIDTH  1024  
@@ -27,16 +28,19 @@
 class Common
 {
 public:
-    // 讀取檔案並轉換成圖片
+    // 依據uri路徑讀取檔案並轉換成圖片
+    Common() {
+    }
+    ~Common();
     static HRESULT LoadBitmapFromFile(
-                    ID2D1RenderTarget* pRenderTarget,
-                    IWICImagingFactory* pIWICFactory,
-                    std::wstring uri,
-                    UINT destinationWidth,
-                    UINT destinationHeight,
-                    ID2D1Bitmap** ppBitmap,
-                    HWND hwnd ,
-                    int& result)
+        ID2D1RenderTarget* pRenderTarget,
+        IWICImagingFactory* pIWICFactory,
+        std::wstring uri,
+        UINT destinationWidth,
+        UINT destinationHeight,
+        ID2D1Bitmap** ppBitmap,
+        HWND hwnd,
+        int& result)
     {
         // 初始化 WIC
         result = 0;
@@ -72,23 +76,23 @@ public:
                 WICBitmapPaletteTypeMedianCut
             );
 
-             //創建 D2D 位圖
-                hr = pRenderTarget->CreateBitmapFromWicBitmap(
-                    pConverter,
-                    NULL,
-                    ppBitmap
-                );
+            //創建 D2D 位圖
+            hr = pRenderTarget->CreateBitmapFromWicBitmap(
+                pConverter,
+                NULL,
+                ppBitmap
+            );
         }
         else
         {
             std::wstring path = (uri.c_str());
             path += L"\n圖檔不存在\n";
             OutputDebugString(path.c_str());
-            //MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
+            MessageBox(hwnd, path.c_str(), L"錯誤", MB_OK);
             result = 1;
         }
 
-            // 釋放 WIC 資源
+        // 釋放 WIC 資源
         if (pDecoder)
             pDecoder->Release();
         if (pSource)
@@ -124,11 +128,13 @@ public:
         return hr;
     }
 
+    // 以檔案總管取得檔案路徑,並寫入Bitmap
     static void OpenFile(HWND hWnd,
-                        ID2D1RenderTarget* pRenderTarget, 
-                        ID2D1Bitmap** ppBitmap, 
-                        std::wstring& ploadPath , 
-                        std::wstring& filename)
+        ID2D1RenderTarget* pRenderTarget,
+        ID2D1Bitmap** ppBitmap,
+        std::wstring& ploadPath,
+        std::wstring& filename,
+        std::filesystem::path currentPath)
     {
         //OutputDebugString(L"讀取檔案\n");
 
@@ -141,11 +147,14 @@ public:
         ofn.lpstrFile = szFile;
         ofn.lpstrFile[0] = '\0';
         ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-        ofn.lpstrFilter = L"All Files\0*.*\0";
+        ofn.lpstrFilter = L"Image Files\0*.bmp;*.jpg;*.png\0";
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
         ofn.nMaxFileTitle = 0;
-        ofn.lpstrInitialDir = NULL;
+        std::wstring str = currentPath.wstring() + L"\\..\\種樹\\Images\\";
+        //OutputDebugString(L"\n檔案讀取預設路徑\n");
+        //OutputDebugString(str.c_str());
+        ofn.lpstrInitialDir = str.c_str();
         ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         // TODO:判斷副檔名
 
@@ -155,9 +164,12 @@ public:
             IWICImagingFactory* pIWICFactory = NULL;
             CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
             int errorcode;
-            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap , hWnd, errorcode);
-            if (errorcode != 0)
+            LoadBitmapFromFile(pRenderTarget, pIWICFactory, szFile, 0, 0, ppBitmap, hWnd, errorcode);
+            if (errorcode != 0) {
+                if (pIWICFactory)
+                    pIWICFactory->Release();
                 return;
+            }
             OutputDebugString(szFile);
             //將讀取路徑儲存
             ploadPath = szFile;
@@ -172,7 +184,7 @@ public:
         }
     }
     //用以製作32位元bitmap
-    static HBITMAP CreateDIBSectionBitmap(int width, int height) 
+    static HBITMAP CreateDIBSectionBitmap(int width, int height)
     {
         BITMAPINFO bmi;
         ZeroMemory(&bmi, sizeof(BITMAPINFO));
@@ -191,9 +203,9 @@ public:
     //截圖視窗畫面到檔案中
     static void SaveWindowToImage(
         HWND hwnd,
-        const wchar_t* filePath ,
-        POINT point ,
-        int RECTwidth ,
+        const wchar_t* filePath,
+        POINT point,
+        int RECTwidth,
         int RECTheight
     )
     {
@@ -437,18 +449,18 @@ public:
 
         //製作緩衝區
         int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
-        TCHAR* buffer = new TCHAR[len + 1]; 
-        
+        TCHAR* buffer = new TCHAR[len + 1];
+
         //多字節編碼轉換寬字節編碼
         MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
         //添加字符串结尾  
-        buffer[len] = '\0';             
+        buffer[len] = '\0';
 
         result.append(buffer);
         //删除緩衝區  
         delete[] buffer;
         return result;
-        
+
         //另一個方法
         //#include <comutil.h>  
         //#pragma comment(lib, "comsuppw.lib")

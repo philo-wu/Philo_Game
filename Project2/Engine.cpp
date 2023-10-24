@@ -157,7 +157,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
             ID2D1Bitmap* tree_Bitmap;
             //樹圖片: Tree_saveData[treeName]["image"]
             std::wstring image = converter.from_bytes(Tree_saveData[treeName]["image"]);
-            std::wstring path = currentPath.wstring() + L"\\Images\\" + image;
+            std::wstring path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + image;
             int errorcode;
             Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd , errorcode);
             if (errorcode != 0) {
