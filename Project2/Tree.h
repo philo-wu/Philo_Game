@@ -3,7 +3,6 @@
 #include "framework.h"
 #include "Direct2D.h"
 
-
 // 父類別 Images
 class Images {
 protected:
@@ -56,7 +55,7 @@ public:
 class Tree : public Images {
 protected:
     std::wstring using_Dialog_TreeName;
-    POINT tree_Point;
+    dtawPoint tree_Point;
 public:
     Tree(const std::wstring name) : using_Dialog_TreeName(name) ,Images() { }
 
@@ -65,7 +64,7 @@ public:
 // 子類別 FruitTree
 class FruitTree : public Tree  {
 private:
-    std::vector<POINT> fruit_Points;
+    std::vector<dtawPoint> fruit_Points;
     std::wstring  fruit_Name;
 
 public:
@@ -75,10 +74,10 @@ public:
         // 在這裡可以使用基類的資訊進行初始化
         // 例如，可以從 Tree 和 Fruit 中獲取相關資訊來初始化 FruitTree
     }
-    void Set_fruit_Points(std::vector<POINT> Points) { 
+    void Set_fruit_Points(std::vector<dtawPoint> Points) { 
         fruit_Points  = Points;
     }
-    std::vector<POINT> Get_fruit_Points() { 
+    std::vector<dtawPoint> Get_fruit_Points() { 
         return fruit_Points;
     };
 

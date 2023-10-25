@@ -83,9 +83,9 @@ void Engine::Logic(double elapsedTime)
     //}
 }
 
-HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
+HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
     FruitTree* tree, json Map_saveData, json Tree_saveData,
-    std::vector<POINT> Map_treepoints,
+    std::vector<dtawPoint> Map_treepoints,
     std::string using_MapName, std::string using_Main_TreeName)
 {
 
@@ -158,7 +158,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
             ID2D1Bitmap* tree_Bitmap;
             //樹圖片: Tree_saveData[treeName]["image"]
             std::wstring image = converter.from_bytes(Tree_saveData[treeName]["image"]);
-            std::wstring path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + image;
+            std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
             int errorcode;
             Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd , errorcode);
             if (errorcode != 0) {
@@ -168,7 +168,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
             //樹座標:  Tree_saveData[treeName]["coordinates"]
             for (const auto& coordinate : Map_saveData[treeName]["coordinates"])
             {
-                POINT tree_Point;
+                dtawPoint tree_Point;
                 tree_Point.x = coordinate["X"];
                 tree_Point.y = coordinate["Y"];
                 if (tree_Bitmap)
@@ -179,7 +179,7 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
                         ID2D1Bitmap* fruit_Bitmap;
                         //水果圖片:  Tree_saveData[treeName]["Fruit"]["image"]
                         image = converter.from_bytes(Tree_saveData[treeName]["Fruit"]["image"]);
-                        path = currentPath.wstring() + L"\\..\\種樹\\Images\\" + image;
+                        std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
                         Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd , errorcode);
                         if (errorcode != 0) {
                             std::wstring str1 = path + L"圖檔不存在" + L"\n";
@@ -244,12 +244,12 @@ HRESULT Engine::Draw(HWND hWnd, POINT point, int OriginalSize, int pxSize,
     // 再繪製正在當前元件
     //OutputDebugString(L"繪製未儲存元件\n");
     if (tree->Get_treeBitmap()) {
-        for (const POINT& tree_Point : Map_treepoints){
+        for (const dtawPoint& tree_Point : Map_treepoints){
             // 繪製樹
             if (tree->Get_treeBitmap())
                 m_pRenderTarget->DrawBitmap(tree->Get_treeBitmap(), D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
             // 水果座標
-            for (const POINT& coordinate : tree->Get_fruit_Points())
+            for (const dtawPoint& coordinate : tree->Get_fruit_Points())
             {
                 UINT drawpoint_x = tree_Point.x + coordinate.x* scalingRatio;
                 UINT drawpoint_y = tree_Point.y + coordinate.y* scalingRatio;

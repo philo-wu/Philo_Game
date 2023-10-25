@@ -30,6 +30,21 @@
 #define WM_CUSTOM_GAMEEND WM_USER + 1
 #define WM_CUSTOM_GAMEWIN WM_USER + 2
 
+struct dtawPoint {
+    int x;
+    int y;
+
+    // 自定義的比較函數
+    bool operator<(const dtawPoint& other) const {
+        // 首先按照 y 坐標升序排列
+        if (y != other.y) {
+            return y < other.y;
+        }
+        // 如果 y 相同，則按照 x 坐標升序排列
+        return x < other.x;
+    }
+}; 
+
 class Common
 {
 public:
@@ -156,7 +171,7 @@ public:
         ofn.nFilterIndex = 1;
         ofn.lpstrFileTitle = NULL;
         ofn.nMaxFileTitle = 0;
-        std::wstring str = currentPath.wstring() + L"\\..\\種樹\\Images\\";
+        std::wstring str = currentPath.parent_path().wstring() + L"\\種樹\\Images\\";
         //OutputDebugString(L"\n檔案讀取預設路徑\n");
         //OutputDebugString(str.c_str());
         ofn.lpstrInitialDir = str.c_str();
@@ -209,7 +224,7 @@ public:
     static void SaveWindowToImage(
         HWND hwnd,
         const wchar_t* filePath,
-        POINT point,
+        dtawPoint point,
         int RECTwidth,
         int RECTheight
     )

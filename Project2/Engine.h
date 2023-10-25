@@ -17,9 +17,9 @@ public:
 	D2D1_RECT_F Rect_functionColumn_right = D2D1::RectF(230, 0, SCREEN_WIDTH, FUNCTION_COLUMN_HEIGHT);	//視窗上方功能列右側空白
 	D2D1_RECT_F Rect_drawingArea = D2D1::RectF(0, FUNCTION_COLUMN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);		//視窗下方繪圖區域
 
-	HRESULT Draw(HWND hWnd, POINT point ,int OriginalSize,int pxSize, FruitTree* tree ,
+	HRESULT Draw(HWND hWnd, dtawPoint point ,int OriginalSize,int pxSize, FruitTree* tree ,
 		json Map_saveData, json Tree_saveData,
-		std::vector<POINT> Map_treepoints,
+		std::vector<dtawPoint> Map_treepoints,
 		std::string using_MapName, std::string using_Main_TreeName);
 	bool frist_start = 1;
 	bool do_clear = 1;

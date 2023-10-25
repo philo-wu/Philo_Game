@@ -4,29 +4,6 @@
 ID2D1HwndRenderTarget* MapMenu_RenderTarget;
 bool Dialog_MapMenu_is_open = false;
 
-std::string AnsiToUtf8(const std::string& ansiStr)
-{
-    int wstrLen = MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, nullptr, 0);
-    if (wstrLen == 0) {
-        // Handle error
-        return std::string();
-    }
-
-    std::wstring wstr(wstrLen, L'\0');
-    MultiByteToWideChar(CP_ACP, 0, ansiStr.c_str(), -1, &wstr[0], wstrLen);
-
-    int utf8Len = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
-    if (utf8Len == 0) {
-        // Handle error
-        return std::string();
-    }
-
-    std::string utf8Str(utf8Len, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &utf8Str[0], utf8Len, nullptr, nullptr);
-
-    return utf8Str;
-}
-
 INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -135,8 +112,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             json tree;
             // 創建一個 JSON array，用於存放 coordinates
             json coordinatesArray;
-            // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-            for (const POINT& point : Map_treepoints)
+            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
+            for (const dtawPoint& point : Map_treepoints)
             {
                 json pointObject =
                 {
@@ -231,13 +208,14 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     }
                 }
                 using_MapName = Save_Name;
+                Map_Remarks = Save_Remarks;
             }
             // 將 JSON 對象轉換為字串
             json tree;
             // 創建一個 JSON array，用於存放 coordinates
             json coordinatesArray;
-            // 將 fruit_Points 中的每個 POINT 轉換為 JSON object 並添加到 array 中
-            for (const POINT& point : Map_treepoints)
+            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
+            for (const dtawPoint& point : Map_treepoints)
             {
                 json pointObject =
                 {
@@ -255,7 +233,6 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             Map_saveData_using[using_Dialog_TreeName] = tree;
             // 將使用中地圖寫入存檔
 
-            Map_Remarks = Save_Remarks;
             Map_saveData_using["remarks"] = Map_Remarks;
 
             std::wstring widestr;
@@ -398,7 +375,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 // 將地圖中符合元件拿出寫入正在繪製中
                 if (it != Map_saveData_using.end()) { 
                     for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"]) {
-                        POINT tree_Point;
+                        dtawPoint tree_Point;
                         tree_Point.x = coordinate["X"];
                         tree_Point.y = coordinate["Y"];
                         Map_treepoints.push_back(tree_Point);
@@ -412,6 +389,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 }
                 else {
+                    Map_Remarks = "";
                     widestr = L"";
                 }
                 HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
@@ -497,6 +475,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_DESTROY:
     {
         MapMenu_RenderTarget->Release();
+        Map_Remarks = "";
         Dialog_MapMenu_is_open = 0;
         OutputDebugString(L"地圖選單關閉\n");
     }

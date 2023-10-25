@@ -63,12 +63,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     engine = new Engine();
     engine->phWnd = hWnd;
     //drawTree = new Tree(L"1");
-    OutputDebugString(L"drawFruitTree2\n");
-
-    drawFruitTree2 = new FruitTree(L"3", L"apple");
-    OutputDebugString(L"drawFruitTree\n");
-
-    drawFruitTree = new FruitTree(L"2",L"apple");
+    drawFruitTree = new FruitTree(L"2",L"apple"); //drawFruitTree為當前繪圖物件
     engine->InitializeD2D(hWnd); //繪製背景
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
 
@@ -320,6 +315,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                 Map_clickPoint.x = static_cast<FLOAT>(xPos);
                 Map_clickPoint.y = static_cast<FLOAT>(yPos);
+
+                auto it = std::lower_bound(Map_treepoints.begin(), Map_treepoints.end(), Map_clickPoint);
+                Map_treepoints.insert(it, Map_clickPoint);
+
                 Map_treepoints.push_back(Map_clickPoint);
                 InvalidateRect(hWnd, NULL, FALSE);
             }
