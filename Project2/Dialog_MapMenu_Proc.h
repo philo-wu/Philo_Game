@@ -3,6 +3,7 @@
 
 ID2D1HwndRenderTarget* MapMenu_RenderTarget;
 bool Dialog_MapMenu_is_open = false;
+bool Dialog_MapMenu_is_Create = 1;//控制創造或刪除模式 
 
 INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -11,7 +12,25 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_INITDIALOG:
     {
         OutputDebugString(L"地圖選單開啟\n");
+        MapMenu_hWnd = hwndDlg;
         Dialog_MapMenu_is_open = 1;
+
+        if (Dialog_MapMenu_is_Create) {
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);   // 勾選 IDC_CHECK1
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
+        }
+        else {
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
+        }
+        ShowWindow(GetDlgItem(hwndDlg, ID_RETURN), SW_HIDE);
+        EnableWindow(GetDlgItem(hWnd, 3), FALSE);
+
+        if (Dialog_Input_is_open) {
+            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE), FALSE);
+            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE_QUICK), FALSE);
+        }   
+
         Common::InitD2D(hwndDlg, pD2DFactory, &MapMenu_RenderTarget);
         if (Tree_saveData.empty()) {
             std::string path = currentPath.parent_path().string() + "/種樹/Images/Tree_saveData.json";
@@ -76,25 +95,40 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     }
     break;
     case WM_COMMAND:
+
+        if (LOWORD(wParam) == IDC_CHECK1 && HIWORD(wParam) == BN_CLICKED) {
+            // IDC_CHECK1 被點擊
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 的勾選
+            Dialog_MapMenu_is_Create = 1;
+        }
+        else if (LOWORD(wParam) == IDC_CHECK2 && HIWORD(wParam) == BN_CLICKED) {
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
+            Dialog_MapMenu_is_Create = 0;
+        }
         switch (LOWORD(wParam))
         {
-        case IDOK:
-            // 使用者按下了確定按鈕
+        case IDOK:            // 使用者按下了確定按鈕
         {
 
         }
         break;
 
-        case IDCANCEL:
+        case IDCANCEL:       // 使用者按下了取消按鈕
         {
-            // 使用者按下了取消按鈕
-            EndDialog(hwndDlg, IDCANCEL);
+
+            DestroyWindow(hwndDlg);
+
+            //EndDialog(hwndDlg, IDCANCEL);
         }
         break;
         case ID_DATASAVE: // 另存新檔
         {
-
-            int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
+            if (Dialog_Input_is_open)
+            {
+                MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
+                break;
+            }
+            int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
             if (result == -1)
             {
                 // 對話框創建失敗
@@ -191,10 +225,16 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
 
         }
+        break;
         case ID_DATASAVE_QUICK: // 快速存檔
         {
+
+            if (Dialog_Input_is_open) {
+            MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
+            break;
+            }
             if (using_MapName.empty()) {
-                int result = DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_INPUT), NULL, Dialog_Input_Proc);
+                int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
                 if (result == -1)
                 {
                     // 對話框創建失敗
@@ -373,7 +413,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 Map_treepoints.clear();
                 auto it = Map_saveData_using.find(using_Main_TreeName);
                 // 將地圖中符合元件拿出寫入正在繪製中
-                if (it != Map_saveData_using.end()) { 
+                if (it != Map_saveData_using.end()) {
                     for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"]) {
                         dtawPoint tree_Point;
                         tree_Point.x = coordinate["X"];
@@ -414,15 +454,15 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     // 上面 erase以後 會超出容範圍
                     for (auto it = Map_saveData_using.begin(); it != Map_saveData_using.end();) {
                         std::string key = it.key();
-                        if (key == "remarks") { 
+                        if (key == "remarks") {
                             ++it;
-                            continue; 
+                            continue;
                         }
                         auto treeIt = Tree_saveData.find(key);
                         if (treeIt == Tree_saveData.end()) {
                             std::wstring str = converter.from_bytes(key);
-                            std::wstring str1 = L"無法在元件存檔找到" + str + L"\n請到元件存檔重建," + str + L"\n再讀取一次地圖存檔即可." ;
-                            str1 += L"\n若無重建元件,直接存檔地圖,\n則會將" + str +L"從地圖存檔中刪除";
+                            std::wstring str1 = L"無法在元件存檔找到" + str + L"\n請到元件存檔重建," + str + L"\n再讀取一次地圖存檔即可.";
+                            str1 += L"\n若無重建元件,直接存檔地圖,\n則會將" + str + L"從地圖存檔中刪除";
                             MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
                             it = Map_saveData_using.erase(it); // 更新迭代器
                         }
@@ -446,14 +486,16 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         break;
         case ID_RETURN: //刪除最後繪圖資料
         {
-            if (!Map_treepoints.empty())
-                Map_treepoints.pop_back();
+            if (Map_treepoints.empty())
+                MessageBox(hwndDlg, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
             else if (using_Main_TreeName.empty())
                 MessageBox(hwndDlg, L"未選擇元件", L"錯誤", MB_OK);
-            else
-                MessageBox(hwndDlg, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
-            Map_clickPoint = { 0 };
-            InvalidateRect(hWnd, NULL, FALSE);
+            else {
+                Map_treepoints.pop_back();
+                Map_clickPoint = { 0 };
+                InvalidateRect(hWnd, NULL, FALSE);
+            }
+
         }
         break;
         }
@@ -474,16 +516,32 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     break;
     case WM_DESTROY:
     {
-        MapMenu_RenderTarget->Release();
+        EnableWindow(GetDlgItem(hWnd, 3), TRUE);
         Map_Remarks = "";
         Dialog_MapMenu_is_open = 0;
+        MapMenu_RenderTarget->Release();
+        MapMenu_hWnd = NULL;
         OutputDebugString(L"地圖選單關閉\n");
     }
     break;
     case WM_ERASEBKGND:
         break;
+    case WM_CLOSE:
+    {
+
+        DestroyWindow(hwndDlg);
+    }
+        break;
+    case WM_CTLCOLORSTATIC:
+    {
+        HDC hdcStatic = (HDC)wParam;
+        SetBkColor(hdcStatic, RGB(204, 204, 204)); // 設定靜態控制項的背景色
+        return (INT_PTR)CreateSolidBrush(RGB(204, 204, 204)); // 返回背景刷
+    }
+    break;
     }
 
+    
     return FALSE;
 }
 

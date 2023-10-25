@@ -113,13 +113,5 @@
         },
         "image": "tree_1.png",
         "remarks": ""
-    },
-    "中文": {
-        "coordinates": {
-            "X": 0,
-            "Y": 0
-        },
-        "image": "banana.png",
-        "remarks": "89"
     }
 }

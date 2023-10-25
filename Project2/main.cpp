@@ -5,8 +5,6 @@
 #include "Dialog_LoadTree_Proc.h"
 #include "Dialog_MapMenu_Proc.h"
 
-//提供Dialog句柄
-HINSTANCE HINSTANCE1;
 
 
 
@@ -35,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 註冊視窗
     RegisterClassEx(&wc);
     //根據客戶端取得視窗大小並做處理
-    HINSTANCE1 = hInstance;
+    main_hInstance = hInstance;
     RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // ?置尺寸，而不是位置
     AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
 
@@ -60,13 +58,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
     // 顯示視窗
     ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
+    OutputDebugString(L"主視窗初始化\n");
+
     engine = new Engine();
     engine->phWnd = hWnd;
     //drawTree = new Tree(L"1");
     drawFruitTree = new FruitTree(L"2",L"apple"); //drawFruitTree為當前繪圖物件
-    engine->InitializeD2D(hWnd); //繪製背景
+    engine->InitializeD2D(hWnd); //
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
 
+    Dialog_Tree_is_Create = 1;
+    Dialog_MapMenu_is_Create = 1;
     //   InitD3D(hWnd);
     // 進入主要迴圈:
     
@@ -199,15 +201,15 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 {
 
                 case 1: // 選擇樹木
-                {
-                    if (Dialog_LoadTree_is_open)
-                    {
-                        MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
-                        break;
-                    }
-                    Dialog_is_fruit = 0;
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
-                }
+                //{
+                //    if (Dialog_LoadTree_is_open)
+                //    {
+                //        MessageBox(hWnd, L"視窗已打開", L"錯誤", MB_OK);
+                //        break;
+                //    }
+                //    Dialog_is_fruit = 0;
+                //    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
+                //}
                 break;
 
                 case 2: // 選擇水果樹
@@ -218,7 +220,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         break;
                     }
                     Dialog_is_fruit = 1;
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
+                    DialogBox(TreeLoad_hInstance, MAKEINTRESOURCE(IDD_LOADTREE), NULL, Dialog_LoadTree_Proc);
                 }                    
                 break;
 
@@ -235,7 +237,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         MessageBox(hWnd, L"地圖選單已打開", L"錯誤", MB_OK);
                         break;
                     }
-                    DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_MAPMENU), NULL, Dialog_MapMenu_Proc);
+                    DialogBox(MapMenu_hInstance, MAKEINTRESOURCE(IDD_MAPMENU), NULL, Dialog_MapMenu_Proc, 0);
 
                 }
                 break;
@@ -304,22 +306,34 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         {
             int xPos = GET_X_LPARAM(lParam);
             int yPos = GET_Y_LPARAM(lParam);
-            if (xPos >= 0 
-                && yPos >= FUNCTION_COLUMN_HEIGHT
-                && drawFruitTree->Get_fruitBitmap())
-            {
-                if (xPos + fixed_px_fruit > SCREEN_WIDTH)
-                    xPos = SCREEN_WIDTH - fixed_px_fruit;
-                if (yPos + fixed_px_fruit > SCREEN_HEIGHT)
-                    yPos = SCREEN_HEIGHT - fixed_px_fruit;
+            if (xPos >= 0 &&
+                yPos >= FUNCTION_COLUMN_HEIGHT &&
+                drawFruitTree->Get_fruitBitmap()) {
+                if (Dialog_MapMenu_is_Create) {
+                    if (xPos + MAINDIALOG_TREE_PX > SCREEN_WIDTH)
+                        xPos = SCREEN_WIDTH - MAINDIALOG_TREE_PX;
+                    if (yPos + MAINDIALOG_TREE_PX > SCREEN_HEIGHT)
+                        yPos = SCREEN_HEIGHT - MAINDIALOG_TREE_PX;
 
-                Map_clickPoint.x = static_cast<FLOAT>(xPos);
-                Map_clickPoint.y = static_cast<FLOAT>(yPos);
+                    Map_clickPoint.x = static_cast<FLOAT>(xPos);
+                    Map_clickPoint.y = static_cast<FLOAT>(yPos);
 
-                auto it = std::lower_bound(Map_treepoints.begin(), Map_treepoints.end(), Map_clickPoint);
-                Map_treepoints.insert(it, Map_clickPoint);
+                    auto it = std::lower_bound(Map_treepoints.begin(), Map_treepoints.end(), Map_clickPoint);
+                    Map_treepoints.insert(it, Map_clickPoint);
 
-                Map_treepoints.push_back(Map_clickPoint);
+                    //Map_treepoints.push_back(Map_clickPoint);
+                }
+                else {
+                    float fixedPx = MAINDIALOG_TREE_PX; //無法在 Lambda 中擷取有靜態儲存期的變數	
+
+                    Map_treepoints.erase(std::remove_if(Map_treepoints.begin(), Map_treepoints.end(),
+                        [xPos, yPos, fixedPx](const dtawPoint& point) {
+                            return point.x <= xPos && point.x >= xPos - fixedPx &&
+                                point.y <= yPos && point.y >= yPos - fixedPx;
+                        }), Map_treepoints.end());
+
+                }
+
                 InvalidateRect(hWnd, NULL, FALSE);
             }
         }

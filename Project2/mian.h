@@ -7,6 +7,16 @@
 
 // 全域聲明
 HWND hWnd; // 只將W大寫避免錯誤呼叫
+HWND TreeLoad_hWnd; // 只將W大寫避免錯誤呼叫
+HWND MapMenu_hWnd; // 只將W大寫避免錯誤呼叫
+HWND InPutu_hWnd; // 只將W大寫避免錯誤呼叫
+
+//提供Dialog句柄
+HINSTANCE main_hInstance;
+HINSTANCE TreeLoad_hInstance;
+HINSTANCE MapMenu_hInstance;
+HINSTANCE InPut_hInstance;
+
 //  按鈕宣告
 HWND Load_Button;
 HWND Clean_Button;
