@@ -18,7 +18,7 @@ dtawPoint Tree_Point = { DIALOG_TREELOAD_POINT_X,DIALOG_TREELOAD_POINT_Y }; //Di
 dtawPoint Tree_clickPoint = { 0 }; //Dialog點擊座標
 //dtawPoint movePoint = { 0 }; //Dialog滑鼠當前座標
 json Tree_saveData;   //所有元件存檔
-json fruit_saveData_using; //正在繪製的水果存檔
+json Fruits_saveData_using; //正在繪製的水果
 
 //主視窗相關
 std::vector<dtawPoint> Map_treepoints; //目前元件的座標
@@ -201,33 +201,50 @@ void Dialog_clear()
 }
 // 將當前繪製的水果儲存
 void FruitSave(HWND hwnd) {
-    if (!fruit_Points.empty()) {
-        json fruit;
-        // 創建一個 JSON array，用於存放 coordinates
-        json coordinatesArray;
-        // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-        for (const dtawPoint& point : fruit_Points)
+
+    json fruit;
+    // 創建一個 JSON array，用於存放 coordinates
+    json coordinatesArray;
+    // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
+    for (const dtawPoint& point : fruit_Points)
+    {
+        json pointObject =
         {
-            json pointObject =
-            {
-                {"X", point.x},
-                {"Y", point.y}
-            };
-
-            coordinatesArray.push_back(pointObject);
-        }
-
-        // 將 coordinatesArray 存入 JSON 中的 "coordinates"
-        fruit["coordinates"] = coordinatesArray;
-        if (Fruit_File_Name != "")
-            fruit["image"] = Fruit_File_Name;
-
-        // 下面這行Fruit_File_Name可以換成希望的儲存名稱 
-        // 目前可能為 Banana.png
-        fruit_saveData_using[Fruit_File_Name] = fruit;
-        fruit_Points.clear();
+            {"X", point.x},
+            {"Y", point.y}
+        };
+        coordinatesArray.push_back(pointObject);
     }
 
+    // 將 coordinatesArray 存入 JSON 中的 "coordinates"
+    fruit["coordinates"] = coordinatesArray;
+    if (Fruit_File_Name != "") {
+        fruit["image"] = Fruit_File_Name;
+        // 下面這行Fruit_File_Name可以換成希望的儲存名稱 
+        // 目前為例: Banana.png
+        Fruits_saveData_using[Fruit_File_Name] = fruit;
+    }
+    if (!fruit_Points.empty()) {
+        fruit_Points.clear();
+    }
+    //else {
+    //    CComboBox pComboBox;
+    //    pComboBox.Attach(GetDlgItem(hwnd, IDC_COMBO2));
+    //    if (pComboBox.GetCount() != 0) {
+    //        std::string stdStr = Fruit_File_Name;
+    //        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    //        std::wstring wideSaveName = converter.from_bytes(stdStr);
+    //        //OutputDebugString(selectedText);
+    //        // 
+    //        //刪除存檔
+    //        int index = pComboBox.FindString(-1, wideSaveName.c_str());
+    //        //if (!Fruits_saveData_using[stdStr].empty())
+    //        //    Fruits_saveData_using.erase(stdStr);
+    //        pComboBox.DeleteString(index);
+    //        pComboBox.SetCurSel(-1);
+    //    }
+    //    pComboBox.Detach();
+    //}
 }
 // 在hwnd的IDC COMBOX 新增 name 選項,若重複則不新增
 void ComboBoxAdd(HWND hwnd, int IDC , std::string name) {
@@ -247,6 +264,7 @@ void ComboBoxAdd(HWND hwnd, int IDC , std::string name) {
 
     pComboBox.Detach();
 }
+
 INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -261,11 +279,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
         }
         else {
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 勾選
             CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
         }
 
-        ShowWindow(GetDlgItem(hwndDlg, ID_RETURN), SW_HIDE);
+        ShowWindow(GetDlgItem(hwndDlg, ID_RETURN), SW_HIDE); //隱藏返回鍵
         EnableWindow(GetDlgItem(hWnd, 2), FALSE);
 
         if (Dialog_Input_is_open) {
@@ -367,6 +385,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         else if (LOWORD(wParam) == IDC_COMBO2 && HIWORD(wParam) == CBN_SELCHANGE) {
             FruitSave(hwndDlg);
 
+            SendMessage(hwndDlg, WM_COMMAND, ID_DATALOAD_FRUIT, 0);
+
         }
         else if (LOWORD(wParam) == IDC_CHECK1 && HIWORD(wParam) == BN_CLICKED) {
             // IDC_CHECK1 被點擊
@@ -389,6 +409,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 MessageBox(hwndDlg, L"請先進行存檔", L"錯誤", MB_OK);
                 break;
             }
+
             // 初始化主視窗相關
             if (!Map_treepoints.empty())
             {
@@ -417,7 +438,6 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
             // 將地圖中符合元件拿出寫入正在繪製中
             auto it1 = Map_saveData_using.find(using_Dialog_TreeName);
-
             if (it1 != Map_saveData_using.end())
             {
                 for (const auto& coordinate : Map_saveData_using[using_Dialog_TreeName]["coordinates"])
@@ -429,9 +449,9 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 }
                 Map_saveData_using.erase(using_Dialog_TreeName);
             }
-
             Map_clickPoint = { 0 };
             using_Main_TreeName = using_Dialog_TreeName;
+
             // 帶入水果樹圖片
             //OutputDebugString(L"匯入主選單\n");
             //OutputDebugString(L"樹木位置\n");
@@ -476,6 +496,19 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 Dialog_clear();
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 Tree_File_Name = converter.to_bytes(filename);
+                CComboBox pComboBox;
+                // 樹木存檔選擇空
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+                pComboBox.SetCurSel(-1);
+                pComboBox.Detach();
+                Fruits_saveData_using.clear();
+
+                // 水果存檔清空
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
+                pComboBox.ResetContent();
+                pComboBox.Detach();
+                Fruit_Bitmap = NULL;
+
                 //OutputDebugString(Load_File_Path.c_str());
                 InvalidateRect(hwndDlg, NULL, TRUE);
             }
@@ -524,7 +557,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             // SAVE
             json save_tree;
             FruitSave(hwndDlg);
-            save_tree["Fruit"] = fruit_saveData_using;
+            save_tree["Fruit"] = Fruits_saveData_using;
 
             int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
 
@@ -624,28 +657,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             Dialog_Tree_has_newaction = 0;
             // SAVE
             json save_tree;
-            json fruit;
-            // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-            for (const dtawPoint& point : fruit_Points) {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-
-            // 將 coordinatesArray 存入 JSON 中的 "coordinates"
-            fruit["coordinates"] = coordinatesArray;
-            fruit["image"] = Fruit_File_Name;
+            FruitSave(hwndDlg);
 
             save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
             save_tree["image"] = Tree_File_Name;
-            if (Fruit_File_Name != "")
-                save_tree["Fruit"] = fruit;
+            if (!Fruits_saveData_using.empty())
+                save_tree["Fruit"] = Fruits_saveData_using;
 
             //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
             //std::wstring wideName = converter.from_bytes(Save_Name);
@@ -720,10 +737,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 //刪除存檔
                 Tree_saveData.erase(stdStr);
                 pComboBox.DeleteString(selectedIndex);
-                if (pComboBox.GetCount() == 0)
-                    pComboBox.SetCurSel(-1);
-                else
-                    pComboBox.SetCurSel(0);
+                pComboBox.SetCurSel(-1);
 
 
                 std::string jsonString = Tree_saveData.dump(4);
@@ -748,7 +762,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
         }
         break;
-        case ID_DATALOAD: // 載入存檔
+        case ID_DATALOAD: // 載入樹木存檔
         {
             OutputDebugString(L"載入存檔\n");
 
@@ -819,24 +833,106 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 SetWindowText(hStatic, Png.c_str());
 
                 // 排除存檔中無水果的狀況
-                if (Fruit["image"].empty()) { 
-                    Fruit_Bitmap = NULL;
-                    Load_Fruit_File_Path = L"";
-                }
-                else {
-                    stdStr = Fruit["image"];
-                    Fruit_File_Name = Fruit["image"];
-                    Png = converter.from_bytes(stdStr);
-                    std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + Png;
-                    Fruit_Bitmap = NULL;
+                //if (Fruit["image"].empty()) { 
+                //    Fruit_Bitmap = NULL;
+                //    Load_Fruit_File_Path = L"";
+                //}
+                //else {
+                //    stdStr = Fruit["image"];
+                //    Fruit_File_Name = Fruit["image"];
+                //    Png = converter.from_bytes(stdStr);
+                //    std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + Png;
+                //    Fruit_Bitmap = NULL;
 
-                    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg, errorcode);
-                    Load_Fruit_File_Path = path;
-                    if (errorcode != 0) {
-                        std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
-                        MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
-                        Load_Fruit_File_Path = L"";
+                //    Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg, errorcode);
+                //    Load_Fruit_File_Path = path;
+                //    if (errorcode != 0) {
+                //        std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
+                //        MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                //        Load_Fruit_File_Path = L"";
+                //    }
+                //}
+                if (pIWICFactory)
+                    pIWICFactory->Release();
+
+                Dialog_Tree_has_newaction = 0;
+            }
+            else
+            {
+                // 沒有項目被選中
+                //OutputDebugString(L"沒有項目被選中\n");
+                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+            }
+            pComboBox.Detach();
+            OutputDebugString(L"載入結束\n");
+
+            InvalidateRect(hwndDlg, NULL, TRUE);
+
+        }
+        break;
+        case ID_DATALOAD_FRUIT: // 載入水果存檔
+        {
+            OutputDebugString(L"載入水果存檔\n");
+
+            CComboBox pComboBox;
+            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
+
+            int selectedIndex = pComboBox.GetCurSel();
+
+            if (selectedIndex != CB_ERR)
+            {
+                // 有項目被選中
+                CString selectedText;
+                pComboBox.GetLBText(selectedIndex, selectedText);
+                OutputDebugString(selectedText);
+                OutputDebugString(L"\n");
+
+
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                std::wstring wideselectedText(selectedText);
+                std::string stdStr = converter.to_bytes(wideselectedText);
+
+                //OutputDebugString(selectedText);
+                // 
+                //讀取存檔
+                json Fruit = Fruits_saveData_using[stdStr];
+                Dialog_clear();
+                json coordinatesArray = Fruit["coordinates"];
+
+                // 將 JSON array 中的每個 object 轉換為 dtawPoint 並添加到 fruit_Points 中
+                auto it1 = Fruits_saveData_using.find(stdStr);
+
+                if (it1 != Fruits_saveData_using.end())
+                {
+                    for (const auto& coordinate : Fruit["coordinates"])
+                    {
+                        dtawPoint tree_Point;
+                        tree_Point.x = coordinate["X"];
+                        tree_Point.y = coordinate["Y"];
+                        fruit_Points.push_back(tree_Point);
                     }
+                    Fruits_saveData_using.erase(stdStr);
+                }
+
+                IWICImagingFactory* pIWICFactory = NULL;
+                CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+
+                // 讀取圖檔
+                stdStr = Fruit["image"];
+                std::wstring Png = converter.from_bytes(stdStr);
+                std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + Png;
+                int errorcode;
+                stdStr = Fruit["image"];
+                Fruit_File_Name = Fruit["image"];
+                Png = converter.from_bytes(stdStr);
+                Fruit_Bitmap = NULL;
+
+                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg, errorcode);
+                Load_Fruit_File_Path = path;
+                if (errorcode != 0) {
+                    std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
+                    MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                    Load_Fruit_File_Path = L"";
                 }
                 if (pIWICFactory)
                     pIWICFactory->Release();
@@ -981,17 +1077,55 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(DIALOG_TREELOAD_FRUIT_POINT_X, DIALOG_TREELOAD_FRUIT_POINT_Y, DIALOG_TREELOAD_FRUIT_POINT_X + fixed_px_fruit, DIALOG_TREELOAD_FRUIT_POINT_Y + fixed_px_fruit));
         }
 
-        // 讀取點擊陣列並繪圖水果
-        //for (const dtawPoint& fruit_Point : fruit_Points)
-        //{
-        //    if (Fruit_Bitmap)
-        //    {
-        //        UINT drawpoint_x = Tree_Point.x + fruit_Point.x;
-        //        UINT drawpoint_y = Tree_Point.y + fruit_Point.y;
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        IWICImagingFactory* pIWICFactory = NULL;
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+        OutputDebugString(L"\n繪製已儲存\n");
 
-        //        Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
-        //    }
-        //}
+        for (auto& Fruit : Fruits_saveData_using.items()) {
+            //OutputDebugString(L"迴圈開始\n");
+            std::string FruitName = Fruit.key();
+            std::wstring wideTreeName(FruitName.begin(), FruitName.end());
+            LPCWSTR treeNameCStr = wideTreeName.c_str();
+            OutputDebugString(treeNameCStr);
+
+            if (Fruits_saveData_using.contains(FruitName)) {
+                ID2D1Bitmap* fruitBitmap;
+                std::wstring image = converter.from_bytes(Fruits_saveData_using[FruitName]["image"]);
+                std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
+                int errorcode;
+                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &fruitBitmap, hwndDlg, errorcode);
+                if (errorcode != 0) {
+                    std::wstring str1 = path + L"水果圖檔不存在" + L"\n";
+                    OutputDebugString(path.c_str());
+                }
+
+                for (const auto& coordinate : Fruits_saveData_using[FruitName]["coordinates"]) {
+
+                    UINT drawpoint_x = Tree_Point.x + coordinate["X"];
+                    UINT drawpoint_y = Tree_Point.y + coordinate["Y"];
+                    if (fruitBitmap) {
+                        Tree_RenderTarget->DrawBitmap(fruitBitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
+                        ;
+                    }
+                }
+                //fruitBitmap->Release();
+            }
+        }
+        pIWICFactory->Release();
+        OutputDebugString(L"繪製未儲存\n");
+
+        // 讀取點擊陣列並繪圖水果
+        for (const dtawPoint& fruit_Point : fruit_Points)
+        {
+            if (Fruit_Bitmap)
+            {
+                UINT drawpoint_x = Tree_Point.x + fruit_Point.x;
+                UINT drawpoint_y = Tree_Point.y + fruit_Point.y;
+
+                Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
+            }
+        }
         Tree_RenderTarget->EndDraw();
 
         EndPaint(hwndDlg, &ps);
