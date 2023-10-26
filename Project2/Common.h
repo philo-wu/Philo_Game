@@ -2,25 +2,27 @@
 #include <wincodec.h>
 #include "Direct2D.h"
 //#include <Shlobj.h>
-#include <filesystem>
+#include <filesystem> //讀取專案位置
+#include <regex> //中文判定
 
-// 視窗相關
+// UI相關
 #define SCREEN_WIDTH  1024  
 #define SCREEN_HEIGHT 768
 #define BUTTON_INTERVAL 30
 #define BUTTON_WIDTH  100
 #define BUTTON_HEIGHT 30
-#define FUNCTION_COLUMN_HEIGHT 50
-#define DIALOG_TREELOAD_POINT_X 130
+#define FUNCTION_COLUMN_HEIGHT 50 //主視窗上方功能列
+//TreeLoad的樹木圖片繪製地點
+#define DIALOG_TREELOAD_POINT_X 130 
 #define DIALOG_TREELOAD_POINT_Y 10
-#define DIALOG_TREELOAD_FRUIT_POINT_X 50
-#define DIALOG_TREELOAD_FRUIT_POINT_Y 80
+//TreeLoad的水果圖片繪製地點
+#define DIALOG_TREELOAD_FRUIT_POINT_X 90
+#define DIALOG_TREELOAD_FRUIT_POINT_Y 125
 
-#define DIALOG_TREELOAD_POINT_Y 10
+#define DIALOG_TREELOAD_TREE_PX 200 //TreeLoad的樹木圖片繪製大小
+#define DIALOG_TREELOAD_FRUIT_PX 30 //TreeLoad的水果圖片繪製大小
+#define MAINDIALOG_TREE_PX 50 //主視窗的元件繪製大小
 
-#define DIALOG_TREELOAD_TREE_PX 200
-#define DIALOG_TREELOAD_FRUIT_PX 30
-#define MAINDIALOG_TREE_PX 50
 
 // 遊戲相關
 #define CELL_SIZE 20
@@ -150,10 +152,10 @@ public:
 
     // 以檔案總管取得檔案路徑,並寫入Bitmap
     static void OpenFile(HWND hWnd,
-        ID2D1RenderTarget* pRenderTarget,
-        ID2D1Bitmap** ppBitmap,
-        std::wstring& ploadPath,
-        std::wstring& filename,
+        ID2D1RenderTarget* pRenderTarget, 
+        ID2D1Bitmap** ppBitmap, //輸出的圖檔
+        std::wstring& ploadPath,  
+        std::wstring& filename, 
         std::filesystem::path currentPath)
     {
         //OutputDebugString(L"讀取檔案\n");
@@ -524,4 +526,13 @@ public:
     //DeleteDC(hDCMem);
     //DeleteDC(hDC);
     //}
+
+    // 用以判斷字串有無中文
+    bool containsChinese(const std::string& str) {
+        // 定義中文字符範圍（Unicode 範圍）
+        std::regex chineseRegex("[\\u4e00-\\u9fa5]+");
+
+        // 使用正則表達式進行匹配
+        return std::regex_search(str, chineseRegex);
+    }
 };

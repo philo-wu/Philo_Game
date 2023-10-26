@@ -197,23 +197,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
-
-                CComboBox pComboBox;
-                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
-
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideSaveName = converter.from_bytes(Save_Name);
-                //判斷是否有存在同名選項
-                int index = pComboBox.FindString(-1, wideSaveName.c_str());
-                if (index == CB_ERR) {
-                    // 相同的選項不存在，可以新增
-                    pComboBox.AddString(wideSaveName.c_str());
-                }
-                index = pComboBox.FindString(-1, wideSaveName.c_str());
-                pComboBox.SetCurSel(index);
-
-                pComboBox.Detach();
-
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, Save_Name);
             }
             else
             {
@@ -300,23 +284,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
-
-                CComboBox pComboBox;
-                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
-
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideSaveName = converter.from_bytes(using_MapName);
-                //判斷是否有存在同名選項
-                int index = pComboBox.FindString(-1, wideSaveName.c_str());
-                if (index == CB_ERR) {
-                    // 相同的選項不存在，可以新增
-                    pComboBox.AddString(wideSaveName.c_str());
-                }
-                index = pComboBox.FindString(-1, wideSaveName.c_str());
-                pComboBox.SetCurSel(index);
-
-                pComboBox.Detach();
-
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_MapName);
             }
             else
             {

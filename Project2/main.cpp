@@ -304,16 +304,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         
         case WM_LBUTTONDOWN: // 處理滑鼠左鍵
         {
-            int xPos = GET_X_LPARAM(lParam);
-            int yPos = GET_Y_LPARAM(lParam);
-            if (xPos >= 0 &&
-                yPos >= FUNCTION_COLUMN_HEIGHT &&
+            float fixedPx = MAINDIALOG_TREE_PX; //無法在 Lambda 中擷取有靜態儲存期的變數	
+            int xPos = GET_X_LPARAM(lParam) - fixedPx /2;
+            int yPos = GET_Y_LPARAM(lParam) - fixedPx;
+            if (xPos >= 0 - fixedPx / 2 &&
+                yPos >= FUNCTION_COLUMN_HEIGHT - fixedPx &&
                 drawFruitTree->Get_fruitBitmap()) {
                 if (Dialog_MapMenu_is_Create) {
-                    if (xPos + MAINDIALOG_TREE_PX > SCREEN_WIDTH)
-                        xPos = SCREEN_WIDTH - MAINDIALOG_TREE_PX;
-                    if (yPos + MAINDIALOG_TREE_PX > SCREEN_HEIGHT)
-                        yPos = SCREEN_HEIGHT - MAINDIALOG_TREE_PX;
+                    if (xPos + fixedPx > SCREEN_WIDTH)
+                        xPos = SCREEN_WIDTH - fixedPx;
+                    else if (xPos - fixedPx / 2 < 0)
+                        xPos = 0;
+
+                    if (yPos + fixedPx > SCREEN_HEIGHT)
+                        yPos = SCREEN_HEIGHT - fixedPx;
+                    else if (yPos < FUNCTION_COLUMN_HEIGHT)
+                        yPos = FUNCTION_COLUMN_HEIGHT;
 
                     Map_clickPoint.x = static_cast<FLOAT>(xPos);
                     Map_clickPoint.y = static_cast<FLOAT>(yPos);
@@ -324,7 +330,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     //Map_treepoints.push_back(Map_clickPoint);
                 }
                 else {
-                    float fixedPx = MAINDIALOG_TREE_PX; //無法在 Lambda 中擷取有靜態儲存期的變數	
+                    xPos += fixedPx / 2;
+                    yPos += fixedPx;
 
                     Map_treepoints.erase(std::remove_if(Map_treepoints.begin(), Map_treepoints.end(),
                         [xPos, yPos, fixedPx](const dtawPoint& point) {

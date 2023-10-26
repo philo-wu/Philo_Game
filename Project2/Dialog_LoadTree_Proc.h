@@ -18,6 +18,7 @@ dtawPoint Tree_Point = { DIALOG_TREELOAD_POINT_X,DIALOG_TREELOAD_POINT_Y }; //Di
 dtawPoint Tree_clickPoint = { 0 }; //Dialog點擊座標
 //dtawPoint movePoint = { 0 }; //Dialog滑鼠當前座標
 json Tree_saveData;   //所有元件存檔
+json fruit_saveData_using; //正在繪製的水果存檔
 
 //主視窗相關
 std::vector<dtawPoint> Map_treepoints; //目前元件的座標
@@ -27,6 +28,7 @@ json Map_saveData;   //所有地圖存檔
 json Map_saveData_using; //正在讀取的Map
 std::string using_MapName; //正在讀取的存檔名稱
 std::string using_Dialog_TreeName ; //正在讀取的元件名稱
+std::string using_Dialog_FruitName; //正在讀取的水果名稱
 std::string using_Main_TreeName ; //正在主視窗繪畫的元件名稱
 
 //圖檔繪製大小 樹木圖檔為正方形,長寬為fixed_px, 
@@ -58,14 +60,14 @@ ID2D1Factory* pD2DFactory;
 std::filesystem::path currentPath = std::filesystem::current_path(); // C++ 17
 
 
-
+// 紀錄載入存檔的時候得到的圖片路徑
 std::wstring Load_Tree_File_Path;
 std::wstring Load_Fruit_File_Path;
 
-std::string Tree_File_Name;
-std::string Fruit_File_Name;
-std::string Save_Name;    //為Dialog_Input 最後保存的名稱
-std::string Save_Remarks; //為Dialog_Input 最後保存的備註
+std::string Tree_File_Name;     //正在繪畫於TreeLoad的樹木
+std::string Fruit_File_Name;    //正在繪畫於TreeLoad的水果
+std::string Save_Name;          //為Dialog_Input 最後保存的名稱
+std::string Save_Remarks;       //為Dialog_Input 最後保存的備註
 
 std::string Tree_Remarks; 
 std::string Map_Remarks; 
@@ -114,7 +116,12 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                 WCHAR* buffer = new WCHAR[textLength + 1];
                 // C++14
                 std::wstring_convert<std::codecvt_utf8<WCHAR>> converter;
+                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, textLength + 1);
 
+                if (textLength > 10) {
+                    MessageBox(hwndDlg, L"長度超過10字元", L"錯誤", MB_OK);
+                    break;
+                }
                 bool hasChinese = false;
                 for (int i = 0; i < textLength; ++i) {
                     if (IsDBCSLeadByte(buffer[i])) {
@@ -192,6 +199,54 @@ void Dialog_clear()
     Dialog_do_TreeClear = 1;
     Tree_clickPoint = { 0 };
 }
+// 將當前繪製的水果儲存
+void FruitSave(HWND hwnd) {
+    if (!fruit_Points.empty()) {
+        json fruit;
+        // 創建一個 JSON array，用於存放 coordinates
+        json coordinatesArray;
+        // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
+        for (const dtawPoint& point : fruit_Points)
+        {
+            json pointObject =
+            {
+                {"X", point.x},
+                {"Y", point.y}
+            };
+
+            coordinatesArray.push_back(pointObject);
+        }
+
+        // 將 coordinatesArray 存入 JSON 中的 "coordinates"
+        fruit["coordinates"] = coordinatesArray;
+        if (Fruit_File_Name != "")
+            fruit["image"] = Fruit_File_Name;
+
+        // 下面這行Fruit_File_Name可以換成希望的儲存名稱 
+        // 目前可能為 Banana.png
+        fruit_saveData_using[Fruit_File_Name] = fruit;
+        fruit_Points.clear();
+    }
+
+}
+// 在hwnd的IDC COMBOX 新增 name 選項,若重複則不新增
+void ComboBoxAdd(HWND hwnd, int IDC , std::string name) {
+    CComboBox pComboBox;
+    pComboBox.Attach(GetDlgItem(hwnd, IDC));
+
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    std::wstring wideSaveName = converter.from_bytes(name);
+    //判斷是否有存在同名選項
+    int index = pComboBox.FindString(-1, wideSaveName.c_str());
+    if (index == CB_ERR) {
+        // 相同的選項不存在，可以新增
+        pComboBox.AddString(wideSaveName.c_str());
+    }
+    index = pComboBox.FindString(-1, wideSaveName.c_str());
+    pComboBox.SetCurSel(index);
+
+    pComboBox.Detach();
+}
 INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -261,24 +316,41 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             items.push_back(it.key());
         }
         //OutputDebugString(L"items完成\n");
-
-        CComboBox pComboBox;
-        pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
         CFont font;
         font.CreatePointFont(120, _T("Verdana"));  // 120 是字體大小，"Verdana" 是字體名稱
-        pComboBox.SetFont(&font);
+
+        CComboBox pComboBox_tree;
+        pComboBox_tree.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+        pComboBox_tree.SetFont(&font);
 
         for (const auto& item : items) {
             //將string轉換到wstring //Cstring對中文支援不好
             std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
             std::wstring wideSaveName = converter.from_bytes(item);
-            pComboBox.AddString(wideSaveName.c_str());
+            pComboBox_tree.AddString(wideSaveName.c_str());
             //OutputDebugString(wideSaveName.c_str());
             //OutputDebugString(L"\n");
 
         }
 
-        pComboBox.Detach();
+        pComboBox_tree.Detach();
+        //OutputDebugString(L"JSON讀取成功\n");
+
+        CComboBox pComboBox_fruit;
+        pComboBox_fruit.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
+        pComboBox_fruit.SetFont(&font);
+
+        //for (const auto& item : items) {
+        //    //將string轉換到wstring //Cstring對中文支援不好
+        //    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        //    std::wstring wideSaveName = converter.from_bytes(item);
+        //    pComboBox_fruit.AddString(wideSaveName.c_str());
+        //    //OutputDebugString(wideSaveName.c_str());
+        //    //OutputDebugString(L"\n");
+
+        //}
+
+        pComboBox_fruit.Detach();
         //OutputDebugString(L"JSON讀取成功\n");
 
 
@@ -286,11 +358,14 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     break;
     case WM_COMMAND:
     {
-        if (LOWORD(wParam) == IDC_COMBO1 && HIWORD(wParam) == CBN_SELCHANGE) //偵測Combobox改變
-        {
+        if (LOWORD(wParam) == IDC_COMBO1 && HIWORD(wParam) == CBN_SELCHANGE) {//偵測Combobox改變
             // 在這裡處理選擇改變後的邏輯
             // 直接呼叫LOADSAVE
             SendMessage(hwndDlg, WM_COMMAND, ID_DATALOAD, 0); 
+
+        }
+        else if (LOWORD(wParam) == IDC_COMBO2 && HIWORD(wParam) == CBN_SELCHANGE) {
+            FruitSave(hwndDlg);
 
         }
         else if (LOWORD(wParam) == IDC_CHECK1 && HIWORD(wParam) == BN_CLICKED) {
@@ -302,8 +377,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
             Dialog_Tree_is_Create = 0;
         }
-        switch (LOWORD(wParam))
-        {
+        switch (LOWORD(wParam)) {
         case IDOK: //匯入主選單
         {
 
@@ -420,9 +494,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename, currentPath);
             if (!filename.empty())
             {
+                FruitSave(hwndDlg);
                 Dialog_clear();
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 Fruit_File_Name = converter.to_bytes(filename);
+                ComboBoxAdd(hwndDlg, IDC_COMBO2, Fruit_File_Name);
+
                 InvalidateRect(hwndDlg, NULL, TRUE);
             }
         }
@@ -446,30 +523,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
 
             // SAVE
             json save_tree;
-            json fruit;
-            // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-            for (const dtawPoint& point : fruit_Points)
-            {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-
-            // 將 coordinatesArray 存入 JSON 中的 "coordinates"
-            fruit["coordinates"] = coordinatesArray;
-            if (Fruit_File_Name != "")
-                fruit["image"] = Fruit_File_Name;
-
-            save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
-            save_tree["image"] = Tree_File_Name;
-
-            save_tree["Fruit"] = fruit;
+            FruitSave(hwndDlg);
+            save_tree["Fruit"] = fruit_saveData_using;
 
             int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
 
@@ -523,23 +578,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
-
-                CComboBox pComboBox;
-                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
-
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideSaveName = converter.from_bytes(using_Dialog_TreeName);
-                //判斷是否有存在同名選項
-                int index = pComboBox.FindString(-1, wideSaveName.c_str());
-                if (index == CB_ERR) {
-                    // 相同的選項不存在，可以新增
-                    pComboBox.AddString(wideSaveName.c_str());
-                }
-                index = pComboBox.FindString(-1, wideSaveName.c_str());
-                pComboBox.SetCurSel(index);
-
-                pComboBox.Detach();
-
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_Dialog_TreeName);
             }
             else
             {
@@ -642,23 +681,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
-
-                CComboBox pComboBox;
-                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
-
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-                std::wstring wideSaveName = converter.from_bytes(using_Dialog_TreeName);
-                //判斷是否有存在同名選項
-                int index = pComboBox.FindString(-1, wideSaveName.c_str());
-                if (index == CB_ERR) {
-                    // 相同的選項不存在，可以新增
-                    pComboBox.AddString(wideSaveName.c_str());
-                }
-                index = pComboBox.FindString(-1, wideSaveName.c_str());
-                pComboBox.SetCurSel(index);
-
-                pComboBox.Detach();
-
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_Dialog_TreeName);
             }
             else {
                 //OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
@@ -818,7 +841,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
                 if (pIWICFactory)
                     pIWICFactory->Release();
 
-
+                Dialog_Tree_has_newaction = 0;
             }
             else
             {
@@ -853,18 +876,22 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
     case WM_LBUTTONDOWN:
         // 處理滑鼠左鍵
     {
-        int xPos = GET_X_LPARAM(lParam);
-        int yPos = GET_Y_LPARAM(lParam);
+        int xPos = GET_X_LPARAM(lParam) - fixed_px_fruit /2; // fixed_px_fruit為將繪製點從左上角移到圖片中下方
+        int yPos = GET_Y_LPARAM(lParam) - fixed_px_fruit;
         if (Fruit_Bitmap &&
-            xPos >= Tree_Point.x &&
-            yPos >= Tree_Point.y &&
-            xPos <= Tree_Point.x + fixed_px &&
-            yPos <= Tree_Point.y + fixed_px) {//越界判定
+            xPos >= Tree_Point.x - fixed_px_fruit / 2 &&
+            yPos >= Tree_Point.y - fixed_px_fruit &&
+            xPos <= Tree_Point.x + fixed_px - fixed_px_fruit / 2 &&
+            yPos <= Tree_Point.y + fixed_px - fixed_px_fruit) {//越界判定
             if (Dialog_Tree_is_Create) {
                 if (xPos + fixed_px_fruit > Tree_Point.x + fixed_px)
                     xPos = Tree_Point.x + fixed_px - fixed_px_fruit;
+                else if (xPos < Tree_Point.x)
+                    xPos = Tree_Point.x;
                 if (yPos + fixed_px_fruit > Tree_Point.y + fixed_px)
                     yPos = Tree_Point.y + fixed_px - fixed_px_fruit;
+                else if (yPos < Tree_Point.y)
+                    yPos = Tree_Point.y;
 
                 Tree_clickPoint.x = static_cast<FLOAT>(xPos) - Tree_Point.x;
                 Tree_clickPoint.y = static_cast<FLOAT>(yPos) - Tree_Point.y;
@@ -879,6 +906,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
             else {
                 xPos -= Tree_Point.x;
                 yPos -= Tree_Point.y;
+                xPos += fixed_px_fruit / 2;
+                yPos += fixed_px_fruit;
 
                 float fixedPxFruit = fixed_px_fruit; //無法在 Lambda 中擷取有靜態儲存期的變數	
                 fruit_Points.erase(std::remove_if(fruit_Points.begin(), fruit_Points.end(),
@@ -953,16 +982,16 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LP
         }
 
         // 讀取點擊陣列並繪圖水果
-        for (const dtawPoint& fruit_Point : fruit_Points)
-        {
-            if (Fruit_Bitmap)
-            {
-                UINT drawpoint_x = Tree_Point.x + fruit_Point.x;
-                UINT drawpoint_y = Tree_Point.y + fruit_Point.y;
+        //for (const dtawPoint& fruit_Point : fruit_Points)
+        //{
+        //    if (Fruit_Bitmap)
+        //    {
+        //        UINT drawpoint_x = Tree_Point.x + fruit_Point.x;
+        //        UINT drawpoint_y = Tree_Point.y + fruit_Point.y;
 
-                Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
-            }
-        }
+        //        Tree_RenderTarget->DrawBitmap(Fruit_Bitmap, D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + fixed_px_fruit, drawpoint_y + fixed_px_fruit));
+        //    }
+        //}
         Tree_RenderTarget->EndDraw();
 
         EndPaint(hwndDlg, &ps);

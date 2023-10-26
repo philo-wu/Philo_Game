@@ -1,38 +1,34 @@
 {
-    "001": {
+    "banana_001": {
         "Fruit": {
             "coordinates": [
                 {
-                    "X": 76,
-                    "Y": 28
+                    "X": 0,
+                    "Y": 0
                 },
                 {
-                    "X": 60,
-                    "Y": 34
+                    "X": 170,
+                    "Y": 0
                 },
                 {
-                    "X": 46,
-                    "Y": 46
+                    "X": 54,
+                    "Y": 47
                 },
                 {
-                    "X": 44,
-                    "Y": 58
+                    "X": 170,
+                    "Y": 162
                 },
                 {
-                    "X": 27,
-                    "Y": 91
+                    "X": 170,
+                    "Y": 167
                 },
                 {
-                    "X": 57,
-                    "Y": 110
+                    "X": 170,
+                    "Y": 167
                 },
                 {
-                    "X": 58,
-                    "Y": 121
-                },
-                {
-                    "X": 67,
-                    "Y": 126
+                    "X": 170,
+                    "Y": 169
                 }
             ],
             "image": "banana.png"
@@ -42,76 +38,6 @@
             "Y": 0
         },
         "image": "tree_1.png",
-        "remarks": ""
-    },
-    "25": {
-        "Fruit": {
-            "coordinates": null,
-            "image": "banana.png"
-        },
-        "coordinates": {
-            "X": 0,
-            "Y": 0
-        },
-        "image": "tree_3.png",
-        "remarks": ""
-    },
-    "777": {
-        "Fruit": {
-            "coordinates": [
-                {
-                    "X": 124,
-                    "Y": 39
-                },
-                {
-                    "X": 150,
-                    "Y": 39
-                },
-                {
-                    "X": 56,
-                    "Y": 69
-                },
-                {
-                    "X": 62,
-                    "Y": 100
-                }
-            ],
-            "image": "banana.png"
-        },
-        "coordinates": {
-            "X": 0,
-            "Y": 0
-        },
-        "image": "tree_1.png",
-        "remarks": "88"
-    },
-    "888": {
-        "Fruit": {
-            "coordinates": [
-                {
-                    "X": 124,
-                    "Y": 39
-                },
-                {
-                    "X": 150,
-                    "Y": 39
-                },
-                {
-                    "X": 56,
-                    "Y": 69
-                },
-                {
-                    "X": 62,
-                    "Y": 100
-                }
-            ],
-            "image": "banana.png"
-        },
-        "coordinates": {
-            "X": 0,
-            "Y": 0
-        },
-        "image": "tree_1.png",
-        "remarks": ""
+        "remarks": "第一種香蕉樹"
     }
 }
