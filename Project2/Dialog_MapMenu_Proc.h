@@ -5,33 +5,33 @@ ID2D1HwndRenderTarget* MapMenu_RenderTarget;
 bool Dialog_MapMenu_is_open = false;
 bool Dialog_MapMenu_is_Create = 1;//控制創造或刪除模式 
 
-INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
     switch (uMsg) {
     case WM_INITDIALOG:
     {
         OutputDebugString(L"地圖選單開啟\n");
-        MapMenu_hWnd = hwndDlg;
+        MapMenu_hWnd = hwndDig;
         Dialog_MapMenu_is_open = 1;
 
         if (Dialog_MapMenu_is_Create) {
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);   // 勾選 IDC_CHECK1
-            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
+            CheckDlgButton(hwndDig, IDC_CHECK1, BST_CHECKED);   // 勾選 IDC_CHECK1
+            CheckDlgButton(hwndDig, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
         }
         else {
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1
-            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
+            CheckDlgButton(hwndDig, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1
+            CheckDlgButton(hwndDig, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
         }
-        ShowWindow(GetDlgItem(hwndDlg, ID_RETURN), SW_HIDE);
+        ShowWindow(GetDlgItem(hwndDig, ID_RETURN), SW_HIDE);
         EnableWindow(GetDlgItem(hWnd, 3), FALSE);
 
         if (Dialog_Input_is_open) {
-            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE), FALSE);
-            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE_QUICK), FALSE);
+            EnableWindow(GetDlgItem(hwndDig, ID_DATASAVE), FALSE);
+            EnableWindow(GetDlgItem(hwndDig, ID_DATASAVE_QUICK), FALSE);
         }   
 
-        Common::InitD2D(hwndDlg, pD2DFactory, &MapMenu_RenderTarget);
+        Common::InitD2D(hwndDig, pD2DFactory, &MapMenu_RenderTarget);
         if (Tree_saveData.empty()) {
             std::string path = currentPath.parent_path().string() + "/種樹/Images/Tree_saveData.json";
             std::ifstream inFile(path);
@@ -73,7 +73,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         //OutputDebugString(L"items完成\n");
 
         CComboBox pComboBox;
-        pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+        pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
         CFont font;
         font.CreatePointFont(120, _T("Verdana"));  // 120 是字體大小，"Verdana" 是字體名稱
         pComboBox.SetFont(&font);
@@ -98,11 +98,11 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
         if (LOWORD(wParam) == IDC_CHECK1 && HIWORD(wParam) == BN_CLICKED) {
             // IDC_CHECK1 被點擊
-            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 的勾選
+            CheckDlgButton(hwndDig, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 的勾選
             Dialog_MapMenu_is_Create = 1;
         }
         else if (LOWORD(wParam) == IDC_CHECK2 && HIWORD(wParam) == BN_CLICKED) {
-            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
+            CheckDlgButton(hwndDig, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
             Dialog_MapMenu_is_Create = 0;
         }
         switch (LOWORD(wParam))
@@ -116,19 +116,19 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         case IDCANCEL:       // 使用者按下了取消按鈕
         {
 
-            DestroyWindow(hwndDlg);
+            DestroyWindow(hwndDig);
 
-            //EndDialog(hwndDlg, IDCANCEL);
+            //EndDialog(hwndDig, IDCANCEL);
         }
         break;
         case ID_DATASAVE: // 另存新檔
         {
             if (Dialog_Input_is_open)
             {
-                MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"輸入框已開啟", L"錯誤", MB_OK);
                 break;
             }
-            int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
+            int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDig, Dialog_Input_Proc, 0);
             if (result == -1)
             {
                 // 對話框創建失敗
@@ -179,7 +179,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             else {
                 widestr = L"";
             }
-            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+            HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
             SetWindowText(hStatic, widestr.c_str());
 
             using_MapName = Save_Name;
@@ -197,13 +197,13 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
-                ComboBoxAdd(hwndDlg, IDC_COMBO1, Save_Name);
+                ComboBoxAdd(hwndDig, IDC_COMBO1, Save_Name);
             }
             else
             {
 
 
-                MessageBox(hwndDlg, L"無法另存新檔案", L"地圖選單", MB_OK);
+                MessageBox(hwndDig, L"無法另存新檔案", L"地圖選單", MB_OK);
             }
 
 
@@ -214,11 +214,11 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         {
 
             if (Dialog_Input_is_open) {
-            MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
+            MessageBox(hwndDig, L"輸入框已開啟", L"錯誤", MB_OK);
             break;
             }
             if (using_MapName.empty()) {
-                int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
+                int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDig, Dialog_Input_Proc, 0);
                 if (result == -1)
                 {
                     // 對話框創建失敗
@@ -270,7 +270,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             else {
                 widestr = L"";
             }
-            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+            HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
             SetWindowText(hStatic, widestr.c_str());
 
             Map_saveData[using_MapName] = Map_saveData_using;
@@ -284,11 +284,11 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
-                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_MapName);
+                ComboBoxAdd(hwndDig, IDC_COMBO1, using_MapName);
             }
             else
             {
-                MessageBox(hwndDlg, L"無法打開文件保存JSON", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"無法打開文件保存JSON", L"錯誤", MB_OK);
             }
 
         }
@@ -298,7 +298,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             OutputDebugString(L"刪除存檔\n");
 
             CComboBox pComboBox;
-            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+            pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
 
             int selectedIndex = pComboBox.GetCurSel();
 
@@ -340,7 +340,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             {
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
-                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"沒有項目被選中", L"錯誤", MB_OK);
             }
             pComboBox.Detach();
 
@@ -351,7 +351,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             OutputDebugString(L"載入存檔\n");
 
             CComboBox pComboBox;
-            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
+            pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
 
             int selectedIndex = pComboBox.GetCurSel();
 
@@ -400,7 +400,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     Map_Remarks = "";
                     widestr = L"";
                 }
-                HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
+                HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
                 SetWindowText(hStatic, widestr.c_str());
 
 
@@ -415,7 +415,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                     //    if (it == Tree_saveData.end()) {
                     //        std::wstring str = converter.from_bytes(key);
                     //        std::wstring str1 = L"無法在元件存檔找到" + str;
-                    //        MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                    //        MessageBox(hwndDig, str1.c_str(), L"錯誤", MB_OK);
                     //        Map_saveData_using.erase(key);
                     //    }
                     //} 
@@ -431,7 +431,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                             std::wstring str = converter.from_bytes(key);
                             std::wstring str1 = L"無法在元件存檔找到" + str + L"\n請到元件存檔重建," + str + L"\n再讀取一次地圖存檔即可.";
                             str1 += L"\n若無重建元件,直接存檔地圖,\n則會將" + str + L"從地圖存檔中刪除";
-                            MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
+                            MessageBox(hwndDig, str1.c_str(), L"錯誤", MB_OK);
                             it = Map_saveData_using.erase(it); // 更新迭代器
                         }
                         else {
@@ -444,7 +444,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
             {
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
-                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"沒有項目被選中", L"錯誤", MB_OK);
 
             }
             pComboBox.Detach();
@@ -455,9 +455,9 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         case ID_RETURN: //刪除最後繪圖資料
         {
             if (Map_treepoints.empty())
-                MessageBox(hwndDlg, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
             else if (using_Main_TreeName.empty())
-                MessageBox(hwndDlg, L"未選擇元件", L"錯誤", MB_OK);
+                MessageBox(hwndDig, L"未選擇元件", L"錯誤", MB_OK);
             else {
                 Map_treepoints.pop_back();
                 Map_clickPoint = { 0 };
@@ -471,7 +471,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwndDlg, &ps);
+        HDC hdc = BeginPaint(hwndDig, &ps);
 
         MapMenu_RenderTarget->BeginDraw();
         MapMenu_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -479,7 +479,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
         MapMenu_RenderTarget->Clear(D2D1::ColorF(D2D1::ColorF(0.8f, 0.8f, 0.8f, 0.8f))); // dialog 背景色
         MapMenu_RenderTarget->EndDraw();
 
-        EndPaint(hwndDlg, &ps);
+        EndPaint(hwndDig, &ps);
     }
     break;
     case WM_DESTROY:
@@ -497,7 +497,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_CLOSE:
     {
 
-        DestroyWindow(hwndDlg);
+        DestroyWindow(hwndDig);
     }
         break;
     case WM_CTLCOLORSTATIC:

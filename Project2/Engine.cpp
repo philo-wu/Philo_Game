@@ -144,7 +144,7 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
     IWICImagingFactory* pIWICFactory = NULL;
     CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
 
-    //OutputDebugString(L"繪製已儲存元件\n");
+    OutputDebugString(L"地圖繪製已儲存元件\n");
     for (auto& tree : Map_saveData.items()) {
         //OutputDebugString(L"迴圈開始\n");
         std::string treeName = tree.key();
@@ -153,6 +153,7 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
         //std::wstring wideTreeName(treeName.begin(), treeName.end());
         //LPCWSTR treeNameCStr = wideTreeName.c_str();
         //OutputDebugString(treeNameCStr);
+        // 
         // 在 Tree_saveData 中查找對應樹的資料
         if (Tree_saveData.contains(treeName)) {
             ID2D1Bitmap* tree_Bitmap;
@@ -160,25 +161,34 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
             std::wstring image = converter.from_bytes(Tree_saveData[treeName]["image"]);
             std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
             int errorcode;
+            OutputDebugString(L"載入樹木\n");
             Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd , errorcode);
             if (errorcode != 0) {
                 std::wstring str1 = path + L"圖檔不存在" + L"\n";
                 OutputDebugString(path.c_str());
             }
+
             //樹座標:  Tree_saveData[treeName]["coordinates"]
             for (const auto& coordinate : Map_saveData[treeName]["coordinates"])
             {
                 dtawPoint tree_Point;
                 tree_Point.x = coordinate["X"];
                 tree_Point.y = coordinate["Y"];
-                if (tree_Bitmap)
-                {
+                if (tree_Bitmap) {
                     m_pRenderTarget->DrawBitmap(tree_Bitmap, D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
+
                     // 檢查樹是否有 Fruit
-                    if (Tree_saveData[treeName].contains("Fruit")) {
+                    OutputDebugString(L"畫Fruit\n");
+                    for (auto& fruit : Tree_saveData[treeName]["Fruit"].items()) {
+                        std::string fruitName = fruit.key();
+                        if (fruit.value().is_null()) {
+                            continue;
+                            OutputDebugString(L"value為空\n");
+
+                        }
                         ID2D1Bitmap* fruit_Bitmap;
                         //水果圖片:  Tree_saveData[treeName]["Fruit"]["image"]
-                        image = converter.from_bytes(Tree_saveData[treeName]["Fruit"]["image"]);
+                        image = converter.from_bytes(Tree_saveData[treeName]["Fruit"][fruitName]["image"]);
                         std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
                         Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd , errorcode);
                         if (errorcode != 0) {
@@ -186,7 +196,7 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
                             OutputDebugString(path.c_str());
                         }
                         //水果座標:  Tree_saveData[treeName]["Fruit"]["coordinates"]
-                        for (auto& coordinate : Tree_saveData[treeName]["Fruit"]["coordinates"]) {
+                        for (auto& coordinate : Tree_saveData[treeName]["Fruit"][fruitName]["coordinates"]) {
                             UINT drawpoint_x = tree_Point.x + coordinate["X"] * scalingRatio;
                             UINT drawpoint_y = tree_Point.y + coordinate["Y"] * scalingRatio;
 
@@ -242,7 +252,7 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
         pBlackBrush
     );
     // 再繪製正在當前元件
-    //OutputDebugString(L"繪製未儲存元件\n");
+    OutputDebugString(L"繪製未儲存元件\n");
     if (tree->Get_treeBitmap()) {
         for (const dtawPoint& tree_Point : Map_treepoints){
             // 繪製樹

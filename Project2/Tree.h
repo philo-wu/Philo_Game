@@ -58,8 +58,18 @@ protected:
     dtawPoint tree_Point;
 public:
     Tree(const std::wstring name) : using_Dialog_TreeName(name) ,Images() { }
-
+    void drawTree();
 };
+
+class Fruit /*: public Images  // 因避免菱形繼承,故不使用*/ {
+protected:
+    std::wstring using_Dialog_TreeName;
+    dtawPoint tree_Point;
+public:
+    Fruit(const std::wstring name) : using_Dialog_TreeName(name) { }
+    void drawFruit();
+};
+
 
 // 子類別 FruitTree
 class FruitTree : public Tree  {
@@ -69,16 +79,17 @@ private:
 
 public:
     FruitTree(const std::wstring name, std::wstring fruit) : Tree(name) {}
-    FruitTree(Tree& tree) : Tree(tree)
-    {
-        // 在這裡可以使用基類的資訊進行初始化
-        // 例如，可以從 Tree 和 Fruit 中獲取相關資訊來初始化 FruitTree
-    }
+    //FruitTree(Tree& tree) : Tree(tree)
+    //{
+    //    // 在這裡可以使用基類的資訊進行初始化
+    //    // 例如，可以從 Tree 和 Fruit 中獲取相關資訊來初始化 FruitTree
+    //}
     void Set_fruit_Points(std::vector<dtawPoint> Points) { 
         fruit_Points  = Points;
     }
     std::vector<dtawPoint> Get_fruit_Points() { 
         return fruit_Points;
     };
+    void drawFruitTree();
 
 };
