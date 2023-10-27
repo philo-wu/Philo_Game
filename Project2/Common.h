@@ -32,12 +32,12 @@
 #define WM_CUSTOM_GAMEEND WM_USER + 1
 #define WM_CUSTOM_GAMEWIN WM_USER + 2
 
-struct dtawPoint {
+struct drawPoint {
     int x;
     int y;
 
     // 自定義的比較函數
-    bool operator<(const dtawPoint& other) const {
+    bool operator<(const drawPoint& other) const {
         // 首先按照 y 坐標升序排列
         if (y != other.y) {
             return y < other.y;
@@ -226,7 +226,7 @@ public:
     static void SaveWindowToImage(
         HWND hwnd,
         const wchar_t* filePath,
-        dtawPoint point,
+        drawPoint point,
         int RECTwidth,
         int RECTheight
     )

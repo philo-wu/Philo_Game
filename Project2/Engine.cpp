@@ -83,9 +83,9 @@ void Engine::Logic(double elapsedTime)
     //}
 }
 
-HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
-    FruitTree* tree, json Map_saveData, json Tree_saveData,
-    std::vector<dtawPoint> Map_treepoints,
+HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
+    FruitTreeManager* m_FruitTreeManager, json Map_saveData, json Tree_saveData,
+    std::vector<drawPoint> Map_treepoints,
     std::string using_MapName, std::string using_Main_TreeName)
 {
 
@@ -124,19 +124,6 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
         //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
         m_pRenderTarget->FillRectangle(&Rect_drawingArea, pGreenBrush);
     }
-    // 讀取Map存檔
-    //if (do_drawMap)
-    //{
-    //    m_pRenderTarget->DrawBitmap(Map_Bitmap, Rect_drawingArea);
-    //    do_drawMap = 0;
-    //}
-    // 
-    //if (tree->treeBitmap && point.x >0 && point.y >50)
-    //{
-
-    //    m_pRenderTarget->DrawBitmap(tree->treeBitmap, D2D1::RectF(point.x, point.y, point.x + pxSize, point.y + pxSize));//Rect為樹的位子加上恆定長寬
-
-    //}
     // 先繪製已儲存元件  // 無考慮繪製優先度問題
     double scalingRatio = static_cast<double>(pxSize) / OriginalSize;
     int scalingPx = DIALOG_TREELOAD_FRUIT_PX * scalingRatio;
@@ -171,7 +158,7 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
             //樹座標:  Tree_saveData[treeName]["coordinates"]
             for (const auto& coordinate : Map_saveData[treeName]["coordinates"])
             {
-                dtawPoint tree_Point;
+                drawPoint tree_Point;
                 tree_Point.x = coordinate["X"];
                 tree_Point.y = coordinate["Y"];
                 if (tree_Bitmap) {
@@ -253,23 +240,24 @@ HRESULT Engine::Draw(HWND hWnd, dtawPoint point, int OriginalSize, int pxSize,
     );
     // 再繪製正在當前元件
     OutputDebugString(L"繪製未儲存元件\n");
-    if (tree->Get_treeBitmap()) {
-        for (const dtawPoint& tree_Point : Map_treepoints){
-            // 繪製樹
-            if (tree->Get_treeBitmap())
-                m_pRenderTarget->DrawBitmap(tree->Get_treeBitmap(), D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
-            // 水果座標
-            for (const dtawPoint& coordinate : tree->Get_fruit_Points())
-            {
-                UINT drawpoint_x = tree_Point.x + coordinate.x* scalingRatio;
-                UINT drawpoint_y = tree_Point.y + coordinate.y* scalingRatio;
-                // 繪製水果
-                if(tree->Get_fruitBitmap())
-                    m_pRenderTarget->DrawBitmap(tree->Get_fruitBitmap(), D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + scalingPx, drawpoint_y + scalingPx));
+    //if (tree->Get_treeBitmap()) {
+    //    for (const drawPoint& tree_Point : Map_treepoints){
+    //        // 繪製樹
+    //        if (tree->Get_treeBitmap())
+    //            m_pRenderTarget->DrawBitmap(tree->Get_treeBitmap(), D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
+    //        // 水果座標
+    //        for (const drawPoint& coordinate : tree->Get_fruit_Points())
+    //        {
+    //            UINT drawpoint_x = tree_Point.x + coordinate.x* scalingRatio;
+    //            UINT drawpoint_y = tree_Point.y + coordinate.y* scalingRatio;
+    //            // 繪製水果
+    //            if(tree->Get_fruitBitmap())
+    //                m_pRenderTarget->DrawBitmap(tree->Get_fruitBitmap(), D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + scalingPx, drawpoint_y + scalingPx));
 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
+    m_FruitTreeManager->draw(pxSize,  OriginalSize);
     m_pRenderTarget->EndDraw();
 
     return S_OK;

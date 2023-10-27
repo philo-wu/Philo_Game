@@ -13,17 +13,17 @@ bool Dialog_LoadTree_is_open = false;
 bool Dialog_Input_is_open = false;
 
 // Dialog相關
-std::vector<dtawPoint> fruit_Points; //目前水果的座標
-dtawPoint Tree_Point = { DIALOG_TREELOAD_POINT_X,DIALOG_TREELOAD_POINT_Y }; //Dialog樹木生成座標
-dtawPoint Tree_clickPoint = { 0 }; //Dialog點擊座標
-//dtawPoint movePoint = { 0 }; //Dialog滑鼠當前座標
+std::vector<drawPoint> fruit_Points; //目前水果的座標
+drawPoint Tree_Point = { DIALOG_TREELOAD_POINT_X,DIALOG_TREELOAD_POINT_Y }; //Dialog樹木生成座標
+drawPoint Tree_clickPoint = { 0 }; //Dialog點擊座標
+//drawPoint movePoint = { 0 }; //Dialog滑鼠當前座標
 json Tree_saveData;   //所有元件存檔
 json Fruits_saveData_using; //正在繪製的水果
 
 //主視窗相關
-std::vector<dtawPoint> Map_treepoints; //目前元件的座標
+std::vector<drawPoint> Map_treepoints; //目前元件的座標
 
-dtawPoint Map_clickPoint = { 0 }; //主視窗點擊座標
+drawPoint Map_clickPoint = { 0 }; //主視窗點擊座標
 json Map_saveData;   //所有地圖存檔
 json Map_saveData_using; //正在讀取的Map
 std::string using_MapName; //正在讀取的存檔名稱
@@ -51,9 +51,9 @@ ID2D1Bitmap* Fruit_Bitmap;
 ID2D1HwndRenderTarget* Tree_RenderTarget;
 
 //主視窗繪圖
-Tree* drawTree;
-FruitTree* drawFruitTree;
-
+//Tree* drawTree;
+//FruitTree* drawFruitTree;
+FruitTreeManager* g_FruitTreeManager;
 ID2D1Factory* pD2DFactory;
 
 // 取得專案位置
@@ -205,8 +205,8 @@ void FruitSave(HWND hwnd) {
     json fruit;
     // 創建一個 JSON array，用於存放 coordinates
     json coordinatesArray;
-    // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-    for (const dtawPoint& point : fruit_Points)
+    // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
+    for (const drawPoint& point : fruit_Points)
     {
         json pointObject =
         {
@@ -402,8 +402,6 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         {
 
             //OutputDebugString(L"儲存圖片\n");
-
-            // 將上一份繪圖結果儲存
             if (Dialog_Tree_has_newaction)
             {
                 MessageBox(hwndDig, L"請先進行存檔", L"錯誤", MB_OK);
@@ -411,7 +409,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             }
 
             // 初始化主視窗相關
-            // 這裡開始
+            
+            // 將上一份繪圖結果儲存
             if (!Map_treepoints.empty())
             {
                 json tree;
@@ -420,8 +419,8 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 if (it != Map_saveData_using.end())
                     tree = Map_saveData_using[using_Main_TreeName];
                 json coordinatesArray = tree["coordinates"];
-                // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-                for (const dtawPoint& point : Map_treepoints)
+                // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
+                for (const drawPoint& point : Map_treepoints)
                 {
                     json pointObject =
                     {
@@ -443,7 +442,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             {
                 for (const auto& coordinate : Map_saveData_using[using_Dialog_TreeName]["coordinates"])
                 {
-                    dtawPoint tree_Point;
+                    drawPoint tree_Point;
                     tree_Point.x = coordinate["X"];
                     tree_Point.y = coordinate["Y"];
                     Map_treepoints.push_back(tree_Point);
@@ -453,29 +452,30 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             Map_clickPoint = { 0 };
             using_Main_TreeName = using_Dialog_TreeName;
 
+
             // 帶入水果樹圖片
             //OutputDebugString(L"匯入主選單\n");
             //OutputDebugString(L"樹木位置\n");
             //OutputDebugString(Load_Tree_File_Path.c_str());
             //OutputDebugString(L"\n");
 
-            IWICImagingFactory* pIWICFactory = NULL;
-            CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-            drawFruitTree->Release_treeBitmap();
-            int errorcode;
+            //IWICImagingFactory* pIWICFactory = NULL;
+            //CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+            //drawFruitTree->Release_treeBitmap();
+            //int errorcode;
 
-            Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path, 0, 0, &drawFruitTree->Get_treeBitmap(), hwndDig, errorcode);
+            //Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Tree_File_Path, 0, 0, &drawFruitTree->Get_treeBitmap(), hwndDig, errorcode);
             //OutputDebugString(L"水果位置\n");
             //OutputDebugString(Load_Fruit_File_Path.c_str());
             //OutputDebugString(L"\n");
-            if (!Load_Fruit_File_Path.empty()) {
-                drawFruitTree->Release_fruitBitmap();
-                Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->Get_fruitBitmap(), hwndDig, errorcode);
-                drawFruitTree->Set_fruit_Points(fruit_Points);
-            }
+            //if (!Load_Fruit_File_Path.empty()) {
+            //    drawFruitTree->Release_fruitBitmap();
+            //    Common::LoadBitmapFromFile(engine->m_pRenderTarget, pIWICFactory, Load_Fruit_File_Path, 0, 0, &drawFruitTree->Get_fruitBitmap(), hwndDig, errorcode);
+            //    drawFruitTree->Set_fruit_Points(fruit_Points);
+            //}
+            g_FruitTreeManager->SetFruitTree(Load_Tree_File_Path , Fruits_saveData_using , currentPath);
 
             OutputDebugString(L"匯入結束\n");
-            pIWICFactory->Release();
             InvalidateRect(hWnd, NULL, TRUE);
             //EndDialog(hwndDig, IDOK);
         }
@@ -903,14 +903,14 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 Dialog_clear();
                 json coordinatesArray = Fruit["coordinates"];
 
-                // 將 JSON array 中的每個 object 轉換為 dtawPoint 並添加到 fruit_Points 中
+                // 將 JSON array 中的每個 object 轉換為 drawPoint 並添加到 fruit_Points 中
                 auto it1 = Fruits_saveData_using.find(stdStr);
 
                 if (it1 != Fruits_saveData_using.end())
                 {
                     for (const auto& coordinate : Fruit["coordinates"])
                     {
-                        dtawPoint tree_Point;
+                        drawPoint tree_Point;
                         tree_Point.x = coordinate["X"];
                         tree_Point.y = coordinate["Y"];
                         fruit_Points.push_back(tree_Point);
@@ -1011,7 +1011,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
 
                 float fixedPxFruit = fixed_px_fruit; //無法在 Lambda 中擷取有靜態儲存期的變數	
                 fruit_Points.erase(std::remove_if(fruit_Points.begin(), fruit_Points.end(),
-                    [xPos, yPos, fixedPxFruit](const dtawPoint& point) {
+                    [xPos, yPos, fixedPxFruit](const drawPoint& point) {
                         return point.x <= xPos && point.x >= xPos - fixed_px_fruit &&
                             point.y <= yPos && point.y >= yPos - fixed_px_fruit;
                     }), fruit_Points.end());
@@ -1120,7 +1120,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         OutputDebugString(L"繪製未儲存\n");
 
         // 讀取點擊陣列並繪圖水果
-        for (const dtawPoint& fruit_Point : fruit_Points)
+        for (const drawPoint& fruit_Point : fruit_Points)
         {
             if (Fruit_Bitmap)
             {

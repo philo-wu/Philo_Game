@@ -63,8 +63,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
     engine = new Engine();
     engine->phWnd = hWnd;
     //drawTree = new Tree(L"1");
-    drawFruitTree = new FruitTree(L"2",L"apple"); //drawFruitTree為當前繪圖物件
+    //drawFruitTree = new FruitTree(); //drawFruitTree為當前繪圖物件
     engine->InitializeD2D(hWnd); //
+    g_FruitTreeManager = new FruitTreeManager(hWnd, engine->m_pRenderTarget);
+
     //Common::InitD2D(hWnd , Tree_RenderTarget); //繪製
 
     Dialog_Tree_is_Create = 1;
@@ -294,7 +296,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             //OutputDebugString(wstr.c_str());
             //OutputDebugString(L"\n");
 
-                engine->Draw(hWnd, Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawFruitTree ,
+             engine->Draw(hWnd, Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, g_FruitTreeManager,
                     Map_saveData_using, Tree_saveData , Map_treepoints ,
                     using_MapName , using_Main_TreeName);
                 
@@ -309,7 +311,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             int yPos = GET_Y_LPARAM(lParam) - fixedPx;
             if (xPos >= 0 - fixedPx / 2 &&
                 yPos >= FUNCTION_COLUMN_HEIGHT - fixedPx &&
-                drawFruitTree->Get_fruitBitmap()) {
+                g_FruitTreeManager->is_TreeExist()) {
                 if (Dialog_MapMenu_is_Create) {
                     if (xPos + fixedPx > SCREEN_WIDTH)
                         xPos = SCREEN_WIDTH - fixedPx;
@@ -334,7 +336,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     yPos += fixedPx;
 
                     Map_treepoints.erase(std::remove_if(Map_treepoints.begin(), Map_treepoints.end(),
-                        [xPos, yPos, fixedPx](const dtawPoint& point) {
+                        [xPos, yPos, fixedPx](const drawPoint& point) {
                             return point.x <= xPos && point.x >= xPos - fixedPx &&
                                 point.y <= yPos && point.y >= yPos - fixedPx;
                         }), Map_treepoints.end());

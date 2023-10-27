@@ -146,8 +146,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
             json tree;
             // 創建一個 JSON array，用於存放 coordinates
             json coordinatesArray;
-            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-            for (const dtawPoint& point : Map_treepoints)
+            // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
+            for (const drawPoint& point : Map_treepoints)
             {
                 json pointObject =
                 {
@@ -238,8 +238,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
             json tree;
             // 創建一個 JSON array，用於存放 coordinates
             json coordinatesArray;
-            // 將 fruit_Points 中的每個 dtawPoint 轉換為 JSON object 並添加到 array 中
-            for (const dtawPoint& point : Map_treepoints)
+            // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
+            for (const drawPoint& point : Map_treepoints)
             {
                 json pointObject =
                 {
@@ -383,7 +383,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
                 // 將地圖中符合元件拿出寫入正在繪製中
                 if (it != Map_saveData_using.end()) {
                     for (const auto& coordinate : Map_saveData_using[using_Main_TreeName]["coordinates"]) {
-                        dtawPoint tree_Point;
+                        drawPoint tree_Point;
                         tree_Point.x = coordinate["X"];
                         tree_Point.y = coordinate["Y"];
                         Map_treepoints.push_back(tree_Point);
