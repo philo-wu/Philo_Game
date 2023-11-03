@@ -282,22 +282,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 主選單畫面
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            //if(Dialog_is_fruit)// 1改成判斷要畫樹還是水果樹
-                //engine->Draw(Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, drawTree , Map_saveData , Map_treepoints);
-            //else
-            //std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-            //std::wstring wstr = converter.from_bytes(using_MapName);
-            //OutputDebugString(L"測試\n");
-
-            //OutputDebugString(wstr.c_str());
-            //OutputDebugString(L"\n");
-
-            //wstr = converter.from_bytes(using_Main_TreeName);
-            //OutputDebugString(wstr.c_str());
-            //OutputDebugString(L"\n");
 
              engine->Draw(hWnd, Map_clickPoint, DIALOG_TREELOAD_TREE_PX, MAINDIALOG_TREE_PX, g_FruitTreeManager,
-                    Map_saveData_using, Tree_saveData , Map_treepoints ,
+                    Map_saveData_using, Tree_saveData , 
                     using_MapName , using_Main_TreeName);
                 
             EndPaint(hWnd, &ps);
@@ -306,7 +293,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         
         case WM_LBUTTONDOWN: // 處理滑鼠左鍵
         {
-            float fixedPx = MAINDIALOG_TREE_PX; //無法在 Lambda 中擷取有靜態儲存期的變數	
+            float fixedPx = MAINDIALOG_TREE_PX; 	
+            // 將點擊位置平移到圖片正下方
+            // 注意: 點擊陣列中儲存的位置為圖片左上角的位置
             int xPos = GET_X_LPARAM(lParam) - fixedPx /2;
             int yPos = GET_Y_LPARAM(lParam) - fixedPx;
             if (xPos >= 0 - fixedPx / 2 &&
@@ -323,23 +312,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     else if (yPos < FUNCTION_COLUMN_HEIGHT)
                         yPos = FUNCTION_COLUMN_HEIGHT;
 
-                    Map_clickPoint.x = static_cast<FLOAT>(xPos);
-                    Map_clickPoint.y = static_cast<FLOAT>(yPos);
+                    drawPoint point;
+                    point.x = static_cast<FLOAT>(xPos);
+                    point.y = static_cast<FLOAT>(yPos);
+                    OutputDebugString(L"1\n");
+                    g_FruitTreeManager->Add_points(point);
 
-                    auto it = std::lower_bound(Map_treepoints.begin(), Map_treepoints.end(), Map_clickPoint);
-                    Map_treepoints.insert(it, Map_clickPoint);
+                    //auto it = std::lower_bound(Map_treepoints.begin(), Map_treepoints.end(), Map_clickPoint);
+                    //Map_treepoints.insert(it, Map_clickPoint);
 
                     //Map_treepoints.push_back(Map_clickPoint);
                 }
                 else {
-                    xPos += fixedPx / 2;
-                    yPos += fixedPx;
+                    //xPos += fixedPx / 2;
+                    //yPos += fixedPx;
 
-                    Map_treepoints.erase(std::remove_if(Map_treepoints.begin(), Map_treepoints.end(),
-                        [xPos, yPos, fixedPx](const drawPoint& point) {
-                            return point.x <= xPos && point.x >= xPos - fixedPx &&
-                                point.y <= yPos && point.y >= yPos - fixedPx;
-                        }), Map_treepoints.end());
+                    drawPoint point;
+                    point.x = static_cast<FLOAT>(xPos);
+                    point.y = static_cast<FLOAT>(yPos);
+                    g_FruitTreeManager->Erase_points(point, fixedPx);
+
+                    //Map_treepoints.erase(std::remove_if(Map_treepoints.begin(), Map_treepoints.end(),
+                    //    [xPos, yPos, fixedPx](const drawPoint& point) {
+                    //        return point.x <= xPos && point.x >= xPos - fixedPx &&
+                    //            point.y <= yPos && point.y >= yPos - fixedPx;
+                    //    }), Map_treepoints.end());
 
                 }
 

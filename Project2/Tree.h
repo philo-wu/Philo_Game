@@ -134,7 +134,6 @@ public:
             //計算水果在樹上縮放的大小
             double scalingRatio = static_cast<double>(pxSize) / OriginalSize;
             int scalingPx = DIALOG_TREELOAD_FRUIT_PX * scalingRatio;
-            mRenderTarget->DrawBitmap(fruitBitmap, D2D1::RectF(treepoint.x, treepoint.y, treepoint.x + pxSize, treepoint.y + pxSize));
 
             for (auto& coordinate : fruit_Points) {
                 UINT drawpoint_x = treepoint.x + coordinate.x * scalingRatio;
@@ -181,6 +180,7 @@ public:
     void drawFruitTree(ID2D1HwndRenderTarget* mRenderTarget,drawPoint treepoint, int treeSize , int OriginalSize) {
         drawTree(mRenderTarget, treepoint,  treeSize);
         for (auto& fruit : Fruits) {
+            OutputDebugString(L"drawFruitTree\n");
             fruit->drawFruit(mRenderTarget, treepoint, treeSize, OriginalSize);
         }
     }
@@ -223,22 +223,70 @@ public:
         hwnd = mhwnd;
         RenderTarget = mRenderTarget;
     }
+    void Add_points(drawPoint point) {
+        auto it = std::lower_bound(m_points.begin(), m_points.end(), point);
+        m_points.insert(it, point);
+    }
+    void Erase_points(drawPoint erasePoint, int fixedPx) {
+
+        // 講點擊位置移動回圖片左上方
+        int xPos = erasePoint.x + fixedPx / 2;
+        int yPos = erasePoint.y + fixedPx;
+
+        //auto it = std::find_if(m_points.begin(), m_points.end(),
+        //    [xPos, yPos, fixedPx](const drawPoint& point) {
+        //        return point.x <= xPos && point.x >= xPos - fixedPx &&
+        //            point.y <= yPos && point.y >= yPos - fixedPx;
+        //    });
+
+        //if (it != m_points.end()) {
+        //    m_points.erase(it);
+        //}
+        std::vector<drawPoint> matchingPoints;
+        std::copy_if(m_points.begin(), m_points.end(), std::back_inserter(matchingPoints),
+            [xPos, yPos, fixedPx](const drawPoint& point) {
+                auto isWithinRange = [xPos, yPos, fixedPx](const drawPoint& p) {
+                    return p.x <= xPos && p.x >= xPos - fixedPx &&
+                        p.y <= yPos && p.y >= yPos - fixedPx;
+                };
+                return isWithinRange(point);
+            });
+        // 按照排序條件排序
+        std::sort(matchingPoints.begin(), matchingPoints.end(),
+            [](const drawPoint& point1, const drawPoint& point2) {
+                if (point1.y == point2.y) {
+                    return point1.x < point2.x;
+                }
+                return point1.y < point2.y;
+            });
+
+        //// 刪除最大的元素
+        if (!matchingPoints.empty()) {
+            auto it_remove = std::remove(m_points.begin(), m_points.end(), matchingPoints.back());
+            m_points.erase(it_remove, m_points.end());
+        }
+    }
     void SetFruitTree(std::wstring treepath , json Fruit_Data , std::filesystem::path currentPath) {
         if (m_FruitTree)
             delete m_FruitTree;
         m_FruitTree = new FruitTree(hwnd, RenderTarget, treepath);
         if (!Fruit_Data.is_null())
         {
-            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-            std::wstring fruitpath;
-            std::vector<drawPoint> points;
+            OutputDebugString(L"\n");
+            OutputDebugString(L"Fruit_Data\n");
 
             for (auto Fruit : Fruit_Data.items()) {
                 std::string FruitName = Fruit.key();
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+                std::wstring fruitpath;
+                std::vector<drawPoint> points;
+
                 if (Fruit_Data.contains(FruitName)) {
                     // 路徑
                     std::wstring image = converter.from_bytes(Fruit_Data[FruitName]["image"]);
                     fruitpath = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
+                    OutputDebugString(fruitpath.c_str());
+                    OutputDebugString(L"\n");
 
                     // 座標
                     for (const auto coordinate : Fruit_Data[FruitName]["coordinates"]) {
@@ -248,16 +296,36 @@ public:
                         points.push_back(Fruit_Point);
                     }
                 }
+                m_FruitTree->AddFruit(hwnd, RenderTarget, fruitpath, points);
+
             }
 
-            m_FruitTree->AddFruit(hwnd, RenderTarget, fruitpath, points);
         }
     }
+    std::vector<drawPoint> GetPoints() { return m_points; }
+    void ClearPoints() { m_points.clear(); }
+    json PointsToJson() {
+        json coordinatesArray;
+        // 將 points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
+        for (const drawPoint& point : m_points)
+        {
+            json pointObject =
+            {
+                {"X", point.x},
+                {"Y", point.y}
+            };
+
+            coordinatesArray.push_back(pointObject);
+        }
+        return coordinatesArray;
+    }
+
+
     bool is_TreeExist() {
         if (!m_FruitTree || !m_FruitTree->Get_treeBitmap())
-            return 1;
-        else
             return 0;
+        else
+            return 1;
     }
     //treeSize 為樹木在地圖上出現的大小 fruitSize 為水果在元件盤上出現的大小
     void draw(int treeSize, int OriginalSize) {

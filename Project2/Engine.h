@@ -19,8 +19,13 @@ public:
 
 	HRESULT Draw(HWND hWnd, drawPoint point ,int OriginalSize,int pxSize, FruitTreeManager* m_FruitTreeManager,
 		json Map_saveData, json Tree_saveData,
-		std::vector<drawPoint> Map_treepoints,
 		std::string using_MapName, std::string using_Main_TreeName);
+
+	void Draw_Function_Column();
+	void Draw_Background();
+	void Draw_Saved_tree(int OriginalSize, int pxSize, json Map_saveData, json Tree_saveData);
+	void Draw_Text(std::string using_MapName, std::string using_Main_TreeName);
+
 	bool frist_start = 1;
 	bool do_clear = 1;
 	bool do_drawMap = 0;

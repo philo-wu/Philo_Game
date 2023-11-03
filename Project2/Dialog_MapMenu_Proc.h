@@ -145,19 +145,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
             // 將 JSON 對象轉換為字串
             json tree;
             // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
-            for (const drawPoint& point : Map_treepoints)
-            {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-            Map_treepoints.clear();
+            json coordinatesArray = g_FruitTreeManager->PointsToJson();
+            g_FruitTreeManager->ClearPoints();
             // 將 coordinatesArray 存入 JSON 中的 "coordinates"
             tree["coordinates"] = coordinatesArray;
 
@@ -236,22 +225,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
             }
             // 將 JSON 對象轉換為字串
             json tree;
-            // 創建一個 JSON array，用於存放 coordinates
-            json coordinatesArray;
-            // 將 fruit_Points 中的每個 drawPoint 轉換為 JSON object 並添加到 array 中
-            for (const drawPoint& point : Map_treepoints)
-            {
-                json pointObject =
-                {
-                    {"X", point.x},
-                    {"Y", point.y}
-                };
-
-                coordinatesArray.push_back(pointObject);
-            }
-            Map_treepoints.clear();
-
-            // 將 coordinatesArray 存入 JSON 中的 "coordinates"
+            json coordinatesArray = g_FruitTreeManager->PointsToJson();
+            //g_FruitTreeManager->ClearPoints();
             tree["coordinates"] = coordinatesArray;
             // 將未儲存元件使用中地圖
             Map_saveData_using[using_Dialog_TreeName] = tree;
@@ -378,7 +353,8 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
 
 
                 //清理陣列
-                Map_treepoints.clear();
+                g_FruitTreeManager->ClearPoints();
+
                 auto it = Map_saveData_using.find(using_Main_TreeName);
                 // 將地圖中符合元件拿出寫入正在繪製中
                 if (it != Map_saveData_using.end()) {
@@ -386,7 +362,7 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
                         drawPoint tree_Point;
                         tree_Point.x = coordinate["X"];
                         tree_Point.y = coordinate["Y"];
-                        Map_treepoints.push_back(tree_Point);
+                        g_FruitTreeManager->Add_points(tree_Point);
                     }
                     Map_saveData_using.erase(using_Main_TreeName);
                 }
@@ -454,15 +430,15 @@ INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPA
         break;
         case ID_RETURN: //刪除最後繪圖資料
         {
-            if (Map_treepoints.empty())
-                MessageBox(hwndDig, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
-            else if (using_Main_TreeName.empty())
-                MessageBox(hwndDig, L"未選擇元件", L"錯誤", MB_OK);
-            else {
-                Map_treepoints.pop_back();
-                Map_clickPoint = { 0 };
-                InvalidateRect(hWnd, NULL, FALSE);
-            }
+            //if (Map_treepoints.empty())
+            //    MessageBox(hwndDig, L"此元件已經無物件可刪除", L"錯誤", MB_OK);
+            //else if (using_Main_TreeName.empty())
+            //    MessageBox(hwndDig, L"未選擇元件", L"錯誤", MB_OK);
+            //else {
+            //    Map_treepoints.pop_back();
+            //    Map_clickPoint = { 0 };
+            //    InvalidateRect(hWnd, NULL, FALSE);
+            //}
 
         }
         break;

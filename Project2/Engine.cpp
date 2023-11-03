@@ -85,8 +85,8 @@ void Engine::Logic(double elapsedTime)
 
 HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
     FruitTreeManager* m_FruitTreeManager, json Map_saveData, json Tree_saveData,
-    std::vector<drawPoint> Map_treepoints,
-    std::string using_MapName, std::string using_Main_TreeName)
+    std::string using_MapName, std::string using_Main_TreeName
+)
 {
 
     // This is the drawing method of the engine.
@@ -106,25 +106,48 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
 
     if (frist_start)
     {
-
         //繪製功能列底色
-        D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
-        ID2D1SolidColorBrush* pWhiteBrush;
-        m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
-        //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-        m_pRenderTarget->FillRectangle(&Rect_functionColumn, pWhiteBrush);
+        Draw_Function_Column();
         frist_start = 0;
-    }
-    //if(do_drawMap)
-    {
-        //繪製草地
-        D2D1_COLOR_F customColor = D2D1::ColorF(204.0f / 255.0f, 153.0f / 255.0f, 102.0f / 255.0f, 1.0f);
-        ID2D1SolidColorBrush* pGreenBrush;
-        m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
-        //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
-        m_pRenderTarget->FillRectangle(&Rect_drawingArea, pGreenBrush);
-    }
+    }  
+    //繪製草地
+    Draw_Background();
     // 先繪製已儲存元件  // 無考慮繪製優先度問題
+    Draw_Saved_tree(OriginalSize, pxSize, Map_saveData, Tree_saveData);
+    Draw_Text(using_MapName, using_Main_TreeName);
+
+    OutputDebugString(L"繪製未儲存元件\n");
+    m_FruitTreeManager->draw(pxSize,  OriginalSize);
+    m_pRenderTarget->EndDraw();
+
+    return S_OK;
+}
+
+void Engine::ClearDraw(HWND hWnd)
+{
+    m_pRenderTarget->BeginDraw();
+    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
+    m_pRenderTarget->EndDraw();
+    InvalidateRect(hWnd, NULL, TRUE);
+}
+void Engine::Draw_Function_Column() {
+    D2D1_COLOR_F white_Color = D2D1::ColorF(0.8f, 0.8f, 0.8f, 1.0f);
+    ID2D1SolidColorBrush* pWhiteBrush;
+    m_pRenderTarget->CreateSolidColorBrush(white_Color, &pWhiteBrush);
+    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+    m_pRenderTarget->FillRectangle(&Rect_functionColumn, pWhiteBrush);
+
+}
+void Engine::Draw_Background() {
+
+    D2D1_COLOR_F customColor = D2D1::ColorF(204.0f / 255.0f, 153.0f / 255.0f, 102.0f / 255.0f, 1.0f);
+    ID2D1SolidColorBrush* pGreenBrush;
+    m_pRenderTarget->CreateSolidColorBrush(customColor, &pGreenBrush);
+    //m_pRenderTarget->DrawRectangle(&rectangle, pBlackBrush, 7.0f);
+    m_pRenderTarget->FillRectangle(&Rect_drawingArea, pGreenBrush);
+
+}
+void  Engine::Draw_Saved_tree(int OriginalSize, int pxSize, json Map_saveData, json Tree_saveData) {
     double scalingRatio = static_cast<double>(pxSize) / OriginalSize;
     int scalingPx = DIALOG_TREELOAD_FRUIT_PX * scalingRatio;
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -149,7 +172,7 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
             std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
             int errorcode;
             OutputDebugString(L"載入樹木\n");
-            Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd , errorcode);
+            Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &tree_Bitmap, phWnd, errorcode);
             if (errorcode != 0) {
                 std::wstring str1 = path + L"圖檔不存在" + L"\n";
                 OutputDebugString(path.c_str());
@@ -177,7 +200,7 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
                         //水果圖片:  Tree_saveData[treeName]["Fruit"]["image"]
                         image = converter.from_bytes(Tree_saveData[treeName]["Fruit"][fruitName]["image"]);
                         std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
-                        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd , errorcode);
+                        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &fruit_Bitmap, phWnd, errorcode);
                         if (errorcode != 0) {
                             std::wstring str1 = path + L"圖檔不存在" + L"\n";
                             OutputDebugString(path.c_str());
@@ -206,8 +229,11 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
     }
     pIWICFactory->Release();
 
+}
+void  Engine::Draw_Text(std::string using_MapName, std::string using_Main_TreeName) {
     ID2D1SolidColorBrush* pBlackBrush = nullptr;
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBlackBrush);
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     std::wstring p_using_MapName;
     std::wstring p_using_Main_TreeName;
 
@@ -229,7 +255,7 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
     m_pRenderTarget->FillRectangle(&Rect_functionColumn_right, pWhiteBrush);
 
 
-    swprintf_s(scoreStr, L"地圖名稱: %s\n元件名稱: %s                    ", 
+    swprintf_s(scoreStr, L"地圖名稱: %s\n元件名稱: %s                    ",
         p_using_MapName.c_str(), p_using_Main_TreeName.c_str());
     m_pRenderTarget->DrawText(
         scoreStr,
@@ -238,36 +264,4 @@ HRESULT Engine::Draw(HWND hWnd, drawPoint point, int OriginalSize, int pxSize,
         rectangle3,
         pBlackBrush
     );
-    // 再繪製正在當前元件
-    OutputDebugString(L"繪製未儲存元件\n");
-    //if (tree->Get_treeBitmap()) {
-    //    for (const drawPoint& tree_Point : Map_treepoints){
-    //        // 繪製樹
-    //        if (tree->Get_treeBitmap())
-    //            m_pRenderTarget->DrawBitmap(tree->Get_treeBitmap(), D2D1::RectF(tree_Point.x, tree_Point.y, tree_Point.x + pxSize, tree_Point.y + pxSize));
-    //        // 水果座標
-    //        for (const drawPoint& coordinate : tree->Get_fruit_Points())
-    //        {
-    //            UINT drawpoint_x = tree_Point.x + coordinate.x* scalingRatio;
-    //            UINT drawpoint_y = tree_Point.y + coordinate.y* scalingRatio;
-    //            // 繪製水果
-    //            if(tree->Get_fruitBitmap())
-    //                m_pRenderTarget->DrawBitmap(tree->Get_fruitBitmap(), D2D1::RectF(drawpoint_x, drawpoint_y, drawpoint_x + scalingPx, drawpoint_y + scalingPx));
-
-    //        }
-    //    }
-    //}
-    m_FruitTreeManager->draw(pxSize,  OriginalSize);
-    m_pRenderTarget->EndDraw();
-
-    return S_OK;
 }
-
-void Engine::ClearDraw(HWND hWnd)
-{
-    m_pRenderTarget->BeginDraw();
-    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White));  // 以白色清空背景
-    m_pRenderTarget->EndDraw();
-    InvalidateRect(hWnd, NULL, TRUE);
-}
-

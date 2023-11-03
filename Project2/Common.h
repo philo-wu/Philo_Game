@@ -45,6 +45,9 @@ struct drawPoint {
         // 如果 y 相同，則按照 x 坐標升序排列
         return x < other.x;
     }
+    bool operator==(const drawPoint& lhs ) {
+        return x == lhs.x && y == lhs.y;
+    }
 }; 
 
 class Common
@@ -535,4 +538,6 @@ public:
         // 使用正則表達式進行匹配
         return std::regex_search(str, chineseRegex);
     }
+
+
 };
