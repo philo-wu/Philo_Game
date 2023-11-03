@@ -72,9 +72,9 @@ std::string Tree_Remarks;
 std::string Map_Remarks; 
 
 //提前宣告
-INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK Dialog_MapMenu_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
 
@@ -102,11 +102,11 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARA
         case IDOK:
         {
             // 取得玩家名稱
-            int textLength = GetWindowTextLength(GetDlgItem(hwndDig, IDC_EDIT1));
+            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
             if (textLength == 0)
             {
                 // 輸入為空
-                MessageBox(hwndDig, L"未輸入檔案名稱", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"未輸入檔案名稱", L"錯誤", MB_OK);
                 break;
 
             }
@@ -115,10 +115,10 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARA
                 WCHAR* buffer = new WCHAR[textLength + 1];
                 // C++14
                 std::wstring_convert<std::codecvt_utf8<WCHAR>> converter;
-                GetDlgItemText(hwndDig, IDC_EDIT1, buffer, textLength + 1);
+                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, textLength + 1);
 
                 if (textLength > 10) {
-                    MessageBox(hwndDig, L"長度超過10字元", L"錯誤", MB_OK);
+                    MessageBox(hwndDlg, L"長度超過10字元", L"錯誤", MB_OK);
                     break;
                 }
                 bool hasChinese = false;
@@ -130,21 +130,21 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARA
                     }
                 }
                 if (hasChinese) {
-                    MessageBox(hwndDig, L"檔案名稱請勿輸入中文", L"錯誤", MB_OK);
+                    MessageBox(hwndDlg, L"檔案名稱請勿輸入中文", L"錯誤", MB_OK);
                 }
                 else {
-                    GetDlgItemText(hwndDig, IDC_EDIT1, buffer, textLength + 1);
+                    GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, textLength + 1);
                     Save_Name = converter.to_bytes(buffer);
 
-                    GetDlgItemText(hwndDig, IDC_EDIT2, buffer, textLength + 1);
+                    GetDlgItemText(hwndDlg, IDC_EDIT2, buffer, textLength + 1);
                     Save_Remarks = converter.to_bytes(buffer);
-                    EndDialog(hwndDig, IDOK);
+                    EndDialog(hwndDlg, IDOK);
                 }
                    
 
 
                 // C++17
-                //GetWindowText(GetDlgItem(hwndDig, IDC_EDIT1), buffer, 100);
+                //GetWindowText(GetDlgItem(hwndDlg, IDC_EDIT1), buffer, 100);
                 //int bufferSize = WideCharToMultiByte(CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
                 //Save_Name.resize(bufferSize);
                 //WideCharToMultiByte(CP_UTF8, 0, buffer, -1, &Save_Name[0], bufferSize, nullptr, nullptr);
@@ -161,14 +161,14 @@ INT_PTR CALLBACK Dialog_Input_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARA
         // 使用者按下了取消按鈕
         case IDCANCEL:
         {
-            EndDialog(hwndDig, IDCANCEL);
+            EndDialog(hwndDlg, IDCANCEL);
         }
         break;
         }
     break;
     case WM_CLOSE:
     {
-        DestroyWindow(hwndDig);
+        DestroyWindow(hwndDlg);
     }
     break;
     case WM_DESTROY:
@@ -261,30 +261,30 @@ void ComboBoxAdd(HWND hwnd, int IDC , std::string name) {
     pComboBox.Detach();
 }
 
-INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
     switch (uMsg) {
     case WM_INITDIALOG:
     {
         OutputDebugString(L"繪畫選單開啟\n");
-        TreeLoad_hWnd = hwndDig;
+        TreeLoad_hWnd = hwndDlg;
         Dialog_LoadTree_is_open = 1;
         if (Dialog_Tree_is_Create) {
-            CheckDlgButton(hwndDig, IDC_CHECK1, BST_CHECKED);   // 勾選 IDC_CHECK1
-            CheckDlgButton(hwndDig, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);   // 勾選 IDC_CHECK1
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 勾選
         }
         else {
-            CheckDlgButton(hwndDig, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 勾選
-            CheckDlgButton(hwndDig, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 勾選
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);   // 勾選 IDC_CHECK2
         }
 
-        ShowWindow(GetDlgItem(hwndDig, ID_RETURN), SW_HIDE); //隱藏返回鍵
+        ShowWindow(GetDlgItem(hwndDlg, ID_RETURN), SW_HIDE); //隱藏返回鍵
         EnableWindow(GetDlgItem(hWnd, 2), FALSE);
 
         if (Dialog_Input_is_open) {
-            EnableWindow(GetDlgItem(hwndDig, ID_DATASAVE), FALSE);
-            EnableWindow(GetDlgItem(hwndDig, ID_DATASAVE_QUICK), FALSE);
+            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE), FALSE);
+            EnableWindow(GetDlgItem(hwndDlg, ID_DATASAVE_QUICK), FALSE);
 
         }
 
@@ -304,7 +304,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             Dialog_is_Save = 0;
             Tree_Bitmap = NULL;
             Fruit_Bitmap = NULL;
-            Common::InitD2D(hwndDig, pD2DFactory, &Tree_RenderTarget);
+            Common::InitD2D(hwndDlg, pD2DFactory, &Tree_RenderTarget);
 
             
         }
@@ -334,7 +334,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         font.CreatePointFont(120, _T("Verdana"));  // 120 是字體大小，"Verdana" 是字體名稱
 
         CComboBox pComboBox_tree;
-        pComboBox_tree.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
+        pComboBox_tree.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
         pComboBox_tree.SetFont(&font);
 
         for (const auto& item : items) {
@@ -351,7 +351,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         //OutputDebugString(L"JSON讀取成功\n");
 
         CComboBox pComboBox_fruit;
-        pComboBox_fruit.Attach(GetDlgItem(hwndDig, IDC_COMBO2));
+        pComboBox_fruit.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
         pComboBox_fruit.SetFont(&font);
 
         //for (const auto& item : items) {
@@ -375,25 +375,25 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         if (LOWORD(wParam) == IDC_COMBO1 && HIWORD(wParam) == CBN_SELCHANGE) {//偵測Combobox改變
             // 在這裡處理選擇改變後的邏輯
             // 直接呼叫LOADSAVE
-            SendMessage(hwndDig, WM_COMMAND, ID_DATALOAD, 0); 
+            SendMessage(hwndDlg, WM_COMMAND, ID_DATALOAD, 0); 
 
         }
         else if (LOWORD(wParam) == IDC_COMBO2 && HIWORD(wParam) == CBN_SELCHANGE) {
-            FruitSave(hwndDig);
+            FruitSave(hwndDlg);
             if (!fruit_Points.empty()) {
                 fruit_Points.clear();
             }
 
-            SendMessage(hwndDig, WM_COMMAND, ID_DATALOAD_FRUIT, 0);
+            SendMessage(hwndDlg, WM_COMMAND, ID_DATALOAD_FRUIT, 0);
 
         }
         else if (LOWORD(wParam) == IDC_CHECK1 && HIWORD(wParam) == BN_CLICKED) {
             // IDC_CHECK1 被點擊
-            CheckDlgButton(hwndDig, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 的勾選
+            CheckDlgButton(hwndDlg, IDC_CHECK2, BST_UNCHECKED); // 取消 IDC_CHECK2 的勾選
             Dialog_Tree_is_Create = 1;
         }
         else if (LOWORD(wParam) == IDC_CHECK2 && HIWORD(wParam) == BN_CLICKED) {
-            CheckDlgButton(hwndDig, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
+            CheckDlgButton(hwndDlg, IDC_CHECK1, BST_UNCHECKED); // 取消 IDC_CHECK1 的勾選
             Dialog_Tree_is_Create = 0;
         }
         switch (LOWORD(wParam)) {
@@ -403,7 +403,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             //OutputDebugString(L"儲存圖片\n");
             if (Dialog_Tree_has_newaction)
             {
-                MessageBox(hwndDig, L"請先進行存檔", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"請先進行存檔", L"錯誤", MB_OK);
                 break;
             }
 
@@ -445,21 +445,21 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
 
             OutputDebugString(L"匯入結束\n");
             InvalidateRect(hWnd, NULL, TRUE);
-            //EndDialog(hwndDig, IDOK);
+            //EndDialog(hwndDlg, IDOK);
         }
         break;
 
         case IDCANCEL:// 使用者按下了取消按鈕
         {
             
-            DestroyWindow(hwndDig);
-            //EndDialog(hwndDig, IDCANCEL);
+            DestroyWindow(hwndDlg);
+            //EndDialog(hwndDlg, IDCANCEL);
         }
         break;
         case ID_LOADTREE: // 選擇樹木
         {
             std::wstring filename;
-            Common::OpenFile(hwndDig, Tree_RenderTarget, &Tree_Bitmap, Load_Tree_File_Path, filename, currentPath);
+            Common::OpenFile(hwndDlg, Tree_RenderTarget, &Tree_Bitmap, Load_Tree_File_Path, filename, currentPath);
             if (!filename.empty())
             {
                 Dialog_clear();
@@ -467,7 +467,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 Tree_File_Name = converter.to_bytes(filename);
                 CComboBox pComboBox;
                 // 樹木存檔選擇空
-                pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
                 pComboBox.SetCurSel(-1);
                 pComboBox.Detach();
                 Fruits_saveData_using.clear();
@@ -475,17 +475,17 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 Save_Remarks = "";
                 using_Dialog_TreeName = "";
                 Tree_Remarks = "";
-                HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
+                HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
                 SetWindowText(hStatic, L"");
 
                 // 水果存檔清空
-                pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO2));
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
                 pComboBox.ResetContent();
                 pComboBox.Detach();
                 Fruit_Bitmap = NULL;
 
                 //OutputDebugString(Load_File_Path.c_str());
-                InvalidateRect(hwndDig, NULL, TRUE);
+                InvalidateRect(hwndDlg, NULL, TRUE);
             }
         }
         break;
@@ -494,24 +494,24 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         {
             if (!Tree_Bitmap)
             {
-                MessageBox(hwndDig, L"請先選擇樹木", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"請先選擇樹木", L"錯誤", MB_OK);
                 break;
             }
 
             std::wstring filename;
-            Common::OpenFile(hwndDig, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename, currentPath);
+            Common::OpenFile(hwndDlg, Tree_RenderTarget, &Fruit_Bitmap, Load_Fruit_File_Path, filename, currentPath);
             if (!filename.empty())
             {
-                FruitSave(hwndDig);
+                FruitSave(hwndDlg);
                 if (!fruit_Points.empty()) {
                     fruit_Points.clear();
                 }
                 Dialog_clear();
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 Fruit_File_Name = converter.to_bytes(filename);
-                ComboBoxAdd(hwndDig, IDC_COMBO2, Fruit_File_Name);
+                ComboBoxAdd(hwndDlg, IDC_COMBO2, Fruit_File_Name);
 
-                InvalidateRect(hwndDig, NULL, TRUE);
+                InvalidateRect(hwndDlg, NULL, TRUE);
             }
         }
         break;
@@ -521,12 +521,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
 
             if (!Tree_Bitmap)
             {
-                MessageBox(hwndDig, L"請至少要有樹木", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"請至少要有樹木", L"錯誤", MB_OK);
                 break;
             }
             else if (Dialog_Input_is_open)
             {
-                MessageBox(hwndDig, L"輸入框已開啟", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
                 break;
             }
             Dialog_is_Save = 1;
@@ -534,12 +534,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
 
             // SAVE
             json save_tree;
-            FruitSave(hwndDig);
+            FruitSave(hwndDlg);
             save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
             save_tree["image"] = Tree_File_Name;
             save_tree["Fruit"] = Fruits_saveData_using;
 
-            int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDig, Dialog_Input_Proc, 0);
+            int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
 
             if (result == -1)
             {
@@ -567,7 +567,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             else {
                 widestr = L"";
             }
-            HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
+            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
             SetWindowText(hStatic, widestr.c_str());
             OutputDebugString(widestr.c_str());
 
@@ -592,14 +592,14 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
-                ComboBoxAdd(hwndDig, IDC_COMBO1, using_Dialog_TreeName);
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_Dialog_TreeName);
             }
             else
             {
                 //OutputDebugString(widepath.c_str
-                //MessageBox(hwndDig, path.c_str(), L"繪圖選單", MB_OK);
+                //MessageBox(hwndDlg, path.c_str(), L"繪圖選單", MB_OK);
 
-                MessageBox(hwndDig, L"無法另存新檔", L"繪圖選單", MB_OK);
+                MessageBox(hwndDlg, L"無法另存新檔", L"繪圖選單", MB_OK);
             }
 
 
@@ -610,15 +610,15 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         {
             OutputDebugString(L"快速儲存\n");
             if (!Tree_Bitmap) {
-                MessageBox(hwndDig, L"請至少要有樹木", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"請至少要有樹木", L"錯誤", MB_OK);
                 break;
             }
             else if (Dialog_Input_is_open) {
-                MessageBox(hwndDig, L"輸入框已開啟", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"輸入框已開啟", L"錯誤", MB_OK);
                 break;
             }
             if (using_Dialog_TreeName.empty()) {// 檢查是否從存檔讀取
-                int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDig, Dialog_Input_Proc, 0);
+                int result = DialogBoxParam(InPut_hInstance, MAKEINTRESOURCE(IDD_INPUT), hwndDlg, Dialog_Input_Proc, 0);
                 if (result == -1)
                 {
                     // 對話框創建失敗
@@ -639,7 +639,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             Dialog_Tree_has_newaction = 0;
             // SAVE
             json save_tree;
-            FruitSave(hwndDig);
+            FruitSave(hwndDlg);
 
             save_tree["coordinates"] = { {"X", 0}, {"Y", 0} };
             save_tree["image"] = Tree_File_Name;
@@ -667,7 +667,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             else {
                 widestr = L"";
             }
-            HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
+            HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
             SetWindowText(hStatic, widestr.c_str());
 
             Tree_saveData[using_Dialog_TreeName] = save_tree;
@@ -680,13 +680,13 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 outFile << jsonString;
                 outFile.close();
                 OutputDebugString(L"JSON 已保存到 Tree_saveData.json\n");
-                ComboBoxAdd(hwndDig, IDC_COMBO1, using_Dialog_TreeName);
+                ComboBoxAdd(hwndDlg, IDC_COMBO1, using_Dialog_TreeName);
             }
             else {
                 //OutputDebugString(L"JSON 已保存到 Map_saveData.json\n");
                 //OutputDebugString(widepath.c_str());
-                //MessageBox(hwndDig, widepath.c_str(), L"錯誤", MB_OK);
-                MessageBox(hwndDig, L"無法快速保存JSON", L"錯誤", MB_OK);
+                //MessageBox(hwndDlg, widepath.c_str(), L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"無法快速保存JSON", L"錯誤", MB_OK);
             }
 
 
@@ -698,7 +698,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             OutputDebugString(L"刪除存檔\n");
 
             CComboBox pComboBox;
-            pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
+            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
             int selectedIndex = pComboBox.GetCurSel();
 
@@ -737,10 +737,10 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             {
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
-                MessageBox(hwndDig, L"沒有項目被選中", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
             }
             pComboBox.Detach();
-            InvalidateRect(hwndDig, NULL, TRUE);
+            InvalidateRect(hwndDlg, NULL, TRUE);
 
         }
         break;
@@ -749,7 +749,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             OutputDebugString(L"載入存檔\n");
 
             CComboBox pComboBox;
-            pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO1));
+            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO1));
 
             int selectedIndex = pComboBox.GetCurSel();
 
@@ -780,10 +780,10 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                     //std::wstring wideTreeName(FruitName.begin(), FruitName.end());
                     //LPCWSTR treeNameCStr = wideTreeName.c_str();
                     //OutputDebugString(treeNameCStr);
-                    ComboBoxAdd(hwndDig, IDC_COMBO2, FruitName);
+                    ComboBoxAdd(hwndDlg, IDC_COMBO2, FruitName);
                 }
                 CComboBox pComboBox;
-                pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO2));
+                pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
                 pComboBox.SetCurSel(-1);
                 pComboBox.Detach();
 
@@ -797,11 +797,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + Png;
                 Tree_Bitmap = NULL;
                 int errorcode;
-                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap, hwndDig, errorcode);
+                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Tree_Bitmap, hwndDlg, errorcode);
                 Load_Tree_File_Path = path;
                 if (errorcode != 0) { //errorcode用來示警圖檔不存在的狀況
                     std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
-                    MessageBox(hwndDig, str1.c_str(), L"錯誤", MB_OK);
+                    MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
                     Load_Tree_File_Path = L"";
                 }
 
@@ -814,7 +814,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                     Tree_Remarks = "";
                     Png = L"";
                 }
-                HWND hStatic = GetDlgItem(hwndDig, IDC_STATIC1);
+                HWND hStatic = GetDlgItem(hwndDlg, IDC_STATIC1);
                 SetWindowText(hStatic, Png.c_str());
 
                 if (pIWICFactory)
@@ -828,12 +828,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             {
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
-                MessageBox(hwndDig, L"沒有項目被選中", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
             }
             pComboBox.Detach();
             OutputDebugString(L"載入結束\n");
 
-            InvalidateRect(hwndDig, NULL, TRUE);
+            InvalidateRect(hwndDlg, NULL, TRUE);
 
         }
         break;
@@ -842,7 +842,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             OutputDebugString(L"載入水果存檔\n");
 
             CComboBox pComboBox;
-            pComboBox.Attach(GetDlgItem(hwndDig, IDC_COMBO2));
+            pComboBox.Attach(GetDlgItem(hwndDlg, IDC_COMBO2));
 
             int selectedIndex = pComboBox.GetCurSel();
 
@@ -893,11 +893,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 Png = converter.from_bytes(stdStr);
                 Fruit_Bitmap = NULL;
 
-                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDig, errorcode);
+                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &Fruit_Bitmap, hwndDlg, errorcode);
                 Load_Fruit_File_Path = path;
                 if (errorcode != 0) {
                     std::wstring str1 = path + L"\n圖檔不存在" + L"\n";
-                    MessageBox(hwndDig, str1.c_str(), L"錯誤", MB_OK);
+                    MessageBox(hwndDlg, str1.c_str(), L"錯誤", MB_OK);
                     Load_Fruit_File_Path = L"";
                 }
                 if (pIWICFactory)
@@ -909,12 +909,12 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             {
                 // 沒有項目被選中
                 //OutputDebugString(L"沒有項目被選中\n");
-                MessageBox(hwndDig, L"沒有項目被選中", L"錯誤", MB_OK);
+                MessageBox(hwndDlg, L"沒有項目被選中", L"錯誤", MB_OK);
             }
             pComboBox.Detach();
             OutputDebugString(L"載入結束\n");
 
-            InvalidateRect(hwndDig, NULL, TRUE);
+            InvalidateRect(hwndDlg, NULL, TRUE);
 
         }
         break;
@@ -925,11 +925,11 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
             //    Dialog_do_Clear = 1;
             //    Dialog_do_TreeClear = 1;
             //    Tree_clickPoint = { 0 };
-            //    InvalidateRect(hwndDig, NULL, FALSE);
+            //    InvalidateRect(hwndDlg, NULL, FALSE);
 
             //}
             //else
-            //    MessageBox(hwndDig, L"已經沒有水果可以刪除", L"錯誤", MB_OK);
+            //    MessageBox(hwndDlg, L"已經沒有水果可以刪除", L"錯誤", MB_OK);
         }
         break;
         }
@@ -1000,7 +1000,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 Dialog_do_TreeClear = 1;
                 Tree_clickPoint = { 0 };
             }
-            InvalidateRect(hwndDig, NULL, FALSE);
+            InvalidateRect(hwndDlg, NULL, FALSE);
         }
     }
     break;
@@ -1013,7 +1013,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         //{
         //    movePoint.x = static_cast<FLOAT>(xPos);
         //    movePoint.y = static_cast<FLOAT>(yPos);
-        //    InvalidateRect(hwndDig, NULL, FALSE);
+        //    InvalidateRect(hwndDlg, NULL, FALSE);
         //}
     }    
     break;
@@ -1021,7 +1021,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwndDig, &ps);
+        HDC hdc = BeginPaint(hwndDlg, &ps);
 
         Tree_RenderTarget->BeginDraw();
         Tree_RenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -1078,7 +1078,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
                 std::wstring image = converter.from_bytes(Fruits_saveData_using[FruitName]["image"]);
                 std::wstring path = currentPath.parent_path().wstring() + L"\\種樹\\Images\\" + image;
                 int errorcode;
-                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &fruitBitmap, hwndDig, errorcode);
+                Common::LoadBitmapFromFile(Tree_RenderTarget, pIWICFactory, path, 0, 0, &fruitBitmap, hwndDlg, errorcode);
                 if (errorcode != 0) {
                     std::wstring str1 = path + L"水果圖檔不存在" + L"\n";
                     //OutputDebugString(path.c_str());
@@ -1110,7 +1110,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
         }
         Tree_RenderTarget->EndDraw();
 
-        EndPaint(hwndDig, &ps);
+        EndPaint(hwndDlg, &ps);
     }
     break;
     case WM_DESTROY: //關閉視窗
@@ -1134,7 +1134,7 @@ INT_PTR CALLBACK Dialog_LoadTree_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LP
     case WM_CLOSE:
     {
 
-        DestroyWindow(hwndDig);
+        DestroyWindow(hwndDlg);
     }
     break;
     //case WM_ERASEBKGND:

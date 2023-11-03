@@ -370,7 +370,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 
 // Dialog架構保留
-//INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//INT_PTR CALLBACK Dialog_Ranklist_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //{
 //    DWORD dwID = wParam;
 //
@@ -378,7 +378,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //    case WM_INITDIALOG:
 //        {
 //            // 設定滑塊範圍
-//            HWND hListView = GetDlgItem(hwndDig, IDC_LIST4);
+//            HWND hListView = GetDlgItem(hwndDlg, IDC_LIST4);
 //            DWORD dwStyle = GetWindowLong(hListView, GWL_STYLE);
 //            SetWindowLong(hListView, GWL_STYLE, dwStyle | LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP);
 //
@@ -460,19 +460,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //        case IDOK:
 //            // 使用者按下了確定按鈕
 //        {
-//            EndDialog(hwndDig, IDOK);
+//            EndDialog(hwndDlg, IDOK);
 //        }
 //        break;
 //        case IDCANCEL:
 //            // 使用者按下了取消按鈕
-//            EndDialog(hwndDig, IDCANCEL);
+//            EndDialog(hwndDlg, IDCANCEL);
 //            break;
 //        }
 //        break;
 //    }
 //    return FALSE;
 //}
-//INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDig, UINT uMsg, WPARAM wParam, LPARAM lParam)
+//INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 //{
 //    DWORD dwID = wParam;
 //
@@ -487,7 +487,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //            // 使用者按下了確定按鈕
 //        {
 //            // 取得玩家名稱
-//            int textLength = GetWindowTextLength(GetDlgItem(hwndDig, IDC_EDIT1));
+//            int textLength = GetWindowTextLength(GetDlgItem(hwndDlg, IDC_EDIT1));
 //            if (textLength == 0)
 //            {
 //                // 輸入為空
@@ -498,7 +498,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //            else
 //            {
 //                wchar_t buffer[100]; // 要存放資料的緩衝區
-//                GetDlgItemText(hwndDig, IDC_EDIT1, buffer, 100);
+//                GetDlgItemText(hwndDlg, IDC_EDIT1, buffer, 100);
 //                std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
 //                std::string newName = converter.to_bytes(buffer);
 //
@@ -522,13 +522,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 //                
 //            }
 //
-//            EndDialog(hwndDig, IDOK);
+//            EndDialog(hwndDlg, IDOK);
 //        }
 //        break;
 //
 //        case IDCANCEL:
 //            // 使用者按下了取消按鈕
-//            EndDialog(hwndDig, IDCANCEL);
+//            EndDialog(hwndDlg, IDCANCEL);
 //            break;
 //        }
 //        break;

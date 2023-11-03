@@ -500,7 +500,7 @@ public:
 
     //void 截圖(); //另一種截圖方式但未使用
     //{
-    //HWND hwnd = hwndDig;
+    //HWND hwnd = hwndDlg;
     //HDC hDC = GetDC(hwnd);//獲取屏幕DC
 
     //HDC hDCMem = CreateCompatibleDC(hDC);//創建兼容DC 
