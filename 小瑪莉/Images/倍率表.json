@@ -1,0 +1,12 @@
+{
+    "倍率表": {
+      "APPLE": 5,
+      "Orange": 10,
+      "LEMON": 15,
+      "Bell": 20,
+      "Watermelon": 20,
+      "Star": 30,
+      "Seven": 40,
+      "Bar": 100
+    }
+  }

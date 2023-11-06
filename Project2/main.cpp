@@ -262,7 +262,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
     hWnd = CreateWindowEx(
         NULL,
         L"WindowClass1",                 // 視窗類別的名字
-        L"Philo_Snake",   // 視窗的標題
+        L"超級小瑪莉777",   // 視窗的標題
         WS_OVERLAPPEDWINDOW,             // 視窗的樣式
         1980 / 2 - SCREEN_WIDTH/2,         // 視窗的x座標 //畫面置中 = 1980/2 - SCREEN_WIDTH-2
         0,                               // 視窗的y座標
@@ -521,14 +521,85 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
             EndPaint(hWnd, &ps);
         }break;
-        //貪吃蛇不使用
-        //case WM_LBUTTONDOWN:
-        //    // 處理滑鼠左鍵
-        //    {
-        //        int xPos = GET_X_LPARAM(lParam);
-        //        int yPos = GET_Y_LPARAM(lParam);
-        //        OnClick(xPos, yPos);
-        //    }break;
+        case WM_LBUTTONDOWN:
+            // 處理滑鼠左鍵
+            {
+                int xPos = GET_X_LPARAM(lParam);
+                int yPos = GET_Y_LPARAM(lParam);
+                if (engine->playing)
+                {
+                    int bet_or_function = 0;
+                    if (yPos >= FUNCTION_Y &&
+                        yPos < FUNCTION_Y + FUNCTION_HEIGHT / 2) {
+                        bet_or_function = BET_NUMBER;
+                    }
+                    else if (yPos >= FUNCTION_Y + FUNCTION_HEIGHT / 2 &&
+                        yPos < FUNCTION_Y + FUNCTION_HEIGHT) {
+                        bet_or_function = FUNCTION_NUMBER;
+                    }
+                    else {
+                        bet_or_function = GRID_NUMBER;
+                    }
+
+
+                    switch (bet_or_function)
+                    {
+                    case GRID_NUMBER: {
+                        break;
+                    }
+                    case BET_NUMBER: {
+                        break;
+                    } 
+                    case FUNCTION_NUMBER: {
+                        // TODO :: 變數要改成Draw_Function同步 ,目標為修改其中一方即可
+                        // width * 0.225 為不好的用法 0.225應改成變數
+                        xPos -= FUNCTION_X;
+                        int width = FUNCTION_WIDTH;
+
+                        if (xPos >= width * 0.225 &&
+                            xPos <= width * 1.525) {
+                            // 離開遊戲
+                            //MessageBox(hWnd, L"離開遊戲", L"測試", MB_OK);
+                            SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0); 
+
+                        }
+                        else if (xPos >= width * 1.725 &&
+                            xPos <= width * 2.625) {
+                            // 小
+                            MessageBox(hWnd, L"小", L"測試", MB_OK);
+
+                        }
+                        else if (xPos >= width * 2.825 &&
+                            xPos <= width * 3.725) {
+                            // 大
+                            MessageBox(hWnd, L"大", L"測試", MB_OK);
+
+                        }
+                        else if (xPos >= width * 3.925 &&
+                            xPos <= width * 5.225) {
+                            // 得分
+                            MessageBox(hWnd, L"得分", L"測試", MB_OK);
+
+                        }
+                        else if (xPos >= width * 5.425 &&
+                            xPos <= width * 6.325) {
+                            // 自動
+                            MessageBox(hWnd, L"自動", L"測試", MB_OK);
+
+                        }
+                        else if (xPos >= width * 6.525 &&
+                            xPos <= width * 7.825) {
+                            // 開始
+                            MessageBox(hWnd, L"開始", L"測試", MB_OK);
+
+                        }
+                        break;
+                    }
+                    default:
+                        break;
+                    }
+                }
+            }break;
         case WM_KEYDOWN:
         {
             engine->KeyUp(wParam);
@@ -538,10 +609,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         case WM_CUSTOM_GAMEEND:
             // 處理遊戲結束
             engine->playing = 0;
+            engine->ClearDraw(hWnd);
             //WCHAR scoreStr[64];
             //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
             //MessageBox(hWnd, scoreStr, L"結算", MB_OK);
-            DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_GAMEEND), NULL, Dialog_GameEnd_Proc);
+            //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_GAMEEND), NULL, Dialog_GameEnd_Proc);
             ShowButton(1);
             //ClearDraw();
             break;
@@ -563,67 +635,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     return DefWindowProc (hWnd, message, wParam, lParam);
 }
 
-
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////
-
-
-
-// 開啟檔案
-//void OpenFile()
-//{
-//    OPENFILENAME ofn;
-//    wchar_t szFile[MAX_PATH] = L"";
-//
-//    ZeroMemory(&ofn, sizeof(ofn));
-//    ofn.lStructSize = sizeof(ofn);
-//    ofn.hwndOwner = hWnd;  // 父視窗的 handle
-//    ofn.lpstrFile = szFile;
-//    ofn.lpstrFile[0] = '\0';
-//    ofn.nMaxFile = sizeof(szFile) / sizeof(szFile[0]);
-//    ofn.lpstrFilter = L"All Files\0*.*\0";
-//    ofn.nFilterIndex = 1;
-//    ofn.lpstrFileTitle = NULL;
-//    ofn.nMaxFileTitle = 0;
-//    ofn.lpstrInitialDir = NULL;
-//    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-//    // TODO:判斷副檔名
-//    if (GetOpenFileName(&ofn) == TRUE)
-//    {
-//        IWICImagingFactory* pIWICFactory = NULL;
-//        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
-        //LoadBitmapFromFile(pRT, pIWICFactory, szFile, 0, 0, &pBitmap);
-//        pIWICFactory->Release();
-//    }
-//}
-//
-//// 繪圖
-//void DrawBitmap()
-//{
-//    if (pRT && pBitmap)
-//    {
-//        D2D1_SIZE_U size = pBitmap->GetPixelSize();
-//        UINT width = size.width;
-//        UINT height = size.height;
-//        pRT->BeginDraw();
-//        pRT->DrawBitmap(pBitmap, D2D1::RectF(clickPoint.x, clickPoint.y, clickPoint.x + width, clickPoint.y + height));
-//        pRT->EndDraw();
-//    }
-//}
-//
-// 
-//void OnClick(int mouseX, int mouseY)
-//{
-//    // 更新點擊位置
-//    clickPoint.x = static_cast<FLOAT>(mouseX);
-//    clickPoint.y = static_cast<FLOAT>(mouseY);
-//    // 通知系統進行重繪
-//    InvalidateRect(hWnd, NULL, TRUE);
-//
-//}
-//
 void ShowButton(bool show)
 {
     if(show)

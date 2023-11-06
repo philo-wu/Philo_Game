@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <wincodec.h>
 #include "Direct2D.h"
 // 從framework.h拿出來
@@ -13,7 +13,31 @@
 #define BUTTON_WIDTH  200
 #define BUTTON_HEIGHT 50
 
+// 遊戲視窗相關
+#define GRID_NUMBER     0
+#define BET_NUMBER      1 
+#define FUNCTION_NUMBER 2
+
+#define GRID_X      (SCREEN_WIDTH/3 - 125) //遊戲區域左上角位置
+#define GRID_Y      150
+#define GRID_WIDTH  (SCREEN_WIDTH / 3 + 250) / 7
+#define GRID_HEIGHT 490 / 7
+
+#define BET_X       SCREEN_WIDTH / 3 - 176
+#define BET_Y       GRID_Y + GRID_HEIGHT*7 +10
+#define BET_WIDTH  (SCREEN_WIDTH / 3 + 352) / 8
+#define BET_HEIGHT  200
+
+#define FUNCTION_X      BET_X
+#define FUNCTION_Y      BET_Y + BET_HEIGHT
+#define FUNCTION_WIDTH  BET_WIDTH
+#define FUNCTION_HEIGHT 125
+
+
+
+
 // 遊戲相關
+#define LIGHT_SIZE 6 //燈號大小 
 #define CELL_SIZE 20
 #define GAME_SIZE 7 //遊戲區域分成7*7
 #define BET_SIZE  8 //遊戲區域分成7*7
@@ -22,6 +46,21 @@
 #define ID_CUSTOM_COMMAND 1001
 #define WM_CUSTOM_GAMEEND WM_USER + 1
 #define WM_CUSTOM_GAMEWIN WM_USER + 2
+
+// CELL依據代表分數降序排列
+
+#define BAR_NUMBER 0
+#define SEVEN_NUMBER BAR_NUMBER + 1
+#define STAR_NUMBER BAR_NUMBER + 2
+#define WATERMELOM_NUMBER BAR_NUMBER + 3
+#define BELL_NUMBER BAR_NUMBER + 4
+#define LEMON_NUMBER BAR_NUMBER + 5
+#define ORANGE_NUMBER BAR_NUMBER + 6
+#define APPLE_NUMBER  BAR_NUMBER+ 7
+
+#define CELL_TOTAL APPLE_NUMBER+1 //紀錄總共有幾個CELL
+
+
 
 
 class Common
