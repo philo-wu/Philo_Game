@@ -17,7 +17,7 @@ INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
         // 設定滑塊範圍
         SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETRANGE, TRUE, MAKELONG(1, 9));
         // 設定滑塊初始值
-        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, engine->difficulty);
+        SendDlgItemMessage(hwndDlg, IDC_SLIDER1, TBM_SETPOS, TRUE, 5);
 
         // 設定 "食物生成於邊界" 勾選框的初始狀態
         //if(engine->isFoodOnBorderChecked)
@@ -164,9 +164,9 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
     case WM_INITDIALOG:
 
         // 將實際分數設定到對應的靜態文字控制項上
-        SetDlgItemInt(hwndDlg, IDC_STATIC_SCORE, engine->getscore(), FALSE);
+        //SetDlgItemInt(hwndDlg, IDC_STATIC_SCORE, engine->GetWindScore(), FALSE);
         // 將實際難度設定到對應的靜態文字控制項上
-        SetDlgItemInt(hwndDlg, IDC_STATIC_DIFFICULTY, engine->difficulty, FALSE);
+        //SetDlgItemInt(hwndDlg, IDC_STATIC_DIFFICULTY, engine->difficulty, FALSE);
 
         return TRUE;
 
@@ -192,8 +192,8 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
                 std::string newName = converter.to_bytes(buffer);
 
-                int newScore = engine->getscore();
-                int newDifficulty = engine->difficulty;
+                //int newScore = engine->getscore();
+                //int newDifficulty = engine->difficulty;
 
                 std::ifstream file("./Ranklist.json", std::ifstream::binary);
                 json jsonData;
@@ -204,8 +204,8 @@ INT_PTR CALLBACK Dialog_GameEnd_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                 }
                 json newEntry = {
                     {"name", newName},
-                    {"score", newScore},
-                    {"difficulty", newDifficulty}
+                    //{"score", newScore},
+                    //{"difficulty", newDifficulty}
                 };
                 jsonData["Ranklist"].push_back(newEntry);
                 std::ofstream outFile("./Ranklist.json");
@@ -407,35 +407,35 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 GetModuleHandle(NULL),                  // 模組句柄
                 NULL                                    // 指定為 NULL
             );
-            Difficulty_Button = CreateWindow(
-                L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"難度選擇",                            // 按鈕上顯示的文字
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
-                BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // 按鈕位置和大小 (x, y, width, height)
-                hWnd,                                   // 父窗口句柄
-                (HMENU)2,                               // 控制項 ID (可以用於識別按鈕)
-                GetModuleHandle(NULL),                  // 模組句柄
-                NULL                                    // 指定為 NULL
-            );
-            Score_Button = CreateWindow(
-                L"BUTTON",                              // 按鈕控制項的類別名稱
-                L"排行榜",                            // 按鈕上顯示的文字
-                WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 ,
-                BUTTON_WIDTH, BUTTON_HEIGHT,
-                                                        // 按鈕位置和大小 (x, y, width, height)
-                hWnd,                                   // 父窗口句柄
-                (HMENU)3,                               // 控制項 ID (可以用於識別按鈕)
-                GetModuleHandle(NULL),                  // 模組句柄
-                NULL                                    // 指定為 NULL
-            );
+            //Difficulty_Button = CreateWindow(
+            //    L"BUTTON",                              // 按鈕控制項的類別名稱
+            //    L"難度選擇",                            // 按鈕上顯示的文字
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+            //    SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80,
+            //    BUTTON_WIDTH, BUTTON_HEIGHT,
+            //                                            // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                   // 父窗口句柄
+            //    (HMENU)2,                               // 控制項 ID (可以用於識別按鈕)
+            //    GetModuleHandle(NULL),                  // 模組句柄
+            //    NULL                                    // 指定為 NULL
+            //);
+            //Score_Button = CreateWindow(
+            //    L"BUTTON",                              // 按鈕控制項的類別名稱
+            //    L"排行榜",                            // 按鈕上顯示的文字
+            //    WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
+            //    SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 ,
+            //    BUTTON_WIDTH, BUTTON_HEIGHT,
+            //                                            // 按鈕位置和大小 (x, y, width, height)
+            //    hWnd,                                   // 父窗口句柄
+            //    (HMENU)3,                               // 控制項 ID (可以用於識別按鈕)
+            //    GetModuleHandle(NULL),                  // 模組句柄
+            //    NULL                                    // 指定為 NULL
+            //);
             End_Button = CreateWindow(
                 L"BUTTON",                              // 按鈕控制項的類別名稱
                 L"離開遊戲",                            // 按鈕上顯示的文字
                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON,  // 按鈕樣式
-                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 +80,
+                SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2, SCREEN_HEIGHT / 2 -80, //+80
                 BUTTON_WIDTH, BUTTON_HEIGHT,
                                                         // 按鈕位置和大小 (x, y, width, height)
                 hWnd,                                   // 父窗口句柄
@@ -530,10 +530,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 {
                     int bet_or_function = 0;
                     if (yPos >= FUNCTION_Y &&
-                        yPos < FUNCTION_Y + FUNCTION_HEIGHT / 2) {
-                        bet_or_function = BET_NUMBER;
+                        yPos < FUNCTION_Y + FUNCTION_HEIGHT * BET_RATIO) {
+                        bet_or_function = FUNCTION_BET_NUMBER;
                     }
-                    else if (yPos >= FUNCTION_Y + FUNCTION_HEIGHT / 2 &&
+                    else if (yPos >= FUNCTION_Y + FUNCTION_HEIGHT * BET_RATIO &&
                         yPos < FUNCTION_Y + FUNCTION_HEIGHT) {
                         bet_or_function = FUNCTION_NUMBER;
                     }
@@ -547,7 +547,170 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     case GRID_NUMBER: {
                         break;
                     }
-                    case BET_NUMBER: {
+                    case FUNCTION_BET_NUMBER: {
+                        xPos -= FUNCTION_X;
+                        yPos -= FUNCTION_Y;
+                        int width = BET_WIDTH;
+                        if (xPos >= width * 0 &&
+                            xPos <= width * 1) {
+                            // BAR
+
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(BAR_NUMBER,0);
+                            }
+                            else if (xPos >= width * 0 &&
+                                xPos <= width * 0.5) {
+                                engine->Bet_call(BAR_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 0.5 &&
+                                xPos <= width * 1) {
+                                engine->Bet_call(BAR_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 1 &&
+                            xPos <= width * 2) {
+                            // SEVEN
+
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(SEVEN_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 1 &&
+                                xPos <= width * 1.5) {
+                                engine->Bet_call(SEVEN_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 1.5 &&
+                                xPos <= width * 2) {
+                                engine->Bet_call(SEVEN_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 2 &&
+                            xPos <= width * 3) {
+                            // STAR
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(STAR_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 2 &&
+                                xPos <= width * 2.5) {
+                                engine->Bet_call(STAR_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 2.5 &&
+                                xPos <= width * 3) {
+                                engine->Bet_call(STAR_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 3 &&
+                            xPos <= width * 4) {
+                            // WATERMELOM
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(WATERMELOM_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 3 &&
+                                xPos <= width * 3.5) {
+                                engine->Bet_call(WATERMELOM_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 3.5 &&
+                                xPos <= width * 4) {
+                                engine->Bet_call(WATERMELOM_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 4 &&
+                            xPos <= width * 5) {
+                            // BELL
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(BELL_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 4 &&
+                                xPos <= width * 4.5) {
+                                engine->Bet_call(BELL_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 4.5 &&
+                                xPos <= width * 5) {
+                                engine->Bet_call(BELL_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 5 &&
+                            xPos <= width * 6) {
+                            // LEMON
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(LEMON_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 5 &&
+                                xPos <= width * 5.5) {
+                                engine->Bet_call(LEMON_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 5.5 &&
+                                xPos <= width * 6) {
+                                engine->Bet_call(LEMON_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 6 &&
+                            xPos <= width * 7) {
+                            // ORANGE
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(ORANGE_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 6 &&
+                                xPos <= width * 6.5) {
+                                engine->Bet_call(ORANGE_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 6.5 &&
+                                xPos <= width * 7) {
+                                engine->Bet_call(ORANGE_NUMBER, 10);
+
+                            }
+                        }
+                        else if (
+                            xPos >= width * 7 &&
+                            xPos <= width * 8) {
+                            // APPLE
+                            if (yPos >= FUNCTION_HEIGHT * 0.25) {
+                                engine->Bet_call(APPLE_NUMBER, 0);
+
+                            }
+                            else if (xPos >= width * 7 &&
+                                xPos <= width * 7.5) {
+                                engine->Bet_call(APPLE_NUMBER, 1);
+
+                            }
+                            else if (
+                                xPos > width * 7.5 &&
+                                xPos <= width * 8) {
+                                engine->Bet_call(APPLE_NUMBER, 10);
+
+                            }
+                        }
                         break;
                     } 
                     case FUNCTION_NUMBER: {
@@ -566,13 +729,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         else if (xPos >= width * 1.725 &&
                             xPos <= width * 2.625) {
                             // 小
-                            MessageBox(hWnd, L"小", L"測試", MB_OK);
+                            //MessageBox(hWnd, L"小", L"測試", MB_OK);
+                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 0, 1);
+                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime + 1000, 0, 0);
 
                         }
                         else if (xPos >= width * 2.825 &&
                             xPos <= width * 3.725) {
                             // 大
-                            MessageBox(hWnd, L"大", L"測試", MB_OK);
+                            //MessageBox(hWnd, L"大", L"測試", MB_OK);
+                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 1, 1);
+                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime + 500, 1, 0);
 
                         }
                         else if (xPos >= width * 3.925 &&
@@ -585,12 +752,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                             xPos <= width * 6.325) {
                             // 自動
                             MessageBox(hWnd, L"自動", L"測試", MB_OK);
+                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 1, 1);
 
                         }
                         else if (xPos >= width * 6.525 &&
                             xPos <= width * 7.825) {
                             // 開始
-                            MessageBox(hWnd, L"開始", L"測試", MB_OK);
+                            //MessageBox(hWnd, L"開始", L"測試", MB_OK);
+                            //engine->stratTime = std::time(nullptr);
+
+                            std::srand(static_cast<unsigned int>(std::time(nullptr)));
+                            int randomHour = std::rand() % 24;
+                            engine->starting = 1;
 
                         }
                         break;
@@ -615,7 +788,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             //MessageBox(hWnd, scoreStr, L"結算", MB_OK);
             //DialogBox(HINSTANCE1, MAKEINTRESOURCE(IDD_GAMEEND), NULL, Dialog_GameEnd_Proc);
             ShowButton(1);
-            //ClearDraw();
             break;
 
         case WM_CUSTOM_GAMEWIN:
@@ -652,4 +824,3 @@ void ShowButton(bool show)
         ShowWindow(End_Button, SW_HIDE);
     }
 }
-

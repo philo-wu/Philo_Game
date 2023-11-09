@@ -9,10 +9,9 @@ Engine::Engine(Common* pcommon) : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL
     //food->Reset(snake , isFoodOnBorderChecked );
     common = pcommon;
     playing = false;
-    keyPressed = false;
 
-    score = 0;
-    highScore = 15000;
+    WindScore = 0;
+    Score = 15000;
 }
 
 Engine::~Engine()
@@ -138,26 +137,27 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
     inFile.close();
     BettingTable = Data;
 
+    // 初始化燈亮時間
 
+    for (int i = 0; i < 8; ++i) {
+        Bet_Light_map[i] = 0;
+    }
 
+    for (int i = 0; i < 24; ++i) {
+        Game_Light_map[i] = 0;
+    }
+
+    for (int i = 0; i < 2; ++i) {
+        Compare_Light_map[i] = 0;
+    }
+    
     pIWICFactory->Release();
     return S_OK;
 }
 
 void Engine::KeyUp(WPARAM wParam)
 {
-    if (!keyPressed)
-    {
-        //if (wParam == VK_UP)
-        //    snake->GoUp();
-        //if (wParam == VK_DOWN)
-        //    snake->GoDown();
-        //if (wParam == VK_LEFT)
-        //    snake->GoLeft();
-        //if (wParam == VK_RIGHT)
-        //    snake->GoRight();
-        keyPressed = true;
-    }
+
 }
 
 void Engine::Reset()
@@ -167,24 +167,30 @@ void Engine::Reset()
     {
         //snake->Reset();
         //food->Reset(snake, isFoodOnBorderChecked );
-        score = 5;
+        //score = 5;
     }
 }
 
 void Engine::Logic(double elapsedTime)
 {
     // This is the logic part of the engine.
-    //if (playing)
-    //{
-    //    snake->Advance();
-    //    if (snake->CheckFoodCollision(food->position.x, food->position.y))
-    //    {
-    //        food->Reset(snake, isFoodOnBorderChecked);
-    //        snake->Grow();
-    //        score++;
-    //        if (score > highScore)
-    //            highScore = score;
-    //    }
+    if (playing)
+    {
+        //更新現在時間
+        auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000;
+        currentTime = seconds * 1000 + milliseconds;
+
+        updateLightStatus();
+        if (starting) {
+            for (int i = 0; i < 24; ++i) {
+                SetLightStatus(Game_Light_call_map, currentTime + 100 * i, i, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + 100 * (i + 1), i, 0);
+            }
+
+            starting = 0;
+        }
+    }
 
     //    if (snake->CheckSelfCollision())
     //    {
@@ -198,6 +204,72 @@ void Engine::Logic(double elapsedTime)
 
     //}
 }
+int Engine::Get_CellScore(int number) {
+    switch (number)
+    {
+    case APPLE_NUMBER: {
+        return 5;
+    }
+                     break;
+    case BAR_NUMBER: {
+        return 100;
+    }
+                   break;
+    case BELL_NUMBER: {
+        return 20;
+    }
+                    break;
+    case LEMON_NUMBER: {
+        return 15;
+    }
+                     break;
+    case ORANGE_NUMBER: {
+        return 10;
+    }
+                      break;
+    case SEVEN_NUMBER: {
+        return 40;
+    }
+                     break;
+    case STAR_NUMBER: {
+        return 30;
+    }
+                    break;
+    case WATERMELOM_NUMBER: {
+        return 20;
+    }
+                          break;
+
+    default:
+        break;
+    }
+}
+
+// 投入金額 0為清空
+void Engine::Bet_call(int number, int amount) {
+    // 檢查是否存在該號碼的下注紀錄
+    auto it = Bet_call_map.find(number);
+    if (it != Bet_call_map.end()) {
+        // 如果該號碼已存在，更新下注金額
+        int cost = Get_CellScore(number);
+        if (amount == 0) {
+            AddScore(cost*it->second);
+            it->second = 0;
+        }
+        else {
+            if(CostScore(cost * amount))
+                it->second += amount;
+            else
+                MessageBox(NULL, L"金額不足", L"錯誤", MB_OK);
+        }
+    }
+    else {
+        // 如果該號碼不存在，新增一筆下注紀錄
+        MessageBox(NULL, L"號碼不存在", L"錯誤", MB_OK);
+        //Bet_call_map[number] = amount;
+    }
+}
+
 
 HRESULT Engine::Draw()
 {
@@ -242,7 +314,7 @@ HRESULT Engine::Draw()
     WCHAR scoreStr[64];
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
 
-    swprintf_s(scoreStr, L"BONUS/WIN 贏得分數 \n %d                                         ", score);
+    swprintf_s(scoreStr, L"BONUS/WIN 贏得分數 \n %d                                         ", WindScore);
     m_pRenderTarget->DrawText(
         scoreStr,
         48,
@@ -250,7 +322,7 @@ HRESULT Engine::Draw()
         win_rectangle,
         pBrush
     );
-    swprintf_s(scoreStr, L"CREDITS 目前總分數 \n   %d                                      ", highScore);
+    swprintf_s(scoreStr, L"CREDITS 目前總分數 \n   %d                                      ", Score);
     m_pRenderTarget->DrawText(
         scoreStr,
         48,
@@ -363,26 +435,26 @@ void Engine::Draw_Game(int x, int y, int width, int height) {
         game_guess_rectangle,
         pBrush
     );
-    if (1) { //TODO 判斷是否旋轉到此號碼
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
-        m_pRenderTarget->FillEllipse(
-            D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
-            pBrush);
-    }
-    else {
+    if (isLight(Compare_Light_map, 0)) { //TODO 判斷大小燈亮
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
         m_pRenderTarget->FillEllipse(
             D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
             pBrush);
     }
-    if (1) { //TODO 判斷是否旋轉到此號碼
+    else {
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+        m_pRenderTarget->FillEllipse(
+            D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
+            pBrush);
+    }
+    if (isLight(Compare_Light_map, 1)) { //TODO 判斷大小燈亮
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
         m_pRenderTarget->FillEllipse(
             D2D1::Ellipse(D2D1::Point2F(x + width * 4.25, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
             pBrush);
     }
     else {
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
         m_pRenderTarget->FillEllipse(
             D2D1::Ellipse(D2D1::Point2F(x + width * 4.25, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
             pBrush);
@@ -395,51 +467,171 @@ void Engine::Draw_Game(int x, int y, int width, int height) {
         for (int i = 0; i < GAME_SIZE; ++i) {
             if ((i == 0 || i == GAME_SIZE-1) ||
                 (j == 0 || j == GAME_SIZE-1)) {
+                //判斷是否燈亮
+                int light_number = -1;
+                if (j == 0 && i == 0) {
+                    // (0, 0) 處理邏輯
+                    light_number = 0;
+                }
+                else if (j == 0 && i == 1) {
+                    // (0, 1) 處理邏輯
+                    light_number = 1;
+                }
+                else if (j == 0 && i == 2) {
+                    // (0, 2) 處理邏輯
+                    light_number = 2;
+                }
+                else if (j == 0 && i == 3) {
+                    // (0, 3) 處理邏輯
+                    light_number = 3;
+                }
+                else if (j == 0 && i == 4) {
+                    // (0, 4) 處理邏輯
+                    light_number = 4;
+                }
+                else if (j == 0 && i == 5) {
+                    // (0, 5) 處理邏輯
+                    light_number = 5;
+                }
+                else if (j == 0 && i == 6) {
+                    // (0, 6) 處理邏輯
+                    light_number = 6;
+                }
+                else if (j == 1 && i == 6) {
+                    // (1, 6) 處理邏輯
+                    light_number = 7;
+                }
+                else if (j == 2 && i == 6) {
+                    // (2, 6) 處理邏輯
+                    light_number = 8;
+                }
+                else if (j == 3 && i == 6) {
+                    // (3, 6) 處理邏輯
+                    light_number = 9;
+                }
+                else if (j == 4 && i == 6) {
+                    // (4, 6) 處理邏輯
+                    light_number = 10;
+                }
+                else if (j == 5 && i == 6) {
+                    // (5, 6) 處理邏輯
+                    light_number = 11;
+                }
+                else if (j == 6 && i == 6) {
+                    // (6, 6) 處理邏輯
+                    light_number = 12;
+                }
+                else if (j == 6 && i == 5) {
+                    // (6, 5) 處理邏輯
+                    light_number = 13;
+                }
+                else if (j == 6 && i == 4) {
+                    // (6, 4) 處理邏輯
+                    light_number = 14;
+                }
+                else if (j == 6 && i == 3) {
+                    // (6, 3) 處理邏輯
+                    light_number = 15;
+                }
+                else if (j == 6 && i == 2) {
+                    // (6, 2) 處理邏輯
+                    light_number = 16;
+                }
+                else if (j == 6 && i == 1) {
+                    // (6, 1) 處理邏輯
+                    light_number = 17;
+                }
+                else if (j == 6 && i == 0) {
+                    // (6, 0) 處理邏輯
+                    light_number = 18;
+                }
+                else if (j == 5 && i == 0) {
+                    // (5, 0) 處理邏輯
+                    light_number = 19;
+                }
+                else if (j == 4 && i == 0) {
+                    // (4, 0) 處理邏輯
+                    light_number = 20;
+                }
+                else if (j == 3 && i == 0) {
+                    // (3, 0) 處理邏輯
+                    light_number = 21;
+                }
+                else if (j == 2 && i == 0) {
+                    // (2, 0) 處理邏輯
+                    light_number = 22;
+                }
+
+                else if (j == 1 && i == 0) {
+                    // (1, 0) 處理邏輯
+                    light_number = 23;
+                }
+                else {
+                    // 其他格子的處理邏輯
+                    light_number = -1;
+                }
                 D2D1_RECT_F grid_rectangle = D2D1::RectF(x + width * i, y + height * j,
                     x + width * (i + 1), y + height * (j + 1));
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
+
+                if (isLight(Game_Light_map, light_number)) {
+                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                }
+                else {
+                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
+                }
                 m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
                 //邊界
                 m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
                 m_pRenderTarget->DrawRectangle(&grid_rectangle, pBrush, 2.0f);
-                //繪製遊戲圖片
-                if (j == 0 && i == 0) {
+
+                switch (light_number)
+                {
+                case 0: {
                     // (0, 0) 處理邏輯
                     Draw_Cell(ORANGE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 1) {
+                case 1: {
                     // (0, 1) 處理邏輯
                     Draw_Cell(BELL_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 2) {
+                case 2: {
                     // (0, 2) 處理邏輯
                     Draw_Cell(BAR_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 3) {
+                case 3: {
                     // (0, 3) 處理邏輯
                     Draw_Cell(BAR_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 4) {
+                case 4: {
                     // (0, 4) 處理邏輯
                     Draw_Cell(APPLE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 5) {
+                case 5: {
                     // (0, 5) 處理邏輯
                     Draw_Cell(APPLE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 0 && i == 6) {
+                case 6: {
                     // (0, 6) 處理邏輯
                     Draw_Cell(LEMON_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 1 && i == 6) {
+                case 7: {
                     // (1, 6) 處理邏輯
                     Draw_Cell(WATERMELOM_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 2 && i == 6) {
+                case 8: {
                     // (2, 6) 處理邏輯
                     Draw_Cell(WATERMELOM_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 3 && i == 6) {
+                case 9: {
                     // (3, 6) 處理邏輯
                     WCHAR scoreStr[64];
                     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBrush);
@@ -452,52 +644,64 @@ void Engine::Draw_Game(int x, int y, int width, int height) {
                         grid_rectangle,
                         pBrush
                     );
+                    break;
                 }
-                else if (j == 4 && i == 6) {
+                case 10: {
                     // (4, 6) 處理邏輯
                     Draw_Cell(APPLE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 5 && i == 6) {
+                case 11: {
                     // (5, 6) 處理邏輯
                     Draw_Cell(ORANGE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 6) {
+                case 12: {
                     // (6, 6) 處理邏輯
                     Draw_Cell(ORANGE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 5) {
+                case 13: {
                     // (6, 5) 處理邏輯
                     Draw_Cell(BELL_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 4) {
+                case 14: {
                     // (6, 4) 處理邏輯
                     Draw_Cell(SEVEN_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 3) {
+                case 15: {
                     // (6, 3) 處理邏輯
                     Draw_Cell(SEVEN_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 2) {
+                case 16: {
                     // (6, 2) 處理邏輯
                     Draw_Cell(APPLE_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 1) {
+                case 17: {
                     // (6, 1) 處理邏輯
                     Draw_Cell(LEMON_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 6 && i == 0) {
+                case 18: {
                     // (6, 0) 處理邏輯
                     Draw_Cell(LEMON_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 5 && i == 0) {
+                case 19: {
                     // (5, 0) 處理邏輯
                     Draw_Cell(STAR_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 4 && i == 0) {
+                case 20: {
                     // (4, 0) 處理邏輯
                     Draw_Cell(STAR_NUMBER, grid_rectangle);
+                    break;
                 }
-                else if (j == 3 && i == 0) {
+                case 21: {
                     // (3, 0) 處理邏輯
                     WCHAR scoreStr[64];
                     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
@@ -510,35 +714,37 @@ void Engine::Draw_Game(int x, int y, int width, int height) {
                         grid_rectangle,
                         pBrush
                     );
+                    light_number = 21;
+                    break;
                 }
-                else if (j == 2 && i == 0) {
+                case 22: {
                     // (2, 0) 處理邏輯
                     Draw_Cell(APPLE_NUMBER, grid_rectangle);
+                    light_number = 22;
+                    break;
                 }
-
-                else if (j == 1 && i == 0) {
+                case 23: {
                     // (1, 0) 處理邏輯
                     Draw_Cell(BELL_NUMBER, grid_rectangle);
+                    light_number = 23;
+                    break;
                 }
-                else {
+                default:
                     // 其他格子的處理邏輯
+                    light_number = -1;
+                    break;
                 }
-
 
                 //製作燈號
-                if (1) { //TODO 判斷是否旋轉到此號碼
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
-                    m_pRenderTarget->FillEllipse(
-                        D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + height * (j + 1) - 8), LIGHT_SIZE, LIGHT_SIZE),
-                        pBrush);
+                if (isLight(Game_Light_map, light_number)) {
+                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
                 }
                 else {
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
-                    m_pRenderTarget->FillEllipse(
-                        D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + height * (j + 1) - 8), LIGHT_SIZE, LIGHT_SIZE),
-                        pBrush);
+                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
                 }
-
+                m_pRenderTarget->FillEllipse(
+                    D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + height * (j + 1) - 8), LIGHT_SIZE, LIGHT_SIZE),
+                    pBrush);
             }
         }
     }
@@ -600,64 +806,25 @@ void Engine::Draw_Bet(int x, int y, int width, int height) {
             x + width * (i + 1), y + 200);
         if (i != BET_SIZE - 1)
             m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
-        if (1) { //TODO 判斷是否旋轉到此號碼
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
-            m_pRenderTarget->FillEllipse(
-                D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + 8), LIGHT_SIZE, LIGHT_SIZE),
-                pBrush);
-        }
-        else {
+
+        if (isLight(Bet_Light_map , i)) { //TODO 判斷是否旋轉到此號碼
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + 8), LIGHT_SIZE, LIGHT_SIZE),
                 pBrush);
         }
+        else {
+            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+            m_pRenderTarget->FillEllipse(
+                D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + 8), LIGHT_SIZE, LIGHT_SIZE),
+                pBrush);
+        }
     }
 }
 
-int Engine::Get_CellScore(int number) {
-    switch (number)
-    {
-    case APPLE_NUMBER: {
-        return 5;
-    }
-    break;
-    case BAR_NUMBER: {
-        return 100;
-    }
-    break;
-    case BELL_NUMBER: {
-        return 20;
-    }
-    break;
-    case LEMON_NUMBER: {
-        return 15;
-    }
-    break;
-    case ORANGE_NUMBER: {
-        return 10;
-    }
-    break;
-    case SEVEN_NUMBER: {
-        return 40;
-    }
-    break;
-    case STAR_NUMBER: {
-        return 30;
-    }
-    break;
-    case WATERMELOM_NUMBER: {
-        return 20;
-    }
-    break;
-
-    default:
-    break;
-    }
-}
 
 void Engine::Draw_Function(int x, int y, int width, int height) {    
-    D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * 8, y + height); // 8為將width 切分八分
+    D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * 8, y + height); // 8為還原width
     ID2D1SolidColorBrush* pBrush;
     ID2D1SolidColorBrush* p_Pen_Brush;
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &p_Pen_Brush);
@@ -667,16 +834,56 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     m_pRenderTarget->FillRectangle(&function_rectangle, pBrush);
 
+    for (int i = 0; i < 8; ++i) {
+        D2D1_RECT_F bet_rectangle = D2D1::RectF(x + width *i , y, x + width * (i + 1), y + height * 0.5);
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
+        m_pRenderTarget->DrawRectangle(&bet_rectangle, pBrush, 4.0f);
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
+        m_pRenderTarget->FillRectangle(&bet_rectangle, pBrush);
+
+        D2D1_RECT_F Add_1_rectangle  = D2D1::RectF(x + width * i        , y                , x + width * (i + 0.5), y + height * 0.25);
+        D2D1_RECT_F Add_10_rectangle = D2D1::RectF(x + width * (i + 0.5), y                , x + width * (i + 1)  , y + height * 0.25);
+        D2D1_RECT_F Clear_rectangle  = D2D1::RectF(x + width * i        , y + height * 0.25, x + width * (i + 1)  , y + height * 0.5);
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
+        m_pRenderTarget->DrawRectangle(&Add_1_rectangle , pBrush, 2.0f);
+        m_pRenderTarget->DrawRectangle(&Add_10_rectangle, pBrush, 2.0f);
+
+        swprintf_s(scoreStr, L"1                                                  ");
+        m_pRenderTarget->DrawText(
+            scoreStr,
+            30,
+            m_pTextFormat,
+            Add_1_rectangle,
+            p_Pen_Brush
+        );
+        swprintf_s(scoreStr, L"10                                                  ");
+        m_pRenderTarget->DrawText(
+            scoreStr,
+            30,
+            m_pTextFormat,
+            Add_10_rectangle,
+            p_Pen_Brush
+        );
+        swprintf_s(scoreStr, L"CLEAR                                                  ");
+        m_pRenderTarget->DrawText(
+            scoreStr,
+            30,
+            m_pTextFormat,
+            Clear_rectangle,
+            p_Pen_Brush
+        );
+    }
+
     
 
-    // 分配按鈕區域
+    // 分配功能鍵區域
     // TODO 這裡*的比例為人工計算,具體按鍵公式可在調整
-    D2D1_RECT_F exit_rectangle  = D2D1::RectF(x + width * 0.225, y + height * 0.5, x + width * 1.525, y + height);
-    D2D1_RECT_F small_rectangle = D2D1::RectF(x + width * 1.725, y + height * 0.5, x + width * 2.625, y + height);
-    D2D1_RECT_F big_rectangle   = D2D1::RectF(x + width * 2.825, y + height * 0.5, x + width * 3.725, y + height);
-    D2D1_RECT_F score_rectangle = D2D1::RectF(x + width * 3.925, y + height * 0.5, x + width * 5.225, y + height);
-    D2D1_RECT_F auto_rectangle  = D2D1::RectF(x + width * 5.425, y + height * 0.5, x + width * 6.325, y + height);
-    D2D1_RECT_F start_rectangle = D2D1::RectF(x + width * 6.525, y + height * 0.5, x + width * 7.825, y + height);
+    D2D1_RECT_F exit_rectangle  = D2D1::RectF(x + width * 0.225, y + height * BET_RATIO, x + width * 1.525, y + height);
+    D2D1_RECT_F small_rectangle = D2D1::RectF(x + width * 1.725, y + height * BET_RATIO, x + width * 2.625, y + height);
+    D2D1_RECT_F big_rectangle   = D2D1::RectF(x + width * 2.825, y + height * BET_RATIO, x + width * 3.725, y + height);
+    D2D1_RECT_F score_rectangle = D2D1::RectF(x + width * 3.925, y + height * BET_RATIO, x + width * 5.225, y + height);
+    D2D1_RECT_F auto_rectangle  = D2D1::RectF(x + width * 5.425, y + height * BET_RATIO, x + width * 6.325, y + height);
+    D2D1_RECT_F start_rectangle = D2D1::RectF(x + width * 6.525, y + height * BET_RATIO, x + width * 7.825, y + height);
 
 
     //繪製綠色按鈕
@@ -750,4 +957,65 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
 
 
 
+}
+
+bool Engine::isLight(std::map<int, bool> map, int number) {
+    auto it = map.find(number);
+    if (it != map.end()) {
+        return it->second;
+    }
+    // 如果找不到對應的鍵值，也返回 false
+    return false;
+}
+
+void Engine::SetLightStatus(std::multimap<int, std::pair<int, bool>> &map, int time, int number, bool islight) {
+    std::pair<int, bool> ppair;
+    ppair.first = number;
+    ppair.second = islight;
+    map.insert(std::make_pair(time, ppair));
+}
+
+
+void  Engine::updateLightStatus() {
+    for (auto it = Bet_Light_call_map.begin(); it != Bet_Light_call_map.end();) {
+        if (it->first <= currentTime) {
+            // 更新 Bet_Light_map
+            Bet_Light_map[it->second.first] = it->second.second;
+            // 刪除已更新的資訊
+            it = Bet_Light_call_map.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto it = Game_Light_call_map.begin(); it != Game_Light_call_map.end();) {
+        if (it->first <= currentTime) {
+            // 更新 Bet_Light_map
+            Game_Light_map[it->second.first] = it->second.second;
+
+            //std::wstring numberStr = std::to_wstring(it->second.first);
+            //MessageBox(NULL, numberStr.c_str(), L"測試", MB_OK);
+            //numberStr = std::to_wstring(it->second.second);
+            //MessageBox(NULL, numberStr.c_str(), L"測試", MB_OK);
+
+            // 刪除已更新的資訊
+            it = Game_Light_call_map.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
+
+    for (auto it = Compare_Light_call_map.begin(); it != Compare_Light_call_map.end();) {
+        if (it->first <= currentTime) {
+            // 更新 Bet_Light_map
+            Compare_Light_map[it->second.first] = it->second.second;
+            // 刪除已更新的資訊
+            it = Compare_Light_call_map.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 }

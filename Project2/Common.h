@@ -15,7 +15,7 @@
 
 // 遊戲視窗相關
 #define GRID_NUMBER     0
-#define BET_NUMBER      1 
+#define FUNCTION_BET_NUMBER      1 
 #define FUNCTION_NUMBER 2
 
 #define GRID_X      (SCREEN_WIDTH/3 - 125) //遊戲區域左上角位置
@@ -27,6 +27,9 @@
 #define BET_Y       GRID_Y + GRID_HEIGHT*7 +10
 #define BET_WIDTH  (SCREEN_WIDTH / 3 + 352) / 8
 #define BET_HEIGHT  200
+#define BET_RATIO   0.515
+
+
 
 #define FUNCTION_X      BET_X
 #define FUNCTION_Y      BET_Y + BET_HEIGHT
