@@ -475,6 +475,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     ShowButton(0);
                     //OnPaint(hWnd);
                     engine->playing = 1;
+                    engine->autoing = 0;
+
                     break;
 
                 case 2: // 難度選擇
@@ -544,10 +546,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
                     switch (bet_or_function)
                     {
+
                     case GRID_NUMBER: {
+                        if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+
                         break;
                     }
                     case FUNCTION_BET_NUMBER: {
+                        if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+
+                        if (engine->GetWinScore() > 0) {
+                            MessageBox(hWnd, L"請先按得分", L"錯誤", MB_OK);
+                            break; //若有得分則不能遊戲
+                        }
                         xPos -= FUNCTION_X;
                         yPos -= FUNCTION_Y;
                         int width = BET_WIDTH;
@@ -716,55 +727,61 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     case FUNCTION_NUMBER: {
                         // TODO :: 變數要改成Draw_Function同步 ,目標為修改其中一方即可
                         // width * 0.225 為不好的用法 0.225應改成變數
+
                         xPos -= FUNCTION_X;
                         int width = FUNCTION_WIDTH;
 
                         if (xPos >= width * 0.225 &&
                             xPos <= width * 1.525) {
                             // 離開遊戲
-                            //MessageBox(hWnd, L"離開遊戲", L"測試", MB_OK);
+                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
                             SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0); 
-
-                        }
+                                                    }
                         else if (xPos >= width * 1.725 &&
                             xPos <= width * 2.625) {
                             // 小
-                            //MessageBox(hWnd, L"小", L"測試", MB_OK);
-                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 0, 1);
-                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime + 1000, 0, 0);
+                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
 
+                            if (engine->GetWinScore() > 0) {
+                                engine->compare_starting = 1;
+                                engine->SetBigOrSmall(0);
+                            }
                         }
                         else if (xPos >= width * 2.825 &&
                             xPos <= width * 3.725) {
                             // 大
-                            //MessageBox(hWnd, L"大", L"測試", MB_OK);
-                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 1, 1);
-                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime + 500, 1, 0);
+                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                            if (engine->GetWinScore() > 0) {
+                                engine->compare_starting = 1;
+                                engine->SetBigOrSmall(1);
+                            }
 
                         }
                         else if (xPos >= width * 3.925 &&
                             xPos <= width * 5.225) {
                             // 得分
-                            MessageBox(hWnd, L"得分", L"測試", MB_OK);
+                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+
+                            engine->WinToScore();
 
                         }
                         else if (xPos >= width * 5.425 &&
                             xPos <= width * 6.325) {
                             // 自動
-                            MessageBox(hWnd, L"自動", L"測試", MB_OK);
-                            engine->SetLightStatus(engine->Compare_Light_call_map, engine->currentTime, 1, 1);
-
+                            if (engine->autoing)
+                                engine->autoing = 0;
+                            else
+                                engine->autoing = 1;
                         }
                         else if (xPos >= width * 6.525 &&
                             xPos <= width * 7.825) {
                             // 開始
-                            //MessageBox(hWnd, L"開始", L"測試", MB_OK);
-                            //engine->stratTime = std::time(nullptr);
-
-                            std::srand(static_cast<unsigned int>(std::time(nullptr)));
-                            int randomHour = std::rand() % 24;
-                            engine->starting = 1;
-
+                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                            if (engine->GetWinScore() > 0) {
+                                MessageBox(hWnd, L"請先按得分", L"錯誤", MB_OK);
+                                break; //若有得分則不能繼續遊戲
+                            }                            
+                            engine->bet_starting = 1;
                         }
                         break;
                     }
@@ -783,6 +800,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             // 處理遊戲結束
             engine->playing = 0;
             engine->ClearDraw(hWnd);
+            //MessageBox(hWnd, L"自動", L"測試", MB_OK);
             //WCHAR scoreStr[64];
             //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
             //MessageBox(hWnd, scoreStr, L"結算", MB_OK);

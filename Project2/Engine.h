@@ -15,19 +15,45 @@ public:
 	void Reset();
 	void Logic(double elapsedTime);
 	void ClearDraw(HWND hWnd);
-	void AddWindScore(int score) {WindScore += score;};
-	bool CostWindScore(int cost) { 
-		WindScore -= cost;
+	// 結算number對應金額
+	void Settlement(int number) {
+		if (number == RED_ONCEMORE_NUMBER) {
+			// 清空左邊四個
+			for (int i = 0; i < 4; ++i) {
+				Bet_call_map[i] = 0;
+			}
+		}
+		else if (number == BLUE_ONCEMORE_NUMBER) {
+			// 清空右邊四個
+			for (int i = 4; i < CELL_TOTAL; ++i) {
+				Bet_call_map[i] = 0;
+			}
+		}
+		else {
+			int cost = Get_CellScore(number);
+			AddWinScore(Bet_call_map[number] * cost * 2); //2為花費加上回報
+			for (int i = 0; i < CELL_TOTAL; ++i) {
+				Bet_call_map[i] = 0;
+			}
+		}
+	};
+	void AddWinScore(int cost) { 
+		WinScore += cost;
+		return; 
+	}
+
+	bool CostWinScore(int cost) {  
+		WinScore -= cost;
 		if (Score >= 0)
 			return true;
 		else
-			WindScore += cost;
+			WinScore += cost;
 		return false;
 	}
-	int GetWindScore() { return WindScore; };
-	void CloseScore() { 
-		Score += WindScore;
-		WindScore=0;
+	// 結算WinScore 到Score
+	void WinToScore() {
+		Score += WinScore;
+		WinScore=0;
 	}
 	bool CostScore(int cost) { 
 		Score -= cost;
@@ -38,21 +64,42 @@ public:
 		return false;
 	}
 	void AddScore(int score) { Score += score; }
+	int GetWinScore() { return WinScore; }
 	int GetScore() { return Score; }
 
-	//void fps_count();
+	void SetBigOrSmall(bool number) {
+		if (number == 0)
+			compare_SmallOrBig = 0;
+		else if (number == 1 )
+			compare_SmallOrBig = 1;
+	}
 
 	bool playing = 0; //位於遊戲畫面中
-	bool starting = 0; //按下開始遊戲
+	bool bet_starting = 0; //按下開始遊戲
+	bool bet_started = 0; //有開始過遊戲
+	bool bet_settling = 0; //等待結算
+
+	bool compare_starting = 0; //按下大小
+	bool compare_SmallOrBig = 0; // 0=小 1=大
+	bool compare_settling = 0; //等待結算
+
+
+	bool idleing = 0; //閒置中
+	bool autoing = 0; //自動執行
 	int run_second = 10; //每圈執行秒數 
-	int position = 0 ; //當前運行位置
-	int end_position = 0;
+	int position = 0 ; //起點位置
+	int endPosition = 0; //終點位置
+	int endCompare = 0;
+	int Comparenumber = 0;
+
 	long long currentTime;
-	
+	long long endTime;
+
 
 	std::multimap<int, std::pair<int, bool>> Bet_Light_call_map; //紀錄操控動作   <時間,<號碼,燈亮或暗>>
 	std::multimap<int, std::pair<int, bool>> Game_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
 	std::multimap<int, std::pair<int, bool>> Compare_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+	std::multimap<int, int> Compare_Number_map; //紀錄操控動作  <時間,數字>
 
 
 	HRESULT Draw();
@@ -62,10 +109,12 @@ public:
 	void Draw_Bet(int x, int y, int width, int height);
 	void Draw_Function(int x, int y, int width, int height);
 	int Get_CellScore(int number);
+	int Get_CellNumber(int light_number);
 	void Bet_call(int number , int amount);
 	void updateLightStatus();
 	void SetLightStatus(std::multimap<int, std::pair<int, bool>> &map,int time , int number,bool islight);
 	bool isLight(std::map<int, bool> map, int number);
+	void SetCompareNumber(int time, int number);
 
 
 private:
@@ -91,9 +140,13 @@ private:
 	ID2D1Bitmap* Mid_BackgroundBitmap;
 
 	json BettingTable;
-	int WindScore;
+	int WinScore;
 	int Score;
 
+	int lightsecond = 200; //燈亮時間
+	int lightsecond_slow = 400; //燈長亮時間
+	int lightIndex = 0;  
+	int lightIndex_slow = 0;
 
 	std::map<int, int> Bet_call_map; //紀錄下注狀況  <號碼,金額>
 	std::map<int, bool >Bet_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>

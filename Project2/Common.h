@@ -42,8 +42,11 @@
 // 遊戲相關
 #define LIGHT_SIZE 6 //燈號大小 
 #define CELL_SIZE 20
-#define GAME_SIZE 7 //遊戲區域分成7*7
-#define BET_SIZE  8 //遊戲區域分成7*7
+#define GAME_SIZE 7 //遊戲區域分成7*7 但只用邊界格
+#define GAME_TOTAL GAME_SIZE*4-4 // 遊戲區域格子數
+
+#define BET_SIZE  8 //下注區域分成8*1
+#define BET_TOTAL  8 //下注區域格子數
 
 // 事件或指令相關
 #define ID_CUSTOM_COMMAND 1001
@@ -52,18 +55,25 @@
 
 // CELL依據代表分數降序排列
 
-#define BAR_NUMBER 0
-#define SEVEN_NUMBER BAR_NUMBER + 1
-#define STAR_NUMBER BAR_NUMBER + 2
-#define WATERMELOM_NUMBER BAR_NUMBER + 3
-#define BELL_NUMBER BAR_NUMBER + 4
-#define LEMON_NUMBER BAR_NUMBER + 5
-#define ORANGE_NUMBER BAR_NUMBER + 6
-#define APPLE_NUMBER  BAR_NUMBER+ 7
+#define BAR_NUMBER              0
+#define SEVEN_NUMBER            BAR_NUMBER + 1
+#define STAR_NUMBER             BAR_NUMBER + 2
+#define WATERMELOM_NUMBER       BAR_NUMBER + 3
+#define BELL_NUMBER             BAR_NUMBER + 4
+#define LEMON_NUMBER            BAR_NUMBER + 5
+#define ORANGE_NUMBER           BAR_NUMBER + 6
+#define APPLE_NUMBER            BAR_NUMBER + 7
 
-#define CELL_TOTAL APPLE_NUMBER+1 //紀錄總共有幾個CELL
+#define RED_ONCEMORE_NUMBER     BAR_NUMBER + 100
+#define BLUE_ONCEMORE_NUMBER    BAR_NUMBER + 101
+
+#define SMALL_NUMBER     0
+#define BIG_NUMBER       1
 
 
+#define CELL_TOTAL              APPLE_NUMBER+1 //紀錄總共有幾個CELL
+
+#define IDLETIME 5000 //閒置多久進入idle,單位為ms
 
 
 class Common
