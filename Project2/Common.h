@@ -74,6 +74,7 @@
 #define CELL_TOTAL              APPLE_NUMBER+1 //紀錄總共有幾個CELL
 
 #define IDLETIME 5000 //閒置多久進入idle,單位為ms
+#define AUTOTIME 2000 //間隔多久自動下一輪,單位為ms
 
 
 class Common

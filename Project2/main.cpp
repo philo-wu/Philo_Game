@@ -768,10 +768,17 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         else if (xPos >= width * 5.425 &&
                             xPos <= width * 6.325) {
                             // 自動
-                            if (engine->autoing)
+                            if (engine->autoing) {
                                 engine->autoing = 0;
-                            else
+
+                            }
+                            else {
+                                auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                                auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000;
+                                engine->endTime = seconds * 1000 + milliseconds -2000;
                                 engine->autoing = 1;
+
+                            }
                         }
                         else if (xPos >= width * 6.525 &&
                             xPos <= width * 7.825) {
@@ -780,7 +787,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                             if (engine->GetWinScore() > 0) {
                                 MessageBox(hWnd, L"請先按得分", L"錯誤", MB_OK);
                                 break; //若有得分則不能繼續遊戲
-                            }                            
+                            }
+                            if (engine->autoing) {
+                                MessageBox(hWnd, L"會自動開始", L"錯誤", MB_OK);
+                                break; //若開啟自動則由自動啟動
+                            }
                             engine->bet_starting = 1;
                         }
                         break;

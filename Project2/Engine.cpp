@@ -191,85 +191,97 @@ void Engine::Logic(double elapsedTime)
         //  若Y大於N 則再從N到Y
         //  若N小於Y 則從N到23 再從0到Y
 
+        
+        
         // 轉盤遊戲
         if (bet_starting) {
-            if (!bet_started) {
-                bet_started = 1;
+            int amount = 0;
+            for (int i = 0; i < CELL_TOTAL; ++i) {
+                amount += Bet_call_map[i];
             }
-            if (idleing) {
-                Game_Light_call_map.clear();
-                Bet_Light_call_map.clear();
-                for (int i = 0; i < GAME_TOTAL; ++i) {
-                    SetLightStatus(Game_Light_call_map, currentTime, i, 0);
+            if (amount == 0) {
+                MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
+                bet_starting = 0;
+            }
+            else {
+                if (!bet_started) {
+                    bet_started = 1;
                 }
-                for (int i = 0; i < CELL_TOTAL; ++i) {
-                    SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
+                if (idleing) {
+                    Game_Light_call_map.clear();
+                    Bet_Light_call_map.clear();
+                    for (int i = 0; i < GAME_TOTAL; ++i) {
+                        SetLightStatus(Game_Light_call_map, currentTime, i, 0);
+                    }
+                    for (int i = 0; i < CELL_TOTAL; ++i) {
+                        SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
+                    }
+                    idleing = 0;
                 }
-                idleing = 0;
-            }
-            std::srand(static_cast<unsigned int>(std::time(nullptr)));
-            endPosition = std::rand() % 24; //
+                std::srand(static_cast<unsigned int>(std::time(nullptr)));
+                endPosition = std::rand() % 24; //
 
-            int cellNumber = Get_CellNumber(position);
-            SetLightStatus(Game_Light_call_map, currentTime, position, 0);
-            SetLightStatus(Bet_Light_call_map, currentTime, cellNumber, 0);
+                int cellNumber = Get_CellNumber(position);
+                SetLightStatus(Game_Light_call_map, currentTime, position, 0);
+                SetLightStatus(Bet_Light_call_map, currentTime, cellNumber, 0);
 
-            int currentHour = position; //設開始為N 結束為Y
+                int currentHour = position; //設開始為N 結束為Y
 
 
-            for (int i = 0; i < GAME_TOTAL; ++i) { //從n開始 到23 再從0開始 到n
-                currentHour = (currentHour + 1) % 24;
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * lightIndex, currentHour, 1);
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
-                ++lightIndex;
-            }
-            if (endPosition > position) { //若Y大於N
-                //MessageBox(NULL, L"Y大於N", L"測試", MB_OK);
-                for (int i = 0; i <= endPosition; ++i) {
-                    currentHour = (currentHour + 1) % 24; 
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
-                    lightIndex += 2;
-                }
-            }
-            else {  //若Y小於N
-                //MessageBox(NULL, L"Y小於N", L"測試", MB_OK);
-                for (int i = position; i < GAME_TOTAL; ++i) {
+                for (int i = 0; i < GAME_TOTAL; ++i) { //從n開始 到23 再從0開始 到n
                     currentHour = (currentHour + 1) % 24;
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0); 
+                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * lightIndex, currentHour, 1);
+                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
                     ++lightIndex;
-
                 }
-                for (int i = 0; i <= endPosition; ++i) {
-                    currentHour = (currentHour + 1) % 24;
+                if (endPosition > position) { //若Y大於N
+                    //MessageBox(NULL, L"Y大於N", L"測試", MB_OK);
+                    for (int i = 0; i <= endPosition; ++i) {
+                        currentHour = (currentHour + 1) % 24;
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
+                        lightIndex += 2;
+                    }
+                }
+                else {  //若Y小於N
+                    //MessageBox(NULL, L"Y小於N", L"測試", MB_OK);
+                    for (int i = position; i < GAME_TOTAL; ++i) {
+                        currentHour = (currentHour + 1) % 24;
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
+                        ++lightIndex;
+
+                    }
+                    for (int i = 0; i <= endPosition; ++i) {
+                        currentHour = (currentHour + 1) % 24;
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
+                        lightIndex += 2;
+                    }
+                }
+
+                //std::wstring  WStr = std::to_wstring(lightsecond * (lightIndex));
+                //OutputDebugString(L"currentTime = ");
+                //OutputDebugString(WStr.c_str());
+                //OutputDebugString(L"\n");
+                cellNumber = Get_CellNumber(currentHour);
+
+                for (int i = 0; i <= 4; ++i) {
                     SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
+                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
+                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
+                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), cellNumber, 0);
                     lightIndex += 2;
                 }
-            }
-
-            //std::wstring  WStr = std::to_wstring(lightsecond * (lightIndex));
-            //OutputDebugString(L"currentTime = ");
-            //OutputDebugString(WStr.c_str());
-            //OutputDebugString(L"\n");
-            cellNumber = Get_CellNumber(currentHour);
-
-            for (int i = 0; i <= 4; ++i) {
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex )     , currentHour, 1);
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex  +1 ) , currentHour, 0);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
                 SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), cellNumber, 0);
-                lightIndex += 2;
-            }
-            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-            SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
 
-            endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
-            position = currentHour; //更新起點
-            // 結算
-            bet_starting = 0;
-            bet_settling = 1;
+                endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
+                position = currentHour; //更新起點
+                // 結算
+                bet_starting = 0;
+                bet_settling = 1;
+            }
         }
 
         // 比大小
@@ -348,7 +360,7 @@ void Engine::Logic(double elapsedTime)
         if ((bet_settling || compare_settling ) && currentTime > endTime) {
             if (bet_settling) {
                 int number = Get_CellNumber(position);
-                Settlement(number);
+                Settlement(number , autoing);
                 bet_settling = 0;
             }
             if (compare_settling) {
@@ -366,10 +378,30 @@ void Engine::Logic(double elapsedTime)
                 }
                 compare_settling = 0;
             }
-
+            if (autoing) {
+                WinToScore();
+            }
         }
+        // auto
+        if (autoing && currentTime > endTime + AUTOTIME) {
+            int amount = 0;
+            for (int i = 0; i < CELL_TOTAL; ++i) {
+                amount += Bet_call_map[i];
+            }
+            if (amount == 0) {
+                MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
+                autoing = 0;
+            }
+            else {
+                bet_starting = 1;
+            }
+        }
+
         // idleing
-        if (Game_Light_call_map.empty() && Compare_Light_call_map.empty() && currentTime >= endTime + IDLETIME) {
+        if (Game_Light_call_map.empty() && 
+            Compare_Light_call_map.empty() && 
+            currentTime >= endTime + IDLETIME &&
+            !autoing) {
             //OutputDebugString(L"idle\n");
             idleing = 1;
             // 清空面板
@@ -1018,8 +1050,6 @@ void Engine::Draw_Bet(int x, int y, int width, int height) {
         }
     }
 }
-
-
 void Engine::Draw_Function(int x, int y, int width, int height) {    
     D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * BET_TOTAL, y + height); // BET_TOTAL為還原width
     ID2D1SolidColorBrush* pBrush;
@@ -1100,7 +1130,7 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
         exit_rectangle,
         p_Pen_Brush
     );
-    if (bet_settling || compare_settling || GetWinScore() > 0)
+    if (bet_settling || compare_settling || GetWinScore() > 0 || autoing)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);

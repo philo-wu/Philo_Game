@@ -16,24 +16,48 @@ public:
 	void Logic(double elapsedTime);
 	void ClearDraw(HWND hWnd);
 	// 結算number對應金額
-	void Settlement(int number) {
+	void Settlement(int number , bool pAutoing) {
 		if (number == RED_ONCEMORE_NUMBER) {
 			// 清空左邊四個
 			for (int i = 0; i < 4; ++i) {
-				Bet_call_map[i] = 0;
+				if (pAutoing) {
+					if (!CostScore((Get_CellScore(i) * Bet_call_map[i]))) {
+						MessageBox(NULL, L"金額不足,關閉自動模式", L"錯誤", MB_OK);
+						autoing = 0;
+					}
+				}
+				else {
+					Bet_call_map[i] = 0;
+				}
 			}
 		}
 		else if (number == BLUE_ONCEMORE_NUMBER) {
 			// 清空右邊四個
 			for (int i = 4; i < CELL_TOTAL; ++i) {
-				Bet_call_map[i] = 0;
+				if (pAutoing) {
+					if (!CostScore((Get_CellScore(i) * Bet_call_map[i]))) {
+						MessageBox(NULL, L"金額不足,關閉自動模式", L"錯誤", MB_OK);
+						autoing = 0;
+					}
+				}
+				else {
+					Bet_call_map[i] = 0;
+				}
 			}
 		}
 		else {
 			int cost = Get_CellScore(number);
 			AddWinScore(Bet_call_map[number] * cost * 2); //2為花費加上回報
 			for (int i = 0; i < CELL_TOTAL; ++i) {
-				Bet_call_map[i] = 0;
+				if (autoing) {
+					if (!CostScore((Get_CellScore(i) * Bet_call_map[i]))){
+						MessageBox(NULL, L"金額不足,關閉自動模式", L"錯誤", MB_OK);
+						autoing = 0;
+					}
+				}
+				else {
+					Bet_call_map[i] = 0;
+				}
 			}
 		}
 	};
