@@ -48,9 +48,18 @@ HWND Score_Button;
 HWND End_Button;
 HWND hwndScrollBar;
 
+HINSTANCE HINSTANCE1;
+
 //畫面更新
-double targetFrameTime = 1.0 / 8; // 目標每幀時間（這裡假設 為 8 FPS）
+double secFrameTime = 1.0 / 120; // 目標每幀時間（這裡假設 為 8 FPS）
+double secTime = 0.0;
+
+double targetFrameTime = 1000 / 120; // 目標每幀時間（這裡假設 為 8 FPS）
 double accumulatedTime = 0.0;
+
+double logicFrameTime = 1000 / 240; // 目標每幀時間（這裡假設 為 8 FPS）
+double logicAccumulatedTime = 0.0;
+
 int deltaTime = 0;
 // 遊戲引擎
      Engine* engine;
@@ -64,7 +73,11 @@ int deltaTime = 0;
 // 以上貪吃蛇使用不到, 並轉移給引擎宣告
 
 void ShowButton(bool);
-
+void init(HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow);
+    
 //  宣告WindowProc
 LRESULT CALLBACK WindowProc(HWND hWnd,
                             UINT message,

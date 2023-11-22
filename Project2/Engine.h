@@ -13,7 +13,7 @@ public:
 	HRESULT InitializeD2D(HWND m_hwnd);
 	void KeyUp(WPARAM wParam);
 	void Reset();
-	void Logic(double elapsedTime);
+	void Logic();
 	void ClearDraw(HWND hWnd);
 	// 結算number對應金額
 	void Settlement(int number , bool pAutoing) {

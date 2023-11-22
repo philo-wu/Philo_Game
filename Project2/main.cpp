@@ -4,9 +4,10 @@
 #include "nlohmann/json.hpp"
 #include <thread>
 
+// 計時器 //單位為毫秒
+int time_start = GetTickCount();
+int time_end = GetTickCount();
 
-
-HINSTANCE HINSTANCE1;
 INT_PTR CALLBACK Dialog_Difficulty_Proc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     DWORD dwID = wParam;
@@ -235,106 +236,46 @@ int WINAPI WinMain(HINSTANCE hInstance,
     LPSTR lpCmdLine,
     int nCmdShow)   
 {
+    init(hInstance,
+        hPrevInstance,
+        lpCmdLine,
+        nCmdShow);
 
-    // 視窗句柄，由函數填充
-    // 這個結構體用來保存視窗類別相關的訊息
-    WNDCLASSEX wc;
-
-    // 清空視窗類別以供使用
-    ZeroMemory(&wc, sizeof(WNDCLASSEX));
-    // 在結構體中填寫所需的視窗類別信息
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = WindowProc;
-    wc.hInstance = hInstance;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-    wc.lpszClassName = L"WindowClass1";
-
-    // 註冊視窗
-    RegisterClassEx(&wc);
-    //根據客戶端取得視窗大小並做處理
-    HINSTANCE1 = hInstance;
-    RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // 设置尺寸，而不是位置
-    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
-
-    // 建立窗口，並將傳回的結果作為句柄
-    hWnd = CreateWindowEx(
-        NULL,
-        L"WindowClass1",                 // 視窗類別的名字
-        L"超級小瑪莉777",   // 視窗的標題
-        WS_OVERLAPPEDWINDOW,             // 視窗的樣式
-        1980 / 2 - SCREEN_WIDTH/2,         // 視窗的x座標 //畫面置中 = 1980/2 - SCREEN_WIDTH-2
-        0,                               // 視窗的y座標
-        wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
-        wr.bottom - wr.top,              // 視窗的高度
-        NULL,                            // 沒有父窗口，設定為NULL
-        NULL,                            // 不使用選單，設定為NULL
-        hInstance,                       // 應用程式句柄
-        NULL);                           // 與多個視窗一起使用，設定為NULL
-
-    // 主選單的字體及大小
-    HFONT hFont = CreateFont(
-        28,                                     // 字體的高度
-        0,                                      // 字體的寬度
-        0,                                      // 字體的旋轉角度
-        0,                                      // 字體的斜體角度
-        FW_NORMAL,                              // 字體的粗細度
-        FALSE,                                  // 是否是斜體字體
-        FALSE,                                  // 是否是下劃線字體
-        FALSE,                                  // 是否是刪除線字體
-        DEFAULT_CHARSET,                        // 字符集
-        OUT_OUTLINE_PRECIS,                     // 輸出精度
-        CLIP_DEFAULT_PRECIS,                    // 剪裁精度
-        ANTIALIASED_QUALITY,                    // 邊緣平滑度
-        DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
-        L"Verdana"                              // 字體名
-    );
-    SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
-    SendMessage(Difficulty_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
-    SendMessage(Score_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
-    SendMessage(End_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
-
-    // 顯示視窗
-    ShowWindow(hWnd, nCmdShow);
     // 設定並初始化 Direct
     common = new Common();
     engine = new Engine(common);
     engine->InitializeD2D(hWnd);
-    //InitD2D(hWnd);
-
-    //   InitD3D(hWnd);
-    // 進入主要迴圈:
-    
+    // 進入主要迴圈:    
     // 這個結構體包含Windows事件訊息
     MSG msg = { 0 };
-    // 計時器
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    int frames = 0;
-    double framesTime = 0;
-    double FPS = 0;
+    
     // 訊息迴圈
     while (TRUE)
     {
-        end = std::chrono::steady_clock::now();
-        double elapsed_secs = std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0;
-        begin = end;
+        time_end = GetTickCount();
+        int elapsed_sec = time_end - time_start;
+        logicAccumulatedTime += elapsed_sec; //邏輯間隔時間
+        accumulatedTime += elapsed_sec; //繪圖間隔時間
+        secTime += elapsed_sec;
 
-        accumulatedTime += elapsed_secs;
-        //顯示 FPS 從Logic中搬出來
-        //if (engine->playing)
-        //    engine->fps_count();
+        if (secTime >= 1000)
+        {
+            OutputDebugString(L"1秒=================================\n");
+            time_t now = time(0);
+            char* dt = ctime(&now);
+            OutputDebugStringA(dt);
+            secTime -= 1000;
+        }
 
-        while (accumulatedTime >= targetFrameTime)
-
+        if (logicAccumulatedTime >= logicFrameTime)
         {
 
 
             // Game logic
             if (engine->playing)
             {
-                engine->Logic(targetFrameTime);
+                OutputDebugString(L"邏輯\n");
+                engine->Logic();
                 if (!engine->playing)
                 {
                     SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
@@ -342,8 +283,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
                     engine->ClearDraw(hWnd);
                 }
             }
+            logicAccumulatedTime -= logicFrameTime;
 
-            accumulatedTime -= targetFrameTime;
         }
 
         // 检查队列中是否有消息正在等待
@@ -362,21 +303,21 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
-            if (engine->playing)
+            if (accumulatedTime >= targetFrameTime)
             {
-                // Drawing
-                engine->Draw();
+
+                if (engine->playing)
+                {
+                    // Drawing
+                    OutputDebugString(L"繪圖\n");
+                    engine->Draw();
+                }
+                accumulatedTime -= targetFrameTime;
+
             }
-            // FPS新增於此
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // 控制迴圈速度
-
         }
-
+        time_start = time_end;
     }
-
-    // 清理 DirectX 和 COM
-    // CleanD3D();
-    // TODO: CleanD2D
     
     // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
@@ -834,6 +775,73 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
     // 處理 switch 語句未攔截訊息
     return DefWindowProc (hWnd, message, wParam, lParam);
+}
+
+void init(HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR lpCmdLine,
+    int nCmdShow) {
+    // 視窗句柄，由函數填充
+// 這個結構體用來保存視窗類別相關的訊息
+    WNDCLASSEX wc;
+
+    // 清空視窗類別以供使用
+    ZeroMemory(&wc, sizeof(WNDCLASSEX));
+    // 在結構體中填寫所需的視窗類別信息
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+    wc.lpszClassName = L"WindowClass1";
+
+    // 註冊視窗
+    RegisterClassEx(&wc);
+    //根據客戶端取得視窗大小並做處理
+    HINSTANCE1 = hInstance;
+    RECT wr = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };    // 设置尺寸，而不是位置
+    AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // 調整大小
+
+    // 建立窗口，並將傳回的結果作為句柄
+    hWnd = CreateWindowEx(
+        NULL,
+        L"WindowClass1",                 // 視窗類別的名字
+        L"超級小瑪莉777",   // 視窗的標題
+        WS_OVERLAPPEDWINDOW,             // 視窗的樣式
+        1980 / 2 - SCREEN_WIDTH / 2,         // 視窗的x座標 //畫面置中 = 1980/2 - SCREEN_WIDTH-2
+        0,                               // 視窗的y座標
+        wr.right - wr.left,              // 視窗的寬度 //根據客戶端大小來計算適合的視窗大小
+        wr.bottom - wr.top,              // 視窗的高度
+        NULL,                            // 沒有父窗口，設定為NULL
+        NULL,                            // 不使用選單，設定為NULL
+        hInstance,                       // 應用程式句柄
+        NULL);                           // 與多個視窗一起使用，設定為NULL
+
+    // 主選單的字體及大小
+    HFONT hFont = CreateFont(
+        28,                                     // 字體的高度
+        0,                                      // 字體的寬度
+        0,                                      // 字體的旋轉角度
+        0,                                      // 字體的斜體角度
+        FW_NORMAL,                              // 字體的粗細度
+        FALSE,                                  // 是否是斜體字體
+        FALSE,                                  // 是否是下劃線字體
+        FALSE,                                  // 是否是刪除線字體
+        DEFAULT_CHARSET,                        // 字符集
+        OUT_OUTLINE_PRECIS,                     // 輸出精度
+        CLIP_DEFAULT_PRECIS,                    // 剪裁精度
+        ANTIALIASED_QUALITY,                    // 邊緣平滑度
+        DEFAULT_PITCH | FF_SWISS,               // 字體家族和字體名
+        L"Verdana"                              // 字體名
+    );
+    SendMessage(Start_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Difficulty_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(Score_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+    SendMessage(End_Button, WM_SETFONT, (WPARAM)hFont, MAKELPARAM(TRUE, 0));
+
+    // 顯示視窗
+    ShowWindow(hWnd, nCmdShow);
 }
 
 void ShowButton(bool show)

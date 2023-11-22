@@ -171,7 +171,7 @@ void Engine::Reset()
     }
 }
 
-void Engine::Logic(double elapsedTime)
+void Engine::Logic()
 {
     // This is the logic part of the engine.
     if (playing)
