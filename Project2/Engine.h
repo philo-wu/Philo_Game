@@ -9,6 +9,16 @@ public:
 	Engine(Common* pcommon);
 	~Engine();
 
+	/*
+	0 = 閒置
+
+	1 = 遊戲_bet
+	2 = 結算_bet
+	3 = 遊戲_Compare
+	4 = 結算_Compare
+	*/
+	int state = 0 ; 
+
 	Common* common;
 	HRESULT InitializeD2D(HWND m_hwnd);
 	void KeyUp(WPARAM wParam);
@@ -100,7 +110,7 @@ public:
 
 	bool playing = 0; //位於遊戲畫面中
 	bool bet_starting = 0; //按下開始遊戲
-	bool bet_started = 0; //有開始過遊戲
+	bool bet_started = 0; //有開始過遊戲 //
 	bool bet_settling = 0; //等待結算
 
 	bool compare_starting = 0; //按下大小
@@ -132,13 +142,30 @@ public:
 	void Draw_Game(int x ,int y ,int width ,int height);
 	void Draw_Bet(int x, int y, int width, int height);
 	void Draw_Function(int x, int y, int width, int height);
+
+	void Logic_Bet();
+	void Logic_Compare();
+	void Logic_settle();
+	void Logic_idle();
+	void Logic_auto();
+
 	int Get_CellScore(int number);
 	int Get_CellNumber(int light_number);
+	
+	// 判斷是否有下注
+	bool CheckBet();
+	// 投入金額 0為清空
 	void Bet_call(int number , int amount);
+	// 處理指令
 	void updateLightStatus();
+	// 下達燈號指令
 	void SetLightStatus(std::multimap<int, std::pair<int, bool>> &map,int time , int number,bool islight);
+	// 檢測燈號
 	bool isLight(std::map<int, bool> map, int number);
+	// 下達大小指令
 	void SetCompareNumber(int time, int number);
+	// 將燈號全部關閉
+	void Light_Clear();
 
 
 private:

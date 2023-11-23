@@ -48,6 +48,15 @@
 #define BET_SIZE  8 //下注區域分成8*1
 #define BET_TOTAL  8 //下注區域格子數
 
+#define STATE_IDLE              0
+#define STATE_BET_BEFORE        1 //無法操作
+#define STATE_BET_GAMING        2 //無法操作
+#define STATE_BET_SETTLING      3 
+#define STATE_COMPARE_BEFORE    4 //無法操作
+#define STATE_COMPARE_GAMING    5 //無法操作
+#define STATE_COMPARE_SETTLING  6
+
+
 // 事件或指令相關
 #define ID_CUSTOM_COMMAND 1001
 #define WM_CUSTOM_GAMEEND WM_USER + 1

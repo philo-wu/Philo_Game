@@ -125,8 +125,7 @@ HRESULT Engine::InitializeD2D(HWND m_hwnd)
     std::string path1 = common->currentPath.string() + "/Images/倍率表.json";
     std::ifstream inFile(path1);
     if (!inFile.is_open()) {
-        //std::cerr << "無法打開 JSON 文件" << std::endl;
-        //OutputDebugString(L"JSON開啟成功\n");
+        //OutputDebugString(L"無法打開 JSON 文件\n");
         MessageBox(m_hwnd, L"倍率表讀取失敗", L"錯誤", MB_OK);
         return 1;
     }
@@ -191,178 +190,82 @@ void Engine::Logic()
         //  若Y大於N 則再從N到Y
         //  若N小於Y 則從N到23 再從0到Y
 
-        
-        
-        // 轉盤遊戲
-        if (bet_starting) {
-            int amount = 0;
-            for (int i = 0; i < CELL_TOTAL; ++i) {
-                amount += Bet_call_map[i];
+        // auto
+        if (autoing && currentTime > endTime + AUTOTIME)
+            Logic_auto();
+
+
+        // 狀態機
+        switch (state) {
+        case STATE_IDLE:{  // 閒置
+            if (Game_Light_call_map.empty() &&
+                Compare_Light_call_map.empty() &&
+                currentTime >= endTime + IDLETIME &&
+                !autoing)
+                Logic_idle();
+
+            if (bet_starting) { //等待開始遊戲
+                if (!CheckBet()) {
+                    MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
+                    bet_starting = 0;
+                }
+                else {
+                    Light_Clear();
+                    state = STATE_BET_BEFORE;
+                }
             }
-            if (amount == 0) {
-                MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
-                bet_starting = 0;
-            }
-            else {
-                if (!bet_started) {
-                    bet_started = 1;
-                }
-                if (idleing) {
-                    Game_Light_call_map.clear();
-                    Bet_Light_call_map.clear();
-                    for (int i = 0; i < GAME_TOTAL; ++i) {
-                        SetLightStatus(Game_Light_call_map, currentTime, i, 0);
-                    }
-                    for (int i = 0; i < CELL_TOTAL; ++i) {
-                        SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
-                    }
-                    idleing = 0;
-                }
-                std::srand(static_cast<unsigned int>(std::time(nullptr)));
-                endPosition = std::rand() % 24; //
 
-                int cellNumber = Get_CellNumber(position);
-                SetLightStatus(Game_Light_call_map, currentTime, position, 0);
-                SetLightStatus(Bet_Light_call_map, currentTime, cellNumber, 0);
-
-                int currentHour = position; //設開始為N 結束為Y
-
-
-                for (int i = 0; i < GAME_TOTAL; ++i) { //從n開始 到23 再從0開始 到n
-                    currentHour = (currentHour + 1) % 24;
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * lightIndex, currentHour, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
-                    ++lightIndex;
-                }
-                if (endPosition > position) { //若Y大於N
-                    //MessageBox(NULL, L"Y大於N", L"測試", MB_OK);
-                    for (int i = 0; i <= endPosition; ++i) {
-                        currentHour = (currentHour + 1) % 24;
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
-                        lightIndex += 2;
-                    }
-                }
-                else {  //若Y小於N
-                    //MessageBox(NULL, L"Y小於N", L"測試", MB_OK);
-                    for (int i = position; i < GAME_TOTAL; ++i) {
-                        currentHour = (currentHour + 1) % 24;
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
-                        ++lightIndex;
-
-                    }
-                    for (int i = 0; i <= endPosition; ++i) {
-                        currentHour = (currentHour + 1) % 24;
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
-                        lightIndex += 2;
-                    }
-                }
-
-                //std::wstring  WStr = std::to_wstring(lightsecond * (lightIndex));
-                //OutputDebugString(L"currentTime = ");
-                //OutputDebugString(WStr.c_str());
-                //OutputDebugString(L"\n");
-                cellNumber = Get_CellNumber(currentHour);
-
-                for (int i = 0; i <= 4; ++i) {
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
-                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
-                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), cellNumber, 0);
-                    lightIndex += 2;
-                }
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
-
-                endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
-                position = currentHour; //更新起點
-                // 結算
+        }
+        break;
+        case STATE_BET_BEFORE: {
+            state = STATE_BET_GAMING;
+        }
+        break;
+        case STATE_BET_GAMING: {//遊戲bet
+            if (bet_starting) {
+                Logic_Bet();
                 bet_starting = 0;
                 bet_settling = 1;
             }
+            if (bet_settling &&
+                currentTime > endTime)
+                state = STATE_BET_SETTLING;
         }
+        break;
 
-        // 比大小
-        if (compare_starting) {
-            if (idleing) {
-                Game_Light_call_map.clear();
-                Bet_Light_call_map.clear();
-                for (int i = 0; i < GAME_TOTAL; ++i) {
-                    SetLightStatus(Game_Light_call_map, currentTime, i, 0);
-                }
-                for (int i = 0; i < CELL_TOTAL; ++i) {
-                    SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
-                }
-                idleing = 0;
-            }
-            // 清空面板
-            SetLightStatus(Game_Light_call_map, currentTime , position, 0);
-            if (endCompare < 5)
-                SetLightStatus(Compare_Light_call_map, currentTime, SMALL_NUMBER, 0);
-            else
-                SetLightStatus(Compare_Light_call_map, currentTime, BIG_NUMBER, 0);
-
-            std::srand(static_cast<unsigned int>(std::time(nullptr)));
-            endCompare = std::rand() % 10; //   
-            int timeadd = 0, timediv = 10;
-            for (int i = 0; i <= 10; ++i) {
-                std::srand(static_cast<unsigned int>((std::time(nullptr) + i) % timediv++));
-                int random_number1 = std::rand() % 10;
-                SetCompareNumber(currentTime + lightsecond * (lightIndex), random_number1);
-                if (random_number1 < 5) {
-                    SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex ), SMALL_NUMBER, 1);
-                    SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex + 1), SMALL_NUMBER, 0);
-
-                    for (int i = 18; i <= GAME_TOTAL; ++i) {
-                        int j = i % 24; //
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
-                    }
-                }
-                else {
-                    SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex ), BIG_NUMBER, 1);
-                    SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex + 1), BIG_NUMBER, 0);
-                    for (int i = 6; i <= 12; ++i) {
-                        int j = i % 24; //
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
-                    }
-                }
-                lightIndex += 2;
-            }
-            SetCompareNumber(currentTime + lightsecond * (lightIndex), endCompare);
-            endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
-            if (endCompare < 5) {
-                SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), SMALL_NUMBER, 1);
-                for (int i = 18; i <= GAME_TOTAL; ++i) {
-                    int j = i % 24; //
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), j, 0);
-                }
-            }
-            else {
-                SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), BIG_NUMBER, 1);
-                for (int i = 6; i <= 12; ++i) {
-                    int j = i % 24; //
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), j, 0);
-                }
-            }
-            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), position, 1);
-
-            // 結算
-            compare_starting = 0;
-            compare_settling = 1;
-        }
-        // 結算過程
-        if ((bet_settling || compare_settling ) && currentTime > endTime) {
+        case STATE_BET_SETTLING: {  //結算bet
             if (bet_settling) {
                 int number = Get_CellNumber(position);
-                Settlement(number , autoing);
+                Settlement(number, autoing);
                 bet_settling = 0;
             }
+
+            if (compare_starting) { //玩家決定進入比大小
+                state = STATE_COMPARE_BEFORE;
+            }
+
+            if (WinScore == 0) { //遊戲失敗或玩家決定得分
+                state = STATE_IDLE;
+            }
+        }
+        break;
+        case STATE_COMPARE_BEFORE: {
+            state = STATE_COMPARE_GAMING;
+        }
+         break;
+        case STATE_COMPARE_GAMING: {// 遊戲Compare
+            if (compare_starting) { //等待猜大小
+                compare_starting = 0;
+                Logic_Compare();
+                compare_settling = 1;
+            }
+            if(compare_settling &&
+                currentTime > endTime)
+                state = STATE_COMPARE_SETTLING;
+        }
+
+        break;
+        case STATE_COMPARE_SETTLING: {// 結算Compare
             if (compare_settling) {
                 if (endCompare < 5) {
                     if (compare_SmallOrBig == 0)
@@ -378,83 +281,16 @@ void Engine::Logic()
                 }
                 compare_settling = 0;
             }
-            if (autoing) {
-                WinToScore();
-            }
-        }
-        // auto
-        if (autoing && currentTime > endTime + AUTOTIME) {
-            int amount = 0;
-            for (int i = 0; i < CELL_TOTAL; ++i) {
-                amount += Bet_call_map[i];
-            }
-            if (amount == 0) {
-                MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
-                autoing = 0;
+            if (WinScore > 0) { //遊戲勝利
+                state = STATE_BET_SETTLING;
             }
             else {
-                bet_starting = 1;
+                state = STATE_IDLE;
             }
         }
-
-        // idleing
-        if (Game_Light_call_map.empty() && 
-            Compare_Light_call_map.empty() && 
-            currentTime >= endTime + IDLETIME &&
-            !autoing) {
-            //OutputDebugString(L"idle\n");
-            idleing = 1;
-            // 清空面板
-            SetLightStatus(Game_Light_call_map, currentTime, position, 0);
-            SetLightStatus(Bet_Light_call_map, currentTime, Get_CellNumber(position), 0);
-
-            for (int i = 0; i < GAME_TOTAL; i +=2) {
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
-            }
-            for (int i = 0; i < CELL_TOTAL; i += 2) {
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
-            }
-            lightIndex += 2;
-
-            for (int i = 1; i < GAME_TOTAL; i += 2) {
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
-            }
-            for (int i = 1; i < CELL_TOTAL; i += 2) {
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
-            }
-            lightIndex += 2;
-
-            for (int i = 0; i < GAME_TOTAL; ++i) {
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 5), i, 0);
-                int j = i % 8;
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
-
-                ++lightIndex;
-            }
-
-            if (bet_started) {
-
-                for (int i = 0; i <= position; ++i) {
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
-                    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 5), i, 0);
-                    int j = i % 8;
-                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
-                    SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 5), j, 0);
-                    ++lightIndex;
-                }
-
-                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 4), position, 1);
-                SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 4), Get_CellNumber(position), 1);
-
-            }
-            endTime = currentTime + lightsecond * (lightIndex ); //更新結束時間
-
+        break;
+        default:
+        break;
         }
     }
 }
@@ -579,7 +415,6 @@ int Engine::Get_CellNumber(int light_number) {
     }
 }
 
-// 投入金額 0為清空
 void Engine::Bet_call(int number, int amount) {
     // 檢查是否存在該號碼的下注紀錄
     auto it = Bet_call_map.find(number);
@@ -603,7 +438,6 @@ void Engine::Bet_call(int number, int amount) {
         //Bet_call_map[number] = amount;
     }
 }
-
 
 HRESULT Engine::Draw()
 {
@@ -637,15 +471,22 @@ HRESULT Engine::Draw()
 
 
     // UI設計基準紅線 未來刪除
-    D2D1_RECT_F rectangle4 = D2D1::RectF(SCREEN_WIDTH/2-1, 1.0f, SCREEN_WIDTH/2+1, SCREEN_HEIGHT - 3);
+    D2D1_RECT_F rectangle4 = D2D1::RectF(1, 1, SCREEN_WIDTH, 50 - 3);
     ID2D1SolidColorBrush* pBrush;
+    WCHAR scoreStr[64];
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
-    m_pRenderTarget->FillRectangle(&rectangle4, pBrush);
-
+    //m_pRenderTarget->FillRectangle(&rectangle4, pBrush);
+    swprintf_s(scoreStr, L"狀態::%d                                              ", state);
+    m_pRenderTarget->DrawText(
+        scoreStr,
+        48,
+        m_pTextFormat,
+        rectangle4,
+        pBrush
+    );
     // Draw score
     D2D1_RECT_F win_rectangle     = D2D1::RectF(SCREEN_WIDTH / 3  -120 , 70, SCREEN_WIDTH / 3  +120, 150);
     D2D1_RECT_F credits_rectangle = D2D1::RectF(SCREEN_WIDTH / 3*2-120 , 70, SCREEN_WIDTH / 3*2+120, 150);
-    WCHAR scoreStr[64];
     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
 
     swprintf_s(scoreStr, L"BONUS/WIN 贏得分數 \n %d                                         ", WinScore);
@@ -1117,7 +958,7 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
 
 
     //繪製綠色按鈕
-    if (bet_settling || compare_settling )
+    if (state != 0)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
@@ -1130,7 +971,7 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
         exit_rectangle,
         p_Pen_Brush
     );
-    if (bet_settling || compare_settling || GetWinScore() > 0 || autoing)
+    if (state != 0)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
@@ -1145,7 +986,7 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
     );
 
     //繪製黃色按鈕
-    if (bet_settling || compare_settling || GetWinScore() == 0)
+    if (state != STATE_BET_SETTLING)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
@@ -1171,7 +1012,8 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
 
 
     //繪製紅色按鈕
-    if (bet_settling || compare_settling || GetWinScore() == 0)
+    if (state != STATE_BET_SETTLING &&
+        state != STATE_COMPARE_SETTLING)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
@@ -1184,9 +1026,10 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
         score_rectangle,
         p_Pen_Brush
     );
-
     if(autoing)
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightYellow), &pBrush);
+    else if(state != STATE_IDLE)
+        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
     else
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
     m_pRenderTarget->FillRectangle(&auto_rectangle, pBrush);
@@ -1198,12 +1041,218 @@ void Engine::Draw_Function(int x, int y, int width, int height) {
         auto_rectangle,
         p_Pen_Brush
     );
+}
+
+void Engine::Logic_Bet(){
+
+        if (!bet_started) {
+            bet_started = 1;
+        }
 
 
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        endPosition = std::rand() % 24; //
+
+        int cellNumber = Get_CellNumber(position);
+        SetLightStatus(Game_Light_call_map, currentTime, position, 0);
+        SetLightStatus(Bet_Light_call_map, currentTime, cellNumber, 0);
+
+        int currentHour = position; //設開始為N 結束為Y
 
 
+        for (int i = 0; i < GAME_TOTAL; ++i) { //從n開始 到23 再從0開始 到n
+            currentHour = (currentHour + 1) % 24;
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * lightIndex, currentHour, 1);
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
+            ++lightIndex;
+        }
+        if (endPosition > position) { //若Y大於N
+            //MessageBox(NULL, L"Y大於N", L"測試", MB_OK);
+            for (int i = 0; i <= endPosition; ++i) {
+                currentHour = (currentHour + 1) % 24;
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
+                lightIndex += 2;
+            }
+        }
+        else {  //若Y小於N
+            //MessageBox(NULL, L"Y小於N", L"測試", MB_OK);
+            for (int i = position; i < GAME_TOTAL; ++i) {
+                currentHour = (currentHour + 1) % 24;
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
+                ++lightIndex;
+
+            }
+            for (int i = 0; i <= endPosition; ++i) {
+                currentHour = (currentHour + 1) % 24;
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 2), currentHour, 0);
+                lightIndex += 2;
+            }
+        }
+
+        //std::wstring  WStr = std::to_wstring(lightsecond * (lightIndex));
+        //OutputDebugString(L"currentTime = ");
+        //OutputDebugString(WStr.c_str());
+        //OutputDebugString(L"\n");
+        cellNumber = Get_CellNumber(currentHour);
+
+        for (int i = 0; i <= 4; ++i) {
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
+            SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
+            SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), cellNumber, 0);
+            lightIndex += 2;
+        }
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), currentHour, 1);
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), cellNumber, 1);
+
+        endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
+        position = currentHour; //更新起點
+        // 結算
+    
+}
+void Engine::Logic_Compare() {
+    // 清空面板
+    SetLightStatus(Game_Light_call_map, currentTime, position, 0);
+    if (endCompare < 5)
+        SetLightStatus(Compare_Light_call_map, currentTime, SMALL_NUMBER, 0);
+    else
+        SetLightStatus(Compare_Light_call_map, currentTime, BIG_NUMBER, 0);
+
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    endCompare = std::rand() % 10; //   
+    int timeadd = 0, timediv = 10;
+    for (int i = 0; i <= 10; ++i) {
+        std::srand(static_cast<unsigned int>((std::time(nullptr) + i) % timediv++));
+        int random_number1 = std::rand() % 10;
+        SetCompareNumber(currentTime + lightsecond * (lightIndex), random_number1);
+        if (random_number1 < 5) {
+            SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), SMALL_NUMBER, 1);
+            SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex + 1), SMALL_NUMBER, 0);
+
+            for (int i = 18; i <= GAME_TOTAL; ++i) {
+                int j = i % 24; //
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
+            }
+        }
+        else {
+            SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), BIG_NUMBER, 1);
+            SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex + 1), BIG_NUMBER, 0);
+            for (int i = 6; i <= 12; ++i) {
+                int j = i % 24; //
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+                SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
+            }
+        }
+        lightIndex += 2;
+    }
+    SetCompareNumber(currentTime + lightsecond * (lightIndex), endCompare);
+    endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
+    if (endCompare < 5) {
+        SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), SMALL_NUMBER, 1);
+        for (int i = 18; i <= GAME_TOTAL; ++i) {
+            int j = i % 24; //
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), j, 0);
+        }
+    }
+    else {
+        SetLightStatus(Compare_Light_call_map, currentTime + lightsecond * (lightIndex), BIG_NUMBER, 1);
+        for (int i = 6; i <= 12; ++i) {
+            int j = i % 24; //
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), j, 0);
+        }
+    }
+    SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), position, 1);
+    // 結算
+}
+void Engine::Logic_settle() {
 
 
+    if (autoing) {
+        WinToScore();
+    }
+}
+void Engine::Logic_idle() {
+    //OutputDebugString(L"idle\n");
+    idleing = 1;
+    // 清空面板
+    SetLightStatus(Game_Light_call_map, currentTime, position, 0);
+    SetLightStatus(Bet_Light_call_map, currentTime, Get_CellNumber(position), 0);
+
+    for (int i = 0; i < GAME_TOTAL; i += 2) {
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
+    }
+    for (int i = 0; i < CELL_TOTAL; i += 2) {
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
+    }
+    lightIndex += 2;
+
+    for (int i = 1; i < GAME_TOTAL; i += 2) {
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
+    }
+    for (int i = 1; i < CELL_TOTAL; i += 2) {
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), i, 0);
+    }
+    lightIndex += 2;
+
+    for (int i = 0; i < GAME_TOTAL; ++i) {
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 5), i, 0);
+        int j = i % 8;
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 1), j, 0);
+
+        ++lightIndex;
+    }
+
+    if (bet_started) {
+
+        for (int i = 0; i <= position; ++i) {
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex), i, 1);
+            SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 5), i, 0);
+            int j = i % 8;
+            SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex), j, 1);
+            SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 5), j, 0);
+            ++lightIndex;
+        }
+
+        SetLightStatus(Game_Light_call_map, currentTime + lightsecond * (lightIndex + 4), position, 1);
+        SetLightStatus(Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 4), Get_CellNumber(position), 1);
+
+    }
+    endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
+}
+void Engine::Logic_auto() {
+    int amount = 0;
+    for (int i = 0; i < CELL_TOTAL; ++i) {
+        amount += Bet_call_map[i];
+    }
+    if (amount == 0) {
+        MessageBox(NULL, L"請先下注", L"錯誤", MB_OK);
+        autoing = 0;
+    }
+    else {
+        bet_starting = 1;
+    }
+}
+
+bool Engine::CheckBet() {
+    //int amount = 0;
+    for (int i = 0; i < CELL_TOTAL; ++i) {
+        //amount += Bet_call_map[i];
+        if (Bet_call_map[i] > 0)
+            return true;
+    }
+    return false;
 }
 
 bool Engine::isLight(std::map<int, bool> map, int number) {
@@ -1214,7 +1263,6 @@ bool Engine::isLight(std::map<int, bool> map, int number) {
     // 如果找不到對應的鍵值，也返回 false
     return false;
 }
-
 void Engine::SetLightStatus(std::multimap<int, std::pair<int, bool>> &map, int time, int number, bool islight) {
     std::pair<int, bool> ppair;
     ppair.first = number;
@@ -1224,9 +1272,7 @@ void Engine::SetLightStatus(std::multimap<int, std::pair<int, bool>> &map, int t
 void Engine::SetCompareNumber(int time, int number) {
     Compare_Number_map.insert(std::make_pair(time, number));
 }
-
-
-void  Engine::updateLightStatus() {
+void Engine::updateLightStatus() {
     for (auto it = Bet_Light_call_map.begin(); it != Bet_Light_call_map.end();) {
         if (it->first <= currentTime) {
             // 更新 Bet_Light_map
@@ -1279,5 +1325,16 @@ void  Engine::updateLightStatus() {
         else {
             ++it;
         }
+    }
+}
+
+void Engine::Light_Clear() {
+    Game_Light_call_map.clear();
+    Bet_Light_call_map.clear();
+    for (int i = 0; i < GAME_TOTAL; ++i) {
+        SetLightStatus(Game_Light_call_map, currentTime, i, 0);
+    }
+    for (int i = 0; i < CELL_TOTAL; ++i) {
+        SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
     }
 }

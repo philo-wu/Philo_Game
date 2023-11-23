@@ -260,10 +260,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
         if (secTime >= 1000)
         {
-            OutputDebugString(L"1秒=================================\n");
+            //OutputDebugString(L"1秒=================================\n");
             time_t now = time(0);
             char* dt = ctime(&now);
-            OutputDebugStringA(dt);
+            //OutputDebugStringA(dt);
             secTime -= 1000;
         }
 
@@ -274,7 +274,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
             // Game logic
             if (engine->playing)
             {
-                OutputDebugString(L"邏輯\n");
+                //OutputDebugString(L"邏輯\n");
                 engine->Logic();
                 if (!engine->playing)
                 {
@@ -298,7 +298,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
             // 檢查是否到了退出的時間
             if (msg.message == WM_QUIT)
                 break;
-            // 看到有人用return 0, 但因為我將Clean寫在後方,故只用break
         }
         else
         {
@@ -309,7 +308,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
                 if (engine->playing)
                 {
                     // Drawing
-                    OutputDebugString(L"繪圖\n");
+                    //OutputDebugString(L"繪圖\n");
                     engine->Draw();
                 }
                 accumulatedTime -= targetFrameTime;
@@ -675,15 +674,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         if (xPos >= width * 0.225 &&
                             xPos <= width * 1.525) {
                             // 離開遊戲
-                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                            //if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                            if (engine->state == STATE_IDLE)
                             SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0); 
                                                     }
                         else if (xPos >= width * 1.725 &&
                             xPos <= width * 2.625) {
                             // 小
-                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
-
-                            if (engine->GetWinScore() > 0) {
+                            if (engine->state == STATE_BET_SETTLING) {
                                 engine->compare_starting = 1;
                                 engine->SetBigOrSmall(0);
                             }
@@ -691,8 +689,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         else if (xPos >= width * 2.825 &&
                             xPos <= width * 3.725) {
                             // 大
-                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
-                            if (engine->GetWinScore() > 0) {
+                            if (engine->state == STATE_BET_SETTLING) {
                                 engine->compare_starting = 1;
                                 engine->SetBigOrSmall(1);
                             }
@@ -701,22 +698,26 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         else if (xPos >= width * 3.925 &&
                             xPos <= width * 5.225) {
                             // 得分
-                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
-
-                            engine->WinToScore();
-
+                            if (engine->state == STATE_BET_SETTLING || engine->state == STATE_COMPARE_SETTLING) {
+                                engine->WinToScore();
+                            }
                         }
                         else if (xPos >= width * 5.425 &&
                             xPos <= width * 6.325) {
                             // 自動
                             if (engine->autoing) {
                                 engine->autoing = 0;
+                            }
+                            if (engine->state != STATE_IDLE)
+                                break;
 
+                            if (engine->autoing) {
+                                engine->autoing = 0;
                             }
                             else {
                                 auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
                                 auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000;
-                                engine->endTime = seconds * 1000 + milliseconds -2000;
+                                engine->endTime = seconds * 1000 + milliseconds -2000; //控制自動開始時間
                                 engine->autoing = 1;
 
                             }
@@ -733,7 +734,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                                 MessageBox(hWnd, L"會自動開始", L"錯誤", MB_OK);
                                 break; //若開啟自動則由自動啟動
                             }
-                            engine->bet_starting = 1;
+                            if (engine->state == STATE_IDLE)
+                                engine->bet_starting = 1;
                         }
                         break;
                     }
