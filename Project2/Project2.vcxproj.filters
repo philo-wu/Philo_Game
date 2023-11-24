@@ -24,6 +24,9 @@
     <ClCompile Include="Engine.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Area.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mian.h">
@@ -42,6 +45,18 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Area_Bet.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Area_Game.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Area_Function.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Area.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

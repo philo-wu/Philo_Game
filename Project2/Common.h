@@ -84,14 +84,18 @@
 
 #define IDLETIME 5000 //閒置多久進入idle,單位為ms
 #define AUTOTIME 2000 //間隔多久自動下一輪,單位為ms
-
+class BitmapManager;
+class ScoreManager;
+class EngineStateManager;
 
 class Common
 {
 public:
     // 依據uri路徑讀取檔案並轉換成圖片
     std::filesystem::path currentPath = std::filesystem::current_path(); // C++ 17
-
+    BitmapManager* BM;
+    ScoreManager* SM;
+    EngineStateManager* ESM;
     static HRESULT LoadBitmapFromFile(
         ID2D1RenderTarget* pRenderTarget,
         IWICImagingFactory* pIWICFactory,
@@ -533,35 +537,221 @@ public:
 
     }
 
-    //void 截圖(); //另一種截圖方式但未使用
-    //{
-    //HWND hwnd = hwndDlg;
-    //HDC hDC = GetDC(hwnd);//獲取屏幕DC
-
-    //HDC hDCMem = CreateCompatibleDC(hDC);//創建兼容DC 
-
-    ////HBITMAP hBitMap = CreateCompatibleBitmap(hDC, fixed_px, fixed_px);//創建兼容位圖
-    ////HBITMAP hBitMap = CreateBitmap(fixed_px, fixed_px, 1, 32, NULL);
-    //HBITMAP hBitMap = Common::CreateDIBSectionBitmap(fixed_px, fixed_px);
-    //HBITMAP hOldMap = (HBITMAP)::SelectObject(hDCMem, hBitMap);//選入位圖到兼容DC。并保存返回值  
+};
 
 
-    //TransparentBlt(hDCMem, 0, 0, fixed_px, fixed_px,
-    //    hDC, Tree_Point.x, Tree_Point.y, fixed_px, fixed_px, RGB(255, 255, 255)); // 將白色視為透明色 
-    ////BitBlt(hDCMem, 0, 0, fixed_px, fixed_px, 
-    ////        hDC, Tree_Point.x, Tree_Point.y, SRCCOPY);//將指定區域的屏幕DC圖象拷貝到兼容DC中
-    ////SetBkColor(hDCMem, RGB(255, 255, 255));  // 將白色視為透明色
+class BitmapManager {
+public:
+    BitmapManager(Common* pcommon,
+    ID2D1Factory* p_pDirect2dFactory,
+    ID2D1HwndRenderTarget* p_pRenderTarget,
+    IDWriteFactory* p_pDWriteFactory,
+    IDWriteTextFormat* p_pTextFormat,
+    ID2D1SolidColorBrush* p_pWhiteBrush
+    ) {
+        common = pcommon;
+        m_pDirect2dFactory = p_pDirect2dFactory;
+        m_pRenderTarget = p_pRenderTarget;
+        m_pDWriteFactory = p_pDWriteFactory;
+        m_pTextFormat = p_pTextFormat;
+        m_pWhiteBrush = p_pWhiteBrush;
+    }
 
-    //CImage image;
-    //image.Attach(hBitMap);
-    //image.Save(_T("./MyCapture.png"));//假设文件后缀为.bmp，则保存为为bmp格式  
-    //image.Detach(); 
 
-    //SelectObject(hDCMem, hOldMap);//釋放選入的位圖
+    Common* common;
 
-    ////释放  
-    //DeleteObject(hBitMap);
-    //DeleteDC(hDCMem);
-    //DeleteDC(hDC);
-    //}
+    ID2D1Factory* m_pDirect2dFactory;
+    ID2D1HwndRenderTarget* m_pRenderTarget;
+    IDWriteFactory* m_pDWriteFactory;
+    IDWriteTextFormat* m_pTextFormat;
+    ID2D1SolidColorBrush* m_pWhiteBrush;
+
+    ID2D1Bitmap* AppleBitmap;
+    ID2D1Bitmap* BarBitmap;
+    ID2D1Bitmap* BellBitmap;
+    ID2D1Bitmap* LemonBitmap;
+    ID2D1Bitmap* OrangeBitmap;
+    ID2D1Bitmap* SevenBitmap;
+    ID2D1Bitmap* StarBitmap;
+    ID2D1Bitmap* WatermelonBitmap;
+
+    ID2D1Bitmap* BackgroundBitmap;
+    ID2D1Bitmap* Mid_BackgroundBitmap;
+
+    void init(HWND m_hwnd) {
+
+        IWICImagingFactory* pIWICFactory = NULL;
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&pIWICFactory);
+        int errorcode = 0;
+
+        // 將讀取所有圖檔
+        std::wstring path = common->currentPath.wstring() + L"\\Images\\Apple.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &AppleBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) { //TODO::error處理
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Bar.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BarBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Bell.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BellBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Lemon.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &LemonBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Orange.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &OrangeBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Seven.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &SevenBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Star.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &StarBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Watermelon.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &WatermelonBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Background.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BackgroundBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        path = common->currentPath.wstring() + L"\\Images\\Mid_Background.png";
+        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &Mid_BackgroundBitmap, m_hwnd, errorcode);
+        if (errorcode != 0) {
+            ;
+        }
+        pIWICFactory->Release();
+    }
+
+
+};
+
+class ScoreManager
+{
+public:
+    ScoreManager() {
+        WinScore = 0;
+        Score = 15000;
+    }
+    void AddWinScore(int cost) {
+        WinScore += cost;
+        return;
+    }
+    bool CostWinScore(int cost) {
+        WinScore -= cost;
+        if (Score >= 0)
+            return true;
+        else
+            WinScore += cost;
+        return false;
+    }
+    // 結算WinScore 到Score
+    void WinToScore() {
+        Score += WinScore;
+        WinScore = 0;
+    }
+    bool CostScore(int cost) {
+        Score -= cost;
+        if (Score >= 0)
+            return true;
+        else
+            Score += cost;
+        return false;
+    }
+    void AddScore(int score) { Score += score; }
+    int GetWinScore() { return WinScore; }
+    int GetScore() { return Score; }
+
+private:
+    int WinScore;
+    int Score;
+
+public:
+    int Get_CellScore(int number) {
+        switch (number)
+        {
+        case APPLE_NUMBER: {
+            return 5;
+        }
+                         break;
+        case BAR_NUMBER: {
+            return 100;
+        }
+                       break;
+        case BELL_NUMBER: {
+            return 20;
+        }
+                        break;
+        case LEMON_NUMBER: {
+            return 15;
+        }
+                         break;
+        case ORANGE_NUMBER: {
+            return 10;
+        }
+                          break;
+        case SEVEN_NUMBER: {
+            return 40;
+        }
+                         break;
+        case STAR_NUMBER: {
+            return 30;
+        }
+                        break;
+        case WATERMELOM_NUMBER: {
+            return 20;
+        }
+                              break;
+
+        default:
+            break;
+        }
+    }
+};
+
+class EngineStateManager
+{
+public:
+    int state = 0;
+    bool playing = 0; //位於遊戲畫面中
+    bool bet_starting = 0; //按下開始遊戲
+    bool bet_started = 0; //有開始過遊戲 //
+    bool bet_settling = 0; //等待結算
+
+    bool compare_starting = 0; //按下大小
+    bool compare_SmallOrBig = 0; // 0=小 1=大
+    bool compare_settling = 0; //等待結算
+
+
+    bool idleing = 0; //閒置中
+    bool autoing = 0; //自動執行
+    int position = 0; //起點位置
+    int endPosition = 0; //終點位置
+    int endCompare = 0;
+    int Comparenumber = 0; //比大小的結果數字
+
+    long long currentTime;
+    long long endTime;
+
+    void SetBigOrSmall(bool number) {
+        if (number == 0)
+            compare_SmallOrBig = 0;
+        else if (number == 1)
+            compare_SmallOrBig = 1;
+    }
 };

@@ -243,8 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     // 設定並初始化 Direct
     common = new Common();
-    engine = new Engine(common);
-    engine->InitializeD2D(hWnd);
+    engine = new Engine(common, hWnd);
     // 進入主要迴圈:    
     // 這個結構體包含Windows事件訊息
     MSG msg = { 0 };
@@ -275,12 +274,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
             if (engine->playing)
             {
                 //OutputDebugString(L"邏輯\n");
-                engine->Logic();
+                //engine->Logic();
                 if (!engine->playing)
                 {
                     SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
                     engine->Reset();
-                    engine->ClearDraw(hWnd);
+                    engine->ClearDraw();
                 }
             }
             logicAccumulatedTime -= logicFrameTime;
@@ -415,7 +414,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     ShowButton(0);
                     //OnPaint(hWnd);
                     engine->playing = 1;
-                    engine->autoing = 0;
+                    common->ESM->autoing = 0;
 
                     break;
 
@@ -488,14 +487,14 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                     {
 
                     case GRID_NUMBER: {
-                        if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                        if (common->ESM->bet_settling || common->ESM->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
 
                         break;
                     }
                     case FUNCTION_BET_NUMBER: {
-                        if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                        if (common->ESM->bet_settling || common->ESM->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
 
-                        if (engine->GetWinScore() > 0) {
+                        if (common->SM->GetWinScore() > 0) {
                             MessageBox(hWnd, L"請先按得分", L"錯誤", MB_OK);
                             break; //若有得分則不能遊戲
                         }
@@ -675,22 +674,22 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                             xPos <= width * 1.525) {
                             // 離開遊戲
                             //if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
-                            if (engine->state == STATE_IDLE)
+                            if (common->ESM->state == STATE_IDLE)
                             SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0); 
                                                     }
                         else if (xPos >= width * 1.725 &&
                             xPos <= width * 2.625) {
                             // 小
-                            if (engine->state == STATE_BET_SETTLING) {
-                                engine->compare_starting = 1;
+                            if (common->ESM->state == STATE_BET_SETTLING) {
+                                common->ESM->compare_starting = 1;
                                 engine->SetBigOrSmall(0);
                             }
                         }
                         else if (xPos >= width * 2.825 &&
                             xPos <= width * 3.725) {
                             // 大
-                            if (engine->state == STATE_BET_SETTLING) {
-                                engine->compare_starting = 1;
+                            if (common->ESM->state == STATE_BET_SETTLING) {
+                                common->ESM->compare_starting = 1;
                                 engine->SetBigOrSmall(1);
                             }
 
@@ -698,44 +697,44 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                         else if (xPos >= width * 3.925 &&
                             xPos <= width * 5.225) {
                             // 得分
-                            if (engine->state == STATE_BET_SETTLING || engine->state == STATE_COMPARE_SETTLING) {
-                                engine->WinToScore();
+                            if (common->ESM->state == STATE_BET_SETTLING || common->ESM->state == STATE_COMPARE_SETTLING) {
+                                common->SM->WinToScore();
                             }
                         }
                         else if (xPos >= width * 5.425 &&
                             xPos <= width * 6.325) {
                             // 自動
-                            if (engine->autoing) {
-                                engine->autoing = 0;
+                            if (common->ESM->autoing) {
+                                common->ESM->autoing = 0;
                             }
-                            if (engine->state != STATE_IDLE)
+                            if (common->ESM->state != STATE_IDLE)
                                 break;
 
-                            if (engine->autoing) {
-                                engine->autoing = 0;
+                            if (common->ESM->autoing) {
+                                common->ESM->autoing = 0;
                             }
                             else {
                                 auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
                                 auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000;
                                 engine->endTime = seconds * 1000 + milliseconds -2000; //控制自動開始時間
-                                engine->autoing = 1;
+                                common->ESM->autoing = 1;
 
                             }
                         }
                         else if (xPos >= width * 6.525 &&
                             xPos <= width * 7.825) {
                             // 開始
-                            if (engine->bet_settling || engine->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
-                            if (engine->GetWinScore() > 0) {
+                            if (common->ESM->bet_settling || common->ESM->compare_settling) break; //開始遊戲後 動畫停止前不接受指令
+                            if (common->SM->GetWinScore() > 0) {
                                 MessageBox(hWnd, L"請先按得分", L"錯誤", MB_OK);
                                 break; //若有得分則不能繼續遊戲
                             }
-                            if (engine->autoing) {
+                            if (common->ESM->autoing) {
                                 MessageBox(hWnd, L"會自動開始", L"錯誤", MB_OK);
                                 break; //若開啟自動則由自動啟動
                             }
-                            if (engine->state == STATE_IDLE)
-                                engine->bet_starting = 1;
+                            if (common->ESM->state == STATE_IDLE)
+                                common->ESM->bet_starting = 1;
                         }
                         break;
                     }
@@ -753,7 +752,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         case WM_CUSTOM_GAMEEND:
             // 處理遊戲結束
             engine->playing = 0;
-            engine->ClearDraw(hWnd);
+            engine->ClearDraw();
             //MessageBox(hWnd, L"自動", L"測試", MB_OK);
             //WCHAR scoreStr[64];
             //swprintf_s(scoreStr, L"遊戲結束 \n得分為%d     ", engine->getscore());
