@@ -5,6 +5,7 @@
 #include <atlimage.h>  
 #include <shobjidl.h>
 #include <filesystem>
+#include <map>
 
 // 視窗相關
 #define SCREEN_WIDTH  720  
@@ -96,6 +97,7 @@ public:
     BitmapManager* BM;
     ScoreManager* SM;
     EngineStateManager* ESM;
+
     static HRESULT LoadBitmapFromFile(
         ID2D1RenderTarget* pRenderTarget,
         IWICImagingFactory* pIWICFactory,
@@ -644,14 +646,25 @@ public:
 class ScoreManager
 {
 public:
+
+
     ScoreManager() {
         WinScore = 0;
         Score = 15000;
     }
+    std::map<int, int> Bet_call_map;  //紀錄下注狀況  <號碼,金額>
+
+private:
+    int WinScore;
+    int Score;
+
+public:
+
     void AddWinScore(int cost) {
         WinScore += cost;
         return;
     }
+
     bool CostWinScore(int cost) {
         WinScore -= cost;
         if (Score >= 0)
@@ -660,11 +673,13 @@ public:
             WinScore += cost;
         return false;
     }
+
     // 結算WinScore 到Score
     void WinToScore() {
         Score += WinScore;
         WinScore = 0;
     }
+
     bool CostScore(int cost) {
         Score -= cost;
         if (Score >= 0)
@@ -673,15 +688,13 @@ public:
             Score += cost;
         return false;
     }
+
     void AddScore(int score) { Score += score; }
+
     int GetWinScore() { return WinScore; }
+
     int GetScore() { return Score; }
 
-private:
-    int WinScore;
-    int Score;
-
-public:
     int Get_CellScore(int number) {
         switch (number)
         {
@@ -722,13 +735,126 @@ public:
             break;
         }
     }
-};
 
+    int Get_CellNumber(int light_number) {
+        switch (light_number)
+        {
+        case 0: {
+            return ORANGE_NUMBER;
+        }
+        case 1: {
+            return BELL_NUMBER;
+        }
+        case 2: {
+            return BAR_NUMBER;
+        }
+        case 3: {
+            return BAR_NUMBER;
+        }
+        case 4: {
+            return APPLE_NUMBER;
+        }
+        case 5: {
+            return APPLE_NUMBER;
+        }
+        case 6: {
+            return LEMON_NUMBER;
+        }
+        case 7: {
+            return WATERMELOM_NUMBER;
+        }
+        case 8: {
+            return WATERMELOM_NUMBER;
+        }
+        case 9: {
+            return BLUE_ONCEMORE_NUMBER;
+        }
+        case 10: {
+            return APPLE_NUMBER;
+        }
+        case 11: {
+            return ORANGE_NUMBER;
+        }
+        case 12: {
+            return ORANGE_NUMBER;
+        }
+        case 13: {
+            return BELL_NUMBER;
+        }
+        case 14: {
+            return SEVEN_NUMBER;
+        }
+        case 15: {
+            return SEVEN_NUMBER;
+        }
+        case 16: {
+            return APPLE_NUMBER;
+        }
+        case 17: {
+            return LEMON_NUMBER;
+        }
+        case 18: {
+            return LEMON_NUMBER;
+        }
+        case 19: {
+            return STAR_NUMBER;
+        }
+        case 20: {
+            return STAR_NUMBER;
+        }
+        case 21: {
+            return RED_ONCEMORE_NUMBER;
+        }
+        case 22: {
+            return APPLE_NUMBER;
+        }
+        case 23: {
+            return BELL_NUMBER;
+        }
+        default:
+            // 其他格子的處理邏輯
+            return -1;
+        }
+    }
+
+    void Bet_call(int number, int amount) {
+        // 檢查是否存在該號碼的下注紀錄
+        auto it = Bet_call_map.find(number);
+        if (it != Bet_call_map.end()) {
+            // 如果該號碼已存在，更新下注金額
+            int cost = Get_CellScore(number);
+            if (amount == 0) {
+                AddScore(cost * it->second);
+                it->second = 0;
+            }
+            else {
+                if (CostScore(cost * amount))
+                    it->second += amount;
+                else
+                    MessageBox(NULL, L"金額不足", L"錯誤", MB_OK);
+            }
+        }
+        else {
+            // 如果該號碼不存在，新增一筆下注紀錄
+            MessageBox(NULL, L"號碼不存在", L"錯誤", MB_OK);
+            //Bet_call_map[number] = amount;
+        }
+    }
+
+    // 判斷是否有下注
+    bool CheckBet() {
+        for (int i = 0; i < CELL_TOTAL; ++i) {
+            if (Bet_call_map[i] > 0)
+                return true;
+        }
+        return false;
+    }
+};
+    
 class EngineStateManager
 {
 public:
     int state = 0;
-    bool playing = 0; //位於遊戲畫面中
     bool bet_starting = 0; //按下開始遊戲
     bool bet_started = 0; //有開始過遊戲 //
     bool bet_settling = 0; //等待結算
@@ -740,18 +866,163 @@ public:
 
     bool idleing = 0; //閒置中
     bool autoing = 0; //自動執行
-    int position = 0; //起點位置
+    int position = 0; //遊戲開始時起點位置 = 上場遊戲結束時終點位置
     int endPosition = 0; //終點位置
     int endCompare = 0;
     int Comparenumber = 0; //比大小的結果數字
 
+    // 邏輯運行開始時間
     long long currentTime;
+
+    // 燈號結束時間
     long long endTime;
 
+    // Area_Game
+    std::multimap<int, std::pair<int, bool>> Game_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+    std::map<int, bool> Game_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>
+
+    std::multimap<int, std::pair<int, bool>> Compare_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+    std::map<int, bool> Compare_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>
+
+    std::multimap<int, int> Compare_Number_map; //紀錄操控動作  <時間,數字>
+
+
+    // Area_Bet 下注區域
+    std::multimap<int, std::pair<int, bool>> Bet_Light_call_map; //紀錄操控動作   <時間,<號碼,燈亮或暗>>
+    std::map<int, bool>Bet_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>   
+
+    //Area_Function
+    std::multimap<int, std::pair<int, bool>> One_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+    std::map<int, bool> One_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>
+    std::multimap<int, std::pair<int, bool>> Ten_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+    std::map<int, bool> Ten_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>
+    std::multimap<int, std::pair<int, bool>> Clear_Light_call_map; //紀錄操控動作  <時間,<號碼,燈亮或暗>>
+    std::map<int, bool> Clear_Light_map; //紀錄燈狀態 <號碼,燈亮或暗>
+
+
+    void updateLightStatus() {
+        for (auto it = Bet_Light_call_map.begin(); it != Bet_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Bet_Light_map
+                if (it->second.first == RED_ONCEMORE_NUMBER || it->second.first == BLUE_ONCEMORE_NUMBER) {
+                    it = Bet_Light_call_map.erase(it);
+                }
+                else {
+                    Bet_Light_map[it->second.first] = it->second.second;
+                    // 刪除已更新的資訊
+                    it = Bet_Light_call_map.erase(it);
+                }
+            }
+            else {
+                ++it;
+            }
+        }
+
+        for (auto it = Game_Light_call_map.begin(); it != Game_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Game_Light_map
+                Game_Light_map[it->second.first] = it->second.second;
+
+                // 刪除已更新的資訊
+                it = Game_Light_call_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        for (auto it = Compare_Light_call_map.begin(); it != Compare_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Compare_Light_map
+                Compare_Light_map[it->second.first] = it->second.second;
+                // 刪除已更新的資訊
+                it = Compare_Light_call_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        for (auto it = Compare_Number_map.begin(); it != Compare_Number_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Comparenumber
+                Comparenumber = it->second;
+                // 刪除已更新的資訊
+                it = Compare_Number_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        for (auto it = One_Light_call_map.begin(); it != One_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 One_Light_map
+                One_Light_map[it->second.first] = it->second.second;
+                // 刪除已更新的資訊
+                it = One_Light_call_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        for (auto it = Ten_Light_call_map.begin(); it != Ten_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Ten_Light_map
+                Ten_Light_map[it->second.first] = it->second.second;
+                // 刪除已更新的資訊
+                it = Ten_Light_call_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+        for (auto it = Clear_Light_call_map.begin(); it != Clear_Light_call_map.end();) {
+            if (it->first <= currentTime) {
+                // 更新 Clear_Light_map
+                Clear_Light_map[it->second.first] = it->second.second;
+                // 刪除已更新的資訊
+                it = Clear_Light_call_map.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+
+    }
+    // 將燈號全部關閉
+    void Light_Clear() {
+        Game_Light_call_map.clear();
+        Bet_Light_call_map.clear();
+        Compare_Light_call_map.clear();
+        for (int i = 0; i < GAME_TOTAL; ++i) {
+            SetLightStatus(Game_Light_call_map, currentTime, i, 0);
+        }
+        for (int i = 0; i < CELL_TOTAL; ++i) {
+            SetLightStatus(Bet_Light_call_map, currentTime, i, 0);
+        }
+        for (int i = 0; i < 2; ++i) {
+            SetLightStatus(Compare_Light_call_map, currentTime, i, 0);
+        }
+    }
+    // 下達燈號指令
+    void SetLightStatus(std::multimap<int, std::pair<int, bool>>& map, int time, int number, bool islight) {
+        std::pair<int, bool> ppair;
+        ppair.first = number;
+        ppair.second = islight;
+        map.insert(std::make_pair(time, ppair));
+    }
+    // 玩家猜測大或小
     void SetBigOrSmall(bool number) {
         if (number == 0)
             compare_SmallOrBig = 0;
         else if (number == 1)
             compare_SmallOrBig = 1;
     }
+    // 下達大小指令
+    void SetCompareNumber(int time, int number) {
+        Compare_Number_map.insert(std::make_pair(time, number));
+    }
+
+
 };

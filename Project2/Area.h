@@ -22,7 +22,6 @@ public:
     // x為左上角x軸位置 y為左上角y軸位置 
     virtual void Draw(int x, int y, int width, int height) { return; }
     void Draw_Cell(int number, D2D1_RECT_F originalRect);
-    int Get_CellNumber(int light_number);
 
     Common* common;
     BitmapManager* BM;
@@ -36,13 +35,8 @@ public:
     ID2D1SolidColorBrush* m_pWhiteBrush;
 
     int lightsecond = 200; //燈亮時間
-    int lightIndex = 0;
+    //int lightIndex = 0;
 
-    void SetLightStatus(std::multimap<int, std::pair<int, bool>>& map, int time, int number, bool islight) {
-        std::pair<int, bool> ppair;
-        ppair.first = number;
-        ppair.second = islight;
-        map.insert(std::make_pair(time, ppair));
-    }
+
 };
 
