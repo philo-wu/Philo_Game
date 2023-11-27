@@ -137,7 +137,7 @@ void Engine::updata_Json()
     common->BM->png_map[ORANGE_NUMBER] = Data["Table"]["Orange"]["filepath"];
     common->BM->png_map[APPLE_NUMBER] = Data["Table"]["Apple"]["filepath"];
 
-    // @修改
+    // @外部修改轉盤內容
     std::vector<int> positionValues = Data["Position"].get<std::vector<int>>();
 
     for (size_t i = 0; i < positionValues.size(); ++i) {
