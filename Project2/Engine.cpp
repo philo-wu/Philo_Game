@@ -137,6 +137,7 @@ void Engine::updata_Json()
     common->BM->png_map[ORANGE_NUMBER] = Data["Table"]["Orange"]["filepath"];
     common->BM->png_map[APPLE_NUMBER] = Data["Table"]["Apple"]["filepath"];
 
+    // @修改
     std::vector<int> positionValues = Data["Position"].get<std::vector<int>>();
 
     for (size_t i = 0; i < positionValues.size(); ++i) {
@@ -191,7 +192,7 @@ void Engine::Logic()
         int& endCompare = common->ESM->endCompare;
 
 
-        // 狀態機
+        // @狀態機 
         switch (state) {
         case STATE_IDLE:{  // 閒置
             if (common->ESM->Game_Light_call_map.empty() &&

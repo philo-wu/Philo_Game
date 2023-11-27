@@ -94,9 +94,12 @@ class Common
 public:
     // 依據uri路徑讀取檔案並轉換成圖片
     std::filesystem::path currentPath = std::filesystem::current_path(); // C++ 17
+
+    // @使用物件分隔功能區
     BitmapManager* BM;
     ScoreManager* SM;
     EngineStateManager* ESM;
+    // ----使用物件分隔功能區
 
     static HRESULT LoadBitmapFromFile(
         ID2D1RenderTarget* pRenderTarget,

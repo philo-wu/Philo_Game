@@ -418,6 +418,7 @@ public:
             }
             common->SM->Bet_call(number, action);
             long long currentTime = common->ESM->currentTime;
+            // @ÂIÀ»¤ÏÀ³
             if (action == 0) {
                 common->ESM->SetLightStatus(common->ESM->Clear_Light_call_map, currentTime , number, 1);
                 common->ESM->SetLightStatus(common->ESM->Clear_Light_call_map, currentTime + 200, number, 0);

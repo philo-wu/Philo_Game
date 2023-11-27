@@ -35,19 +35,17 @@ int WINAPI WinMain(HINSTANCE hInstance,
         accumulatedTime += elapsed_sec; //繪圖間隔時間
         secTime += elapsed_sec;
 
-        if (secTime >= 1000)
+        //if (secTime >= 1000)
+        //{
+        //    //OutputDebugString(L"1秒=================================\n");
+        //    time_t now = time(0);
+        //    char* dt = ctime(&now);
+        //    //OutputDebugStringA(dt);
+        //    secTime -= 1000;
+        //}
+
+        if (logicAccumulatedTime >= logicFrameTime) //@邏輯運算間隔
         {
-            //OutputDebugString(L"1秒=================================\n");
-            time_t now = time(0);
-            char* dt = ctime(&now);
-            //OutputDebugStringA(dt);
-            secTime -= 1000;
-        }
-
-        if (logicAccumulatedTime >= logicFrameTime)
-        {
-
-
             // Game logic
             if (engine->playing)
             {
@@ -79,7 +77,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
         else
         {
             // 遊戲內容 //為不停重新繪製的地方
-            if (accumulatedTime >= targetFrameTime)
+            if (accumulatedTime >= targetFrameTime) //@繪圖運算間隔
             {
 
                 if (engine->playing)

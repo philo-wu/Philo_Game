@@ -14,9 +14,12 @@ public:
 
 	HWND m_hwnd;
 	Common* common;
+
+	// @使用物件分隔功能區
 	Area_Bet* m_area_Bet ;
 	Area_Function* m_area_Function ;
 	Area_Game* m_area_Game ;
+	// ----使用物件分隔功能區
 
 	HRESULT InitializeD2D();
 	void KeyUp(WPARAM wParam);
