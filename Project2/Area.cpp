@@ -15,43 +15,35 @@ void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
     switch (number)
     {
     case APPLE_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->AppleBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                      break;
     case BAR_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->BarBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                    break;
     case BELL_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->BellBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                     break;
     case LEMON_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->LemonBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                      break;
     case ORANGE_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->OrangeBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                       break;
     case SEVEN_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->SevenBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                      break;
     case STAR_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->StarBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                     break;
     case WATERMELOM_NUMBER: {
-        m_pRenderTarget->DrawBitmap(BM->WatermelonBitmap, Rect);
-
+        m_pRenderTarget->DrawBitmap(BM->cell_vector[number], Rect);
     }
                           break;
     case RED_ONCEMORE_NUMBER: {

@@ -181,7 +181,7 @@ public:
                     m_pRenderTarget->DrawRectangle(&grid_rectangle, pBrush, 2.0f);
 
                     //圖片
-                    Draw_Cell(common->SM->Get_CellNumber(light_number), grid_rectangle);
+                    Draw_Cell(common->BM->Get_CellNumber(light_number), grid_rectangle);
 
                     //燈號
                     if (isLight(common->ESM->Game_Light_map, light_number)) {
@@ -201,7 +201,7 @@ public:
     void Logic_Bet() {
 
 
-        int cellNumber = common->SM->Get_CellNumber(common->ESM->position);
+        int cellNumber = common->BM->Get_CellNumber(common->ESM->position);
         int currentHour = common->ESM->position; //設開始為N 結束為Y
         int lightIndex = 0;
 
@@ -243,7 +243,7 @@ public:
         //OutputDebugString(L"common->ESM->currentTime = ");
         //OutputDebugString(WStr.c_str());
         //OutputDebugString(L"\n");
-        cellNumber = common->SM->Get_CellNumber(currentHour);
+        cellNumber = common->BM->Get_CellNumber(currentHour);
 
         for (int i = 0; i <= 4; ++i) {
             common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), currentHour, 1);

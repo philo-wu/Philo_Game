@@ -191,6 +191,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 case 1: // 開始遊戲
                     ShowButton(0);
                     //OnPaint(hWnd);
+                    engine->updata_Json();
                     engine->playing = 1;
                     common->ESM->autoing = 0;
 

@@ -19,9 +19,10 @@ Engine::Engine(Common* pcommon , HWND p_hwnd) : m_pDirect2dFactory(NULL), m_pRen
                             m_pDWriteFactory,
                             m_pTextFormat,
                             m_pWhiteBrush);
-    common->BM->init(m_hwnd);
     common->SM = new ScoreManager();
     common->ESM = new EngineStateManager();
+    updata_Json();
+    common->BM->init(m_hwnd);
 
     // init map
     common->SM->Bet_call_map.clear();
@@ -43,6 +44,8 @@ Engine::Engine(Common* pcommon , HWND p_hwnd) : m_pDirect2dFactory(NULL), m_pRen
     m_area_Bet = new Area_Bet(common);
     m_area_Function = new Area_Function(common);
     m_area_Game = new Area_Game(common);
+
+
 }
 
 Engine::~Engine()
@@ -91,20 +94,6 @@ HRESULT Engine::InitializeD2D()
 
 
 
-    // 讀取倍率表
-    std::string path1 = common->currentPath.string() + "/Images/倍率表.json";
-    std::ifstream inFile(path1);
-    if (!inFile.is_open()) {
-        //OutputDebugString(L"無法打開 JSON 文件\n");
-        MessageBox(m_hwnd, L"倍率表讀取失敗", L"錯誤", MB_OK);
-        return 1;
-    }
-    //else
-        //OutputDebugString(L"JSON開啟成功\n");
-    json Data;
-    inFile >> Data;
-    inFile.close();
-    BettingTable = Data;
 
 
     
@@ -113,6 +102,46 @@ HRESULT Engine::InitializeD2D()
 
 void Engine::KeyUp(WPARAM wParam)
 {
+
+}
+void Engine::updata_Json()
+{   
+    // 讀取倍率表
+    std::string path1 = common->currentPath.string() + "/Images/倍率表.json";
+    std::ifstream inFile(path1);
+    if (!inFile.is_open()) {
+        //OutputDebugString(L"無法打開 JSON 文件\n");
+        MessageBox(m_hwnd, L"倍率表讀取失敗", L"錯誤", MB_OK);
+    }
+    //else
+        //OutputDebugString(L"JSON開啟成功\n");
+    json Data;
+    inFile >> Data;
+    inFile.close();
+
+    common->SM->Bet_map[BAR_NUMBER] = Data["Table"]["Bar"]["ratio"];
+    common->SM->Bet_map[SEVEN_NUMBER] = Data["Table"]["Seven"]["ratio"];
+    common->SM->Bet_map[STAR_NUMBER] = Data["Table"]["Star"]["ratio"];
+    common->SM->Bet_map[WATERMELOM_NUMBER] = Data["Table"]["Bell"]["ratio"];
+    common->SM->Bet_map[BELL_NUMBER] = Data["Table"]["Watermelon"]["ratio"];
+    common->SM->Bet_map[LEMON_NUMBER] = Data["Table"]["Lemon"]["ratio"];
+    common->SM->Bet_map[ORANGE_NUMBER] = Data["Table"]["Orange"]["ratio"];
+    common->SM->Bet_map[APPLE_NUMBER] = Data["Table"]["Apple"]["ratio"];
+
+    common->BM->png_map[BAR_NUMBER] = Data["Table"]["Bar"]["filepath"];
+    common->BM->png_map[SEVEN_NUMBER] = Data["Table"]["Seven"]["filepath"];
+    common->BM->png_map[STAR_NUMBER] = Data["Table"]["Star"]["filepath"];
+    common->BM->png_map[WATERMELOM_NUMBER] = Data["Table"]["Bell"]["filepath"];
+    common->BM->png_map[BELL_NUMBER] = Data["Table"]["Watermelon"]["filepath"];
+    common->BM->png_map[LEMON_NUMBER] = Data["Table"]["Lemon"]["filepath"];
+    common->BM->png_map[ORANGE_NUMBER] = Data["Table"]["Orange"]["filepath"];
+    common->BM->png_map[APPLE_NUMBER] = Data["Table"]["Apple"]["filepath"];
+
+    std::vector<int> positionValues = Data["Position"].get<std::vector<int>>();
+
+    for (size_t i = 0; i < positionValues.size(); ++i) {
+        common->BM->position[i] = positionValues[i];
+    }
 
 }
 
@@ -203,7 +232,7 @@ void Engine::Logic()
                 std::srand(static_cast<unsigned int>(std::time(nullptr)));
                 common->ESM->endPosition = std::rand() % 24; //
 
-                int cellNumber = common->SM->Get_CellNumber(common->ESM->position);
+                int cellNumber = common->BM->Get_CellNumber(common->ESM->position);
                 common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime, common->ESM->position, 0);
 
                 int currentHour = common->ESM->position; //設開始為N 結束為Y
@@ -220,7 +249,7 @@ void Engine::Logic()
 
         case STATE_BET_SETTLING: {  //結算bet
             if (bet_settling) {
-                int number = common->SM->Get_CellNumber(position);
+                int number = common->BM->Get_CellNumber(position);
                 m_area_Bet->Settlement(number, autoing);
                 bet_settling = 0;
             }
@@ -320,21 +349,23 @@ HRESULT Engine::Draw()
     D2D1_RECT_F rectangle4 = D2D1::RectF(1, 1, SCREEN_WIDTH, 50 - 3);
     ID2D1SolidColorBrush* pBrush;
     WCHAR scoreStr[64];
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
     //m_pRenderTarget->FillRectangle(&rectangle4, pBrush);
-    swprintf_s(scoreStr, L"狀態::%d                                              ", common->ESM->state);
-    m_pRenderTarget->DrawText(
-        scoreStr,
-        48,
-        m_pTextFormat,
-        rectangle4,
-        pBrush
-    );
+    //swprintf_s(scoreStr, L"狀態::%d                                              ", common->ESM->state);
+    //m_pRenderTarget->DrawText(
+    //    scoreStr,
+    //    48,
+    //    m_pTextFormat,
+    //    rectangle4,
+    //    pBrush
+    //);
     // Draw score
-    D2D1_RECT_F win_rectangle     = D2D1::RectF(SCREEN_WIDTH / 3  -120 , 70, SCREEN_WIDTH / 3  +120, 150);
-    D2D1_RECT_F credits_rectangle = D2D1::RectF(SCREEN_WIDTH / 3*2-120 , 70, SCREEN_WIDTH / 3*2+120, 150);
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+    D2D1_RECT_F win_rectangle     = D2D1::RectF(SCREEN_WIDTH / 3  -110 , 85, SCREEN_WIDTH / 3  +110, 140);
+    D2D1_RECT_F credits_rectangle = D2D1::RectF(SCREEN_WIDTH / 3*2-110 , 85, SCREEN_WIDTH / 3*2+110, 140);
+    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
+    m_pRenderTarget->FillRectangle(&win_rectangle, pBrush);
+    m_pRenderTarget->FillRectangle(&credits_rectangle, pBrush);
 
+    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
     swprintf_s(scoreStr, L"BONUS/WIN 贏得分數 \n %d                                         ", common->SM->GetWinScore());
     m_pRenderTarget->DrawText(
         scoreStr,

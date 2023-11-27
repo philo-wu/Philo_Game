@@ -1,12 +1,16 @@
 {
-    "倍率表": {
-      "APPLE": 5,
-      "Orange": 10,
-      "LEMON": 15,
-      "Bell": 20,
-      "Watermelon": 20,
+    "Table": {
+      "Bar": 40,
+      "Seven": 20,
       "Star": 30,
-      "Seven": 40,
-      "Bar": 100
-    }
-  }
+      "Watermelon": 20,
+      "Bell": 20,
+      "Lemon": 15,
+      "Orange": 10,
+      "Apple": 5,
+      "Table備註":"倍率設定"
+    },
+    "Position":[6,4,0,0,7,7,5,3,3,101,7,6,6,4,1,1,7,5,5,2,2,100,7,5],
+    "Position備註":"轉盤位置設定"
+
+}

@@ -23,6 +23,7 @@ public:
 	void Reset();
 	void Logic();
 	void ClearDraw();
+	void updata_Json();
 
 	bool playing = 0; //位於遊戲畫面中
 
@@ -36,5 +37,4 @@ private:
 	IDWriteTextFormat* m_pTextFormat;
 	ID2D1SolidColorBrush* m_pWhiteBrush;
 
-	json BettingTable;
 };

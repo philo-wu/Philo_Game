@@ -509,34 +509,20 @@ public:
         CoUninitialize();
     }
 
-    static std::wstring string2wstring(std::string str)
-    {
-        std::wstring result;
+    static std::wstring ConvertToWideString(const std::string& narrowString) {
+        int wideStrLen = MultiByteToWideChar(CP_UTF8, 0, narrowString.c_str(), -1, NULL, 0);
+        if (wideStrLen == 0) {
+            // 轉換失敗
+            return L"";
+        }
 
-        //製作緩衝區
-        int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
-        TCHAR* buffer = new TCHAR[len + 1];
+        std::wstring wideString(wideStrLen, L'\0');
+        if (MultiByteToWideChar(CP_UTF8, 0, narrowString.c_str(), -1, &wideString[0], wideStrLen) == 0) {
+            // 轉換失敗
+            return L"";
+        }
 
-        //多字節編碼轉換寬字節編碼
-        MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
-        //添加字符串结尾  
-        buffer[len] = '\0';
-
-        result.append(buffer);
-        //删除緩衝區  
-        delete[] buffer;
-        return result;
-
-        //另一個方法
-        //#include <comutil.h>  
-        //#pragma comment(lib, "comsuppw.lib")
-
-
-        //_bstr_t t = str.c_str();
-        //wchar_t* pwchar = (wchar_t*)t;
-        //result = pwchar;
-        //return result;
-
+        return wideString;
     }
 
 };
@@ -557,6 +543,11 @@ public:
         m_pDWriteFactory = p_pDWriteFactory;
         m_pTextFormat = p_pTextFormat;
         m_pWhiteBrush = p_pWhiteBrush;
+
+        for (int i = 0; i < 8; ++i) {
+            ID2D1Bitmap* Bitmap = nullptr;
+            cell_vector.push_back(Bitmap);
+        }
     }
 
 
@@ -568,15 +559,9 @@ public:
     IDWriteTextFormat* m_pTextFormat;
     ID2D1SolidColorBrush* m_pWhiteBrush;
 
-    ID2D1Bitmap* AppleBitmap;
-    ID2D1Bitmap* BarBitmap;
-    ID2D1Bitmap* BellBitmap;
-    ID2D1Bitmap* LemonBitmap;
-    ID2D1Bitmap* OrangeBitmap;
-    ID2D1Bitmap* SevenBitmap;
-    ID2D1Bitmap* StarBitmap;
-    ID2D1Bitmap* WatermelonBitmap;
-
+    int position[24];
+    std::map<int, std::string> png_map;  //紀錄圖片路徑  <號碼,路徑>
+    std::vector <ID2D1Bitmap*> cell_vector;
     ID2D1Bitmap* BackgroundBitmap;
     ID2D1Bitmap* Mid_BackgroundBitmap;
 
@@ -587,45 +572,16 @@ public:
         int errorcode = 0;
 
         // 將讀取所有圖檔
-        std::wstring path = common->currentPath.wstring() + L"\\Images\\Apple.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &AppleBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) { //TODO::error處理
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Bar.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BarBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Bell.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BellBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Lemon.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &LemonBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Orange.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &OrangeBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Seven.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &SevenBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Star.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &StarBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
-        }
-        path = common->currentPath.wstring() + L"\\Images\\Watermelon.png";
-        Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &WatermelonBitmap, m_hwnd, errorcode);
-        if (errorcode != 0) {
-            ;
+        //std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        std::wstring filepath;
+        std::wstring path;
+        for (int i = 0; i < 8; ++i) {
+            filepath = Common::ConvertToWideString(png_map[i]);
+            path = common->currentPath.wstring() + filepath;
+            Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &cell_vector[i], m_hwnd, errorcode);
+            if (errorcode != 0) { //TODO::error處理
+                ;
+            }
         }
         path = common->currentPath.wstring() + L"\\Images\\Background.png";
         Common::LoadBitmapFromFile(m_pRenderTarget, pIWICFactory, path, 0, 0, &BackgroundBitmap, m_hwnd, errorcode);
@@ -640,6 +596,90 @@ public:
         pIWICFactory->Release();
     }
 
+    int Get_CellNumber(int light_number) {
+        if (light_number < 25)
+            return position[light_number];
+        else
+            return 0;
+        //switch (light_number)
+        //{
+        //case 0: {
+        //    return ORANGE_NUMBER;
+        //}
+        //case 1: {
+        //    return BELL_NUMBER;
+        //}
+        //case 2: {
+        //    return BAR_NUMBER;
+        //}
+        //case 3: {
+        //    return BAR_NUMBER;
+        //}
+        //case 4: {
+        //    return APPLE_NUMBER;
+        //}
+        //case 5: {
+        //    return APPLE_NUMBER;
+        //}
+        //case 6: {
+        //    return LEMON_NUMBER;
+        //}
+        //case 7: {
+        //    return WATERMELOM_NUMBER;
+        //}
+        //case 8: {
+        //    return WATERMELOM_NUMBER;
+        //}
+        //case 9: {
+        //    return BLUE_ONCEMORE_NUMBER;
+        //}
+        //case 10: {
+        //    return APPLE_NUMBER;
+        //}
+        //case 11: {
+        //    return ORANGE_NUMBER;
+        //}
+        //case 12: {
+        //    return ORANGE_NUMBER;
+        //}
+        //case 13: {
+        //    return BELL_NUMBER;
+        //}
+        //case 14: {
+        //    return SEVEN_NUMBER;
+        //}
+        //case 15: {
+        //    return SEVEN_NUMBER;
+        //}
+        //case 16: {
+        //    return APPLE_NUMBER;
+        //}
+        //case 17: {
+        //    return LEMON_NUMBER;
+        //}
+        //case 18: {
+        //    return LEMON_NUMBER;
+        //}
+        //case 19: {
+        //    return STAR_NUMBER;
+        //}
+        //case 20: {
+        //    return STAR_NUMBER;
+        //}
+        //case 21: {
+        //    return RED_ONCEMORE_NUMBER;
+        //}
+        //case 22: {
+        //    return APPLE_NUMBER;
+        //}
+        //case 23: {
+        //    return BELL_NUMBER;
+        //}
+        //default:
+        //    // 其他格子的處理邏輯
+        //    return -1;
+        //}
+    }
 
 };
 
@@ -653,6 +693,7 @@ public:
         Score = 15000;
     }
     std::map<int, int> Bet_call_map;  //紀錄下注狀況  <號碼,金額>
+    std::map<int, int> Bet_map;  //倍率表  <號碼,金額>
 
 private:
     int WinScore;
@@ -696,126 +737,48 @@ public:
     int GetScore() { return Score; }
 
     int Get_CellScore(int number) {
-        switch (number)
-        {
-        case APPLE_NUMBER: {
-            return 5;
-        }
-                         break;
-        case BAR_NUMBER: {
-            return 100;
-        }
-                       break;
-        case BELL_NUMBER: {
-            return 20;
-        }
-                        break;
-        case LEMON_NUMBER: {
-            return 15;
-        }
-                         break;
-        case ORANGE_NUMBER: {
-            return 10;
-        }
-                          break;
-        case SEVEN_NUMBER: {
-            return 40;
-        }
-                         break;
-        case STAR_NUMBER: {
-            return 30;
-        }
-                        break;
-        case WATERMELOM_NUMBER: {
-            return 20;
-        }
-                              break;
+        return Bet_map[number];
 
-        default:
-            break;
-        }
+        //switch (number)
+        //{
+        //case APPLE_NUMBER: {
+        //    return 5;
+        //}
+        //                 break;
+        //case BAR_NUMBER: {
+        //    return 100;
+        //}
+        //               break;
+        //case BELL_NUMBER: {
+        //    return 20;
+        //}
+        //                break;
+        //case LEMON_NUMBER: {
+        //    return 15;
+        //}
+        //                 break;
+        //case ORANGE_NUMBER: {
+        //    return 10;
+        //}
+        //                  break;
+        //case SEVEN_NUMBER: {
+        //    return 40;
+        //}
+        //                 break;
+        //case STAR_NUMBER: {
+        //    return 30;
+        //}
+        //                break;
+        //case WATERMELOM_NUMBER: {
+        //    return 20;
+        //}
+        //                      break;
+
+        //default:
+        //    break;
+        //}
     }
 
-    int Get_CellNumber(int light_number) {
-        switch (light_number)
-        {
-        case 0: {
-            return ORANGE_NUMBER;
-        }
-        case 1: {
-            return BELL_NUMBER;
-        }
-        case 2: {
-            return BAR_NUMBER;
-        }
-        case 3: {
-            return BAR_NUMBER;
-        }
-        case 4: {
-            return APPLE_NUMBER;
-        }
-        case 5: {
-            return APPLE_NUMBER;
-        }
-        case 6: {
-            return LEMON_NUMBER;
-        }
-        case 7: {
-            return WATERMELOM_NUMBER;
-        }
-        case 8: {
-            return WATERMELOM_NUMBER;
-        }
-        case 9: {
-            return BLUE_ONCEMORE_NUMBER;
-        }
-        case 10: {
-            return APPLE_NUMBER;
-        }
-        case 11: {
-            return ORANGE_NUMBER;
-        }
-        case 12: {
-            return ORANGE_NUMBER;
-        }
-        case 13: {
-            return BELL_NUMBER;
-        }
-        case 14: {
-            return SEVEN_NUMBER;
-        }
-        case 15: {
-            return SEVEN_NUMBER;
-        }
-        case 16: {
-            return APPLE_NUMBER;
-        }
-        case 17: {
-            return LEMON_NUMBER;
-        }
-        case 18: {
-            return LEMON_NUMBER;
-        }
-        case 19: {
-            return STAR_NUMBER;
-        }
-        case 20: {
-            return STAR_NUMBER;
-        }
-        case 21: {
-            return RED_ONCEMORE_NUMBER;
-        }
-        case 22: {
-            return APPLE_NUMBER;
-        }
-        case 23: {
-            return BELL_NUMBER;
-        }
-        default:
-            // 其他格子的處理邏輯
-            return -1;
-        }
-    }
 
     void Bet_call(int number, int amount) {
         // 檢查是否存在該號碼的下注紀錄

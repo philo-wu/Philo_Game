@@ -1,12 +1,16 @@
 {
-    "倍率表": {
-      "APPLE": 5,
-      "Orange": 10,
-      "LEMON": 15,
-      "Bell": 20,
-      "Watermelon": 20,
-      "Star": 30,
-      "Seven": 40,
-      "Bar": 100
-    }
-  }
+    "Table": {
+      "Bar": {"ratio":100,"filepath":"\\Images\\Bar.png"},
+      "Seven": {"ratio":70,"filepath":"\\Images\\Seven.png"},
+      "Star": {"ratio":30,"filepath":"\\Images\\Star.png"},
+      "Watermelon": {"ratio":20,"filepath":"\\Images\\Watermelon.png"},
+      "Bell": {"ratio":20,"filepath":"\\Images\\Bell.png"},
+      "Lemon": {"ratio":15,"filepath":"\\Images\\Lemon.png"},
+      "Orange": {"ratio":10,"filepath":"\\Images\\Orange.png"},
+      "Apple": {"ratio":5,"filepath":"\\Images\\Apple.png"},
+      "Table備註":"倍率設定"
+    },
+    "Position":[6,4,0,0,7,7,5,3,3,101,7,6,6,4,1,1,7,5,5,2,2,100,7,5],
+    "Position備註":"轉盤位置設定"
+
+}

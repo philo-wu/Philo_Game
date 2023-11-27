@@ -515,6 +515,7 @@ public:
             break;
         }
     }
+
     bool isLight(std::map<int, bool> map, int number) {
         auto it = map.find(number);
         if (it != map.end()) {

@@ -88,7 +88,7 @@ public:
 
     void Logic_Bet() {
 
-        int cellNumber = common->SM->Get_CellNumber(common->ESM->position);
+        int cellNumber = common->BM->Get_CellNumber(common->ESM->position);
         int currentHour = common->ESM->position; //設開始為N 結束為Y
         int lightIndex = 0;
 
@@ -116,7 +116,7 @@ public:
             int ire1 = lightIndex;
 
         }
-        cellNumber = common->SM->Get_CellNumber(currentHour);
+        cellNumber = common->BM->Get_CellNumber(currentHour);
         for (int i = 0; i <= 4; ++i) {
             common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), cellNumber, 1);
             common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex + 1), cellNumber, 0);
@@ -138,7 +138,7 @@ public:
         int lightIndex = 0;
 
         // 清空面板
-        common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime, common->SM->Get_CellNumber(common->ESM->position), 0);
+        common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime, common->BM->Get_CellNumber(common->ESM->position), 0);
 
 
         for (int i = 0; i < CELL_TOTAL; i += 2) {
@@ -169,7 +169,7 @@ public:
                 ++lightIndex;
             }
 
-            common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 4), common->SM->Get_CellNumber(common->ESM->position), 1);
+            common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 4), common->BM->Get_CellNumber(common->ESM->position), 1);
 
         }
         //common->ESM->endTime = currentTime + lightsecond * (lightIndex); //更新結束時間
