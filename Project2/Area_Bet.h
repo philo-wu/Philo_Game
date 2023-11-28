@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Area.h"
 
 
@@ -16,8 +16,8 @@ public:
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
         m_pRenderTarget->FillRectangle(&bet_rectangle, pBrush);
 
-        for (int i = 0; i < BET_TOTAL; ++i) { //¤Uª`°Ï°ì¬°BET_TOTALºØ¿ï¶µ
-            //³»³¡¤À¼Æ
+        for (int i = 0; i < BET_TOTAL; ++i) { //ä¸‹æ³¨å€åŸŸç‚ºBET_TOTALç¨®é¸é …
+            //é ‚éƒ¨åˆ†æ•¸
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkGreen), &pBrush);
             D2D1_RECT_F grid_top_rectangle = D2D1::RectF(x + width * (i), y,
                 x + width * (i + 1), y + 50);
@@ -27,7 +27,7 @@ public:
             WCHAR scoreStr[64];
             int m_score = common->SM->Get_CellScore(i);
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
-            m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //¸m¤¤
+            m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //ç½®ä¸­
             swprintf_s(scoreStr, L"%d                                                  ", m_score);
             m_pRenderTarget->DrawText(
                 scoreStr,
@@ -37,7 +37,7 @@ public:
                 pBrush
             );
 
-            //¤Uª`¼Æ
+            //ä¸‹æ³¨æ•¸
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f)), &pBrush);
             D2D1_RECT_F grid_bottom_rectangle = D2D1::RectF(x + width * (i), y + 50,
                 x + width * (i + 1), y + 124);
@@ -52,7 +52,7 @@ public:
                 grid_bottom_rectangle,
                 pBrush
             );
-            //¹Ï¤ù
+            //åœ–ç‰‡
             D2D1_RECT_F grid_png_rectangle = D2D1::RectF(x + width * (i), y + 124,
                 x + width * (i + 1), y + 200);
 
@@ -64,7 +64,7 @@ public:
             Draw_Cell(i, grid_png_rectangle);
 
 
-            //¤À¬É½u
+            //åˆ†ç•Œç·š
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
             D2D1_RECT_F grid_rectangle = D2D1::RectF(x + width * (i + 1) - 1, y,
                 x + width * (i + 1), y + 200);
@@ -89,13 +89,13 @@ public:
     void Logic_Bet() {
 
         int cellNumber = common->BM->Get_CellNumber(common->ESM->position);
-        int currentHour = common->ESM->position; //³]¶}©l¬°N µ²§ô¬°Y
+        int currentHour = common->ESM->position; //è¨­é–‹å§‹ç‚ºN çµæŸç‚ºY
         int lightIndex = 0;
 
-        for (int i = 0; i < GAME_TOTAL; ++i) { //±qn¶}©l ¨ì23 ¦A±q0¶}©l ¨ìn
+        for (int i = 0; i < GAME_TOTAL; ++i) { //å¾né–‹å§‹ åˆ°23 å†å¾0é–‹å§‹ åˆ°n
             ++lightIndex;
         }
-        if (common->ESM->endPosition > common->ESM->position) { //­YY¤j©óN
+        if (common->ESM->endPosition > common->ESM->position) { //è‹¥Yå¤§æ–¼N
             for (int i = 0; i <= common->ESM->endPosition; ++i) {
                 currentHour = (currentHour + 1) % 24;
                 lightIndex += 2;
@@ -103,7 +103,7 @@ public:
             int ire1 = lightIndex;
 
         }
-        else {  //­YY¤p©óN
+        else {  //è‹¥Yå°æ–¼N
             for (int i = common->ESM->position; i < GAME_TOTAL; ++i) {
                 currentHour = (currentHour + 1) % 24;
                 ++lightIndex;
@@ -124,9 +124,9 @@ public:
         }
         common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), cellNumber, 1);
 
-        //common->ESM->endTime = common->ESM->currentTime + lightsecond * (lightIndex); //§ó·sµ²§ô®É¶¡
-        //common->ESM->position = currentHour; //§ó·s°_ÂI
-        // µ²ºâ
+        //common->ESM->endTime = common->ESM->currentTime + lightsecond * (lightIndex); //æ›´æ–°çµæŸæ™‚é–“
+        //common->ESM->position = currentHour; //æ›´æ–°èµ·é»
+        // çµç®—
 
     }
 
@@ -137,7 +137,7 @@ public:
         long long& endTime = common->ESM->endTime;
         int lightIndex = 0;
 
-        // ²MªÅ­±ªO
+        // æ¸…ç©ºé¢æ¿
         common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime, common->BM->Get_CellNumber(common->ESM->position), 0);
 
 
@@ -172,7 +172,7 @@ public:
             common->ESM->SetLightStatus(common->ESM->Bet_Light_call_map, currentTime + lightsecond * (lightIndex + 4), common->BM->Get_CellNumber(common->ESM->position), 1);
 
         }
-        //common->ESM->endTime = currentTime + lightsecond * (lightIndex); //§ó·sµ²§ô®É¶¡
+        //common->ESM->endTime = currentTime + lightsecond * (lightIndex); //æ›´æ–°çµæŸæ™‚é–“
     }
 
     bool isLight(int number) {
@@ -180,17 +180,17 @@ public:
         if (it != common->ESM->Bet_Light_map.end()) {
             return it->second;
         }
-        // ¦pªG§ä¤£¨ì¹ïÀ³ªºÁä­È¡A¤]ªğ¦^ false
+        // å¦‚æœæ‰¾ä¸åˆ°å°æ‡‰çš„éµå€¼ï¼Œä¹Ÿè¿”å› false
         return false;
     }
 
     void Settlement(int number, bool pAutoing) {
         if (number == RED_ONCEMORE_NUMBER) {
-            // ²MªÅ¥ªÃä¥|­Ó
+            // æ¸…ç©ºå·¦é‚Šå››å€‹
             for (int i = 0; i < 4; ++i) {
                 if (pAutoing) {
                     if (!SM->CostScore((SM->Get_CellScore(i) * common->SM->Bet_call_map[i]))) {
-                        MessageBox(NULL, L"ª÷ÃB¤£¨¬,Ãö³¬¦Û°Ê¼Ò¦¡", L"¿ù»~", MB_OK);
+                        MessageBox(NULL, L"é‡‘é¡ä¸è¶³,é—œé–‰è‡ªå‹•æ¨¡å¼", L"éŒ¯èª¤", MB_OK);
                         ESM->autoing = 0;
                     }
                 }
@@ -200,11 +200,11 @@ public:
             }
         }
         else if (number == BLUE_ONCEMORE_NUMBER) {
-            // ²MªÅ¥kÃä¥|­Ó
+            // æ¸…ç©ºå³é‚Šå››å€‹
             for (int i = 4; i < CELL_TOTAL; ++i) {
                 if (pAutoing) {
                     if (!SM->CostScore((SM->Get_CellScore(i) * common->SM->Bet_call_map[i]))) {
-                        MessageBox(NULL, L"ª÷ÃB¤£¨¬,Ãö³¬¦Û°Ê¼Ò¦¡", L"¿ù»~", MB_OK);
+                        MessageBox(NULL, L"é‡‘é¡ä¸è¶³,é—œé–‰è‡ªå‹•æ¨¡å¼", L"éŒ¯èª¤", MB_OK);
                         ESM->autoing = 0;
                     }
                 }
@@ -215,11 +215,11 @@ public:
         }
         else {
             int cost = SM->Get_CellScore(number);
-            SM->AddWinScore(common->SM->Bet_call_map[number] * cost * 2); //2¬°ªá¶O¥[¤W¦^³ø
+            SM->AddWinScore(common->SM->Bet_call_map[number] * cost * 2); //2ç‚ºèŠ±è²»åŠ ä¸Šå›å ±
             for (int i = 0; i < CELL_TOTAL; ++i) {
                 if (ESM->autoing) {
                     if (!SM->CostScore((SM->Get_CellScore(i) * common->SM->Bet_call_map[i]))) {
-                        MessageBox(NULL, L"ª÷ÃB¤£¨¬,Ãö³¬¦Û°Ê¼Ò¦¡", L"¿ù»~", MB_OK);
+                        MessageBox(NULL, L"é‡‘é¡ä¸è¶³,é—œé–‰è‡ªå‹•æ¨¡å¼", L"éŒ¯èª¤", MB_OK);
                         ESM->autoing = 0;
                     }
                 }

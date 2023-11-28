@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 
 
@@ -18,8 +18,8 @@ public:
 
 
     }
-    // (x.y)¬°m_pDirect2dFactory->CreateHwndRenderTarget¿ï¾ÜªºHWND
-    // x¬°¥ª¤W¨¤x¶b¦ì¸m y¬°¥ª¤W¨¤y¶b¦ì¸m 
+    // (x.y)ç‚ºm_pDirect2dFactory->CreateHwndRenderTargeté¸æ“‡çš„HWND
+    // xç‚ºå·¦ä¸Šè§’xè»¸ä½ç½® yç‚ºå·¦ä¸Šè§’yè»¸ä½ç½® 
     virtual void Draw(int x, int y, int width, int height) { return; }
     void Draw_Cell(int number, D2D1_RECT_F originalRect);
 
@@ -34,7 +34,7 @@ public:
     IDWriteTextFormat* m_pTextFormat;
     ID2D1SolidColorBrush* m_pWhiteBrush;
 
-    int lightsecond = 200; //¿O«G®É¶¡
+    int lightsecond = 200; //ç‡ˆäº®æ™‚é–“
     //int lightIndex = 0;
 
 

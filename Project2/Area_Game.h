@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Area.h"
 
 class Area_Game : public Area
@@ -13,15 +13,15 @@ public:
         D2D1_RECT_F game_rectangle = D2D1::RectF(x + width * 1, y + height * 1, x + width * 6, y + height * 6);
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
         //m_pRenderTarget->FillRectangle(&game_rectangle, pBrush);
-        ///¥¿¤¤¶¡­I´º
+        ///æ­£ä¸­é–“èƒŒæ™¯
         m_pRenderTarget->DrawBitmap(BM->Mid_BackgroundBitmap, game_rectangle);
-        // ¤ñ¤j¤p°Ï°ì
+        // æ¯”å¤§å°å€åŸŸ
         D2D1_RECT_F game_guess_rectangle = D2D1::RectF(x + width * 3, y + height * 4.5, x + width * 4, y + height * 5);
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f)), &pBrush);
         m_pRenderTarget->FillRectangle(&game_guess_rectangle, pBrush);
         WCHAR scoreStr[64];
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightPink), &pBrush);
-        m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //¸m¤¤
+        m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //ç½®ä¸­
         swprintf_s(scoreStr, L"%d                                                  ", common->ESM->Comparenumber);
         m_pRenderTarget->DrawText(
             scoreStr,
@@ -30,7 +30,7 @@ public:
             game_guess_rectangle,
             pBrush
         );
-        if (isLight(common->ESM->Compare_Light_map, 0)) { //TODO §PÂ_¤j¤p¿O«G
+        if (isLight(common->ESM->Compare_Light_map, 0)) { //TODO åˆ¤æ–·å¤§å°ç‡ˆäº®
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
@@ -42,7 +42,7 @@ public:
                 D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
                 pBrush);
         }
-        if (isLight(common->ESM->Compare_Light_map, 1)) { //TODO §PÂ_¤j¤p¿O«G
+        if (isLight(common->ESM->Compare_Light_map, 1)) { //TODO åˆ¤æ–·å¤§å°ç‡ˆäº®
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 4.25, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
@@ -58,117 +58,117 @@ public:
 
 
 
-        for (int j = 0; j < GAME_SIZE; ++j) { //¹CÀ¸°Ï°ì¤À¦¨7*7
+        for (int j = 0; j < GAME_SIZE; ++j) { //éŠæˆ²å€åŸŸåˆ†æˆ7*7
             for (int i = 0; i < GAME_SIZE; ++i) {
                 if ((i == 0 || i == GAME_SIZE - 1) ||
                     (j == 0 || j == GAME_SIZE - 1)) {
-                    //§PÂ_¹CÀ¸®æ¤l½s¸¹
+                    //åˆ¤æ–·éŠæˆ²æ ¼å­ç·¨è™Ÿ
                     int light_number = -1;
                     if (j == 0 && i == 0) {
-                        // (0, 0) ³B²zÅŞ¿è
+                        // (0, 0) è™•ç†é‚è¼¯
                         light_number = 0;
                     }
                     else if (j == 0 && i == 1) {
-                        // (0, 1) ³B²zÅŞ¿è
+                        // (0, 1) è™•ç†é‚è¼¯
                         light_number = 1;
                     }
                     else if (j == 0 && i == 2) {
-                        // (0, 2) ³B²zÅŞ¿è
+                        // (0, 2) è™•ç†é‚è¼¯
                         light_number = 2;
                     }
                     else if (j == 0 && i == 3) {
-                        // (0, 3) ³B²zÅŞ¿è
+                        // (0, 3) è™•ç†é‚è¼¯
                         light_number = 3;
                     }
                     else if (j == 0 && i == 4) {
-                        // (0, 4) ³B²zÅŞ¿è
+                        // (0, 4) è™•ç†é‚è¼¯
                         light_number = 4;
                     }
                     else if (j == 0 && i == 5) {
-                        // (0, 5) ³B²zÅŞ¿è
+                        // (0, 5) è™•ç†é‚è¼¯
                         light_number = 5;
                     }
                     else if (j == 0 && i == 6) {
-                        // (0, 6) ³B²zÅŞ¿è
+                        // (0, 6) è™•ç†é‚è¼¯
                         light_number = 6;
                     }
                     else if (j == 1 && i == 6) {
-                        // (1, 6) ³B²zÅŞ¿è
+                        // (1, 6) è™•ç†é‚è¼¯
                         light_number = 7;
                     }
                     else if (j == 2 && i == 6) {
-                        // (2, 6) ³B²zÅŞ¿è
+                        // (2, 6) è™•ç†é‚è¼¯
                         light_number = 8;
                     }
                     else if (j == 3 && i == 6) {
-                        // (3, 6) ³B²zÅŞ¿è
+                        // (3, 6) è™•ç†é‚è¼¯
                         light_number = 9;
                     }
                     else if (j == 4 && i == 6) {
-                        // (4, 6) ³B²zÅŞ¿è
+                        // (4, 6) è™•ç†é‚è¼¯
                         light_number = 10;
                     }
                     else if (j == 5 && i == 6) {
-                        // (5, 6) ³B²zÅŞ¿è
+                        // (5, 6) è™•ç†é‚è¼¯
                         light_number = 11;
                     }
                     else if (j == 6 && i == 6) {
-                        // (6, 6) ³B²zÅŞ¿è
+                        // (6, 6) è™•ç†é‚è¼¯
                         light_number = 12;
                     }
                     else if (j == 6 && i == 5) {
-                        // (6, 5) ³B²zÅŞ¿è
+                        // (6, 5) è™•ç†é‚è¼¯
                         light_number = 13;
                     }
                     else if (j == 6 && i == 4) {
-                        // (6, 4) ³B²zÅŞ¿è
+                        // (6, 4) è™•ç†é‚è¼¯
                         light_number = 14;
                     }
                     else if (j == 6 && i == 3) {
-                        // (6, 3) ³B²zÅŞ¿è
+                        // (6, 3) è™•ç†é‚è¼¯
                         light_number = 15;
                     }
                     else if (j == 6 && i == 2) {
-                        // (6, 2) ³B²zÅŞ¿è
+                        // (6, 2) è™•ç†é‚è¼¯
                         light_number = 16;
                     }
                     else if (j == 6 && i == 1) {
-                        // (6, 1) ³B²zÅŞ¿è
+                        // (6, 1) è™•ç†é‚è¼¯
                         light_number = 17;
                     }
                     else if (j == 6 && i == 0) {
-                        // (6, 0) ³B²zÅŞ¿è
+                        // (6, 0) è™•ç†é‚è¼¯
                         light_number = 18;
                     }
                     else if (j == 5 && i == 0) {
-                        // (5, 0) ³B²zÅŞ¿è
+                        // (5, 0) è™•ç†é‚è¼¯
                         light_number = 19;
                     }
                     else if (j == 4 && i == 0) {
-                        // (4, 0) ³B²zÅŞ¿è
+                        // (4, 0) è™•ç†é‚è¼¯
                         light_number = 20;
                     }
                     else if (j == 3 && i == 0) {
-                        // (3, 0) ³B²zÅŞ¿è
+                        // (3, 0) è™•ç†é‚è¼¯
                         light_number = 21;
                     }
                     else if (j == 2 && i == 0) {
-                        // (2, 0) ³B²zÅŞ¿è
+                        // (2, 0) è™•ç†é‚è¼¯
                         light_number = 22;
                     }
 
                     else if (j == 1 && i == 0) {
-                        // (1, 0) ³B²zÅŞ¿è
+                        // (1, 0) è™•ç†é‚è¼¯
                         light_number = 23;
                     }
                     else {
-                        // ¨ä¥L®æ¤lªº³B²zÅŞ¿è
+                        // å…¶ä»–æ ¼å­çš„è™•ç†é‚è¼¯
                         light_number = -1;
                     }
                     D2D1_RECT_F grid_rectangle = D2D1::RectF(x + width * i, y + height * j,
                         x + width * (i + 1), y + height * (j + 1));
 
-                    //©³¦â
+                    //åº•è‰²
                     if (isLight(common->ESM->Game_Light_map, light_number)) {
                         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
                     }
@@ -176,14 +176,14 @@ public:
                         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
                     }
                     m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
-                    //¶Â¦â®Ø½u
+                    //é»‘è‰²æ¡†ç·š
                     m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
                     m_pRenderTarget->DrawRectangle(&grid_rectangle, pBrush, 2.0f);
 
-                    //¹Ï¤ù
+                    //åœ–ç‰‡
                     Draw_Cell(common->BM->Get_CellNumber(light_number), grid_rectangle);
 
-                    //¿O¸¹
+                    //ç‡ˆè™Ÿ
                     if (isLight(common->ESM->Game_Light_map, light_number)) {
                         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
                     }
@@ -202,17 +202,17 @@ public:
 
 
         int cellNumber = common->BM->Get_CellNumber(common->ESM->position);
-        int currentHour = common->ESM->position; //³]¶}©l¬°N µ²§ô¬°Y
+        int currentHour = common->ESM->position; //è¨­é–‹å§‹ç‚ºN çµæŸç‚ºY
         int lightIndex = 0;
 
-        for (int i = 0; i < GAME_TOTAL; ++i) { //±qn¶}©l ¨ì23 ¦A±q0¶}©l ¨ìn
+        for (int i = 0; i < GAME_TOTAL; ++i) { //å¾né–‹å§‹ åˆ°23 å†å¾0é–‹å§‹ åˆ°n
             currentHour = (currentHour + 1) % 24;
             common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * lightIndex, currentHour, 1);
             common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex + 1), currentHour, 0);
             ++lightIndex;
         }
-        if (common->ESM->endPosition > common->ESM->position) { //­YY¤j©óN
-            //MessageBox(NULL, L"Y¤j©óN", L"´ú¸Õ", MB_OK);
+        if (common->ESM->endPosition > common->ESM->position) { //è‹¥Yå¤§æ–¼N
+            //MessageBox(NULL, L"Yå¤§æ–¼N", L"æ¸¬è©¦", MB_OK);
             for (int i = 0; i <= common->ESM->endPosition; ++i) {
                 currentHour = (currentHour + 1) % 24;
                 common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), currentHour, 1);
@@ -221,8 +221,8 @@ public:
             }
             int ire = lightIndex;
         }
-        else {  //­YY¤p©óN
-            //MessageBox(NULL, L"Y¤p©óN", L"´ú¸Õ", MB_OK);
+        else {  //è‹¥Yå°æ–¼N
+            //MessageBox(NULL, L"Yå°æ–¼N", L"æ¸¬è©¦", MB_OK);
             for (int i = common->ESM->position; i < GAME_TOTAL; ++i) {
                 currentHour = (currentHour + 1) % 24;
                 common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), currentHour, 1);
@@ -252,9 +252,9 @@ public:
         }
         common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime + lightsecond * (lightIndex), currentHour, 1);
 
-        common->ESM->endTime = common->ESM->currentTime + lightsecond * (lightIndex); //§ó·sµ²§ô®É¶¡
-        common->ESM->position = currentHour; //§ó·s°_ÂI
-        // µ²ºâ
+        common->ESM->endTime = common->ESM->currentTime + lightsecond * (lightIndex); //æ›´æ–°çµæŸæ™‚é–“
+        common->ESM->position = currentHour; //æ›´æ–°èµ·é»
+        // çµç®—
 
     }
 
@@ -263,7 +263,7 @@ public:
         long long& endTime = common->ESM->endTime;
         int lightIndex = 0;
 
-        // ²MªÅ­±ªO
+        // æ¸…ç©ºé¢æ¿
         common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, currentTime, common->ESM->position, 0);
         if (common->ESM->endCompare < 5)
             common->ESM->SetLightStatus(common->ESM->Compare_Light_call_map, currentTime, SMALL_NUMBER, 0);
@@ -301,7 +301,7 @@ public:
             lightIndex += 2;
         }
         SetCompareNumber(currentTime + lightsecond * (lightIndex), common->ESM->endCompare);
-        common->ESM->endTime = currentTime + lightsecond * (lightIndex); //§ó·sµ²§ô®É¶¡
+        common->ESM->endTime = currentTime + lightsecond * (lightIndex); //æ›´æ–°çµæŸæ™‚é–“
         if (common->ESM->endCompare < 5) {
             common->ESM->SetLightStatus(common->ESM->Compare_Light_call_map, currentTime + lightsecond * (lightIndex), SMALL_NUMBER, 1);
             for (int i = 18; i <= GAME_TOTAL; ++i) {
@@ -319,7 +319,7 @@ public:
             }
         }
         common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, currentTime + lightsecond * (lightIndex + 3), common->ESM->position, 1);
-        // µ²ºâ
+        // çµç®—
     }
 
     void Logic_idle() {
@@ -327,7 +327,7 @@ public:
         long long& currentTime = common->ESM->currentTime;
         long long& endTime = common->ESM->endTime;
         int lightIndex = 0;
-        // ²MªÅ­±ªO
+        // æ¸…ç©ºé¢æ¿
         common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, common->ESM->currentTime, common->ESM->position, 0);
 
         for (int i = 0; i < GAME_TOTAL; i += 2) {
@@ -360,7 +360,7 @@ public:
 
             common->ESM->SetLightStatus(common->ESM->Game_Light_call_map, currentTime + lightsecond * (lightIndex + 4), common->ESM->position, 1);
         }
-        common->ESM->endTime = currentTime + lightsecond * (lightIndex); //§ó·sµ²§ô®É¶¡
+        common->ESM->endTime = currentTime + lightsecond * (lightIndex); //æ›´æ–°çµæŸæ™‚é–“
     }
 
     bool isLight(std::map<int, bool> map, int number) {
@@ -368,7 +368,7 @@ public:
         if (it != map.end()) {
             return it->second;
         }
-        // ¦pªG§ä¤£¨ì¹ïÀ³ªºÁä­È¡A¤]ªğ¦^ false
+        // å¦‚æœæ‰¾ä¸åˆ°å°æ‡‰çš„éµå€¼ï¼Œä¹Ÿè¿”å› false
         return false;
     }
 

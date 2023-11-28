@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Area.h"
 
 
@@ -10,12 +10,12 @@ public:
 
 	void Draw(int x, int y, int width, int height) override {
 
-        D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * BET_TOTAL, y + height); // BET_TOTAL¬°ÁÙ­ìwidth
+        D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * BET_TOTAL, y + height); // BET_TOTALç‚ºé‚„åŸwidth
         ID2D1SolidColorBrush* pBrush;
         ID2D1SolidColorBrush* p_Pen_Brush;
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &p_Pen_Brush);
         WCHAR scoreStr[64];
-        m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //¸m¤¤
+        m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //ç½®ä¸­
 
         m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
         m_pRenderTarget->FillRectangle(&function_rectangle, pBrush);
@@ -87,8 +87,8 @@ public:
 
 
 
-        // ¤À°t¥\¯àÁä°Ï°ì
-        // TODO ³o¸Ì*ªº¤ñ¨Ò¬°¤H¤u­pºâ,¨ãÅé«öÁä¤½¦¡¥i¦b½Õ¾ã
+        // åˆ†é…åŠŸèƒ½éµå€åŸŸ
+        // TODO é€™è£¡*çš„æ¯”ä¾‹ç‚ºäººå·¥è¨ˆç®—,å…·é«”æŒ‰éµå…¬å¼å¯åœ¨èª¿æ•´
         D2D1_RECT_F exit_rectangle = D2D1::RectF(x + width * 0.225, y + height * BET_RATIO, x + width * 1.525, y + height);
         D2D1_RECT_F small_rectangle = D2D1::RectF(x + width * 1.725, y + height * BET_RATIO, x + width * 2.625, y + height);
         D2D1_RECT_F big_rectangle = D2D1::RectF(x + width * 2.825, y + height * BET_RATIO, x + width * 3.725, y + height);
@@ -97,13 +97,13 @@ public:
         D2D1_RECT_F start_rectangle = D2D1::RectF(x + width * 6.525, y + height * BET_RATIO, x + width * 7.825, y + height);
 
 
-        //Ã¸»sºñ¦â«ö¶s
+        //ç¹ªè£½ç¶ è‰²æŒ‰éˆ•
         if (ESM->state != STATE_IDLE)
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
         else
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
         m_pRenderTarget->FillRectangle(&exit_rectangle, pBrush);
-        swprintf_s(scoreStr, L"Â÷¶}¹CÀ¸\nEXIT                                                  ");
+        swprintf_s(scoreStr, L"é›¢é–‹éŠæˆ²\nEXIT                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -116,7 +116,7 @@ public:
         else
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
         m_pRenderTarget->FillRectangle(&start_rectangle, pBrush);
-        swprintf_s(scoreStr, L"¶}©l\nSTART                                                  ");
+        swprintf_s(scoreStr, L"é–‹å§‹\nSTART                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -125,14 +125,14 @@ public:
             p_Pen_Brush
         );
 
-        //Ã¸»s¶À¦â«ö¶s
+        //ç¹ªè£½é»ƒè‰²æŒ‰éˆ•
         if (ESM->state != STATE_BET_SETTLING &&
             ESM->state != STATE_COMPARE_SETTLING)
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
         else
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
         m_pRenderTarget->FillRectangle(&small_rectangle, pBrush);
-        swprintf_s(scoreStr, L"¤p\nSMALL                                                  ");
+        swprintf_s(scoreStr, L"å°\nSMALL                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -142,7 +142,7 @@ public:
         );
 
         m_pRenderTarget->FillRectangle(&big_rectangle, pBrush);
-        swprintf_s(scoreStr, L"¤j\nBIG                                                  ");
+        swprintf_s(scoreStr, L"å¤§\nBIG                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -152,14 +152,14 @@ public:
         );
 
 
-        //Ã¸»s¬õ¦â«ö¶s
+        //ç¹ªè£½ç´…è‰²æŒ‰éˆ•
         if (ESM->state != STATE_BET_SETTLING &&
             ESM->state != STATE_COMPARE_SETTLING)
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
         else
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
         m_pRenderTarget->FillRectangle(&score_rectangle, pBrush);
-        swprintf_s(scoreStr, L"±o¤À\nSCORE                                                  ");
+        swprintf_s(scoreStr, L"å¾—åˆ†\nSCORE                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -174,7 +174,7 @@ public:
         else
             m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
         m_pRenderTarget->FillRectangle(&auto_rectangle, pBrush);
-        swprintf_s(scoreStr, L"¦Û°Ê\nAUTO                                                  ");
+        swprintf_s(scoreStr, L"è‡ªå‹•\nAUTO                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
@@ -203,16 +203,16 @@ public:
         {
 
         case GRID_NUMBER: {
-            if (common->ESM->bet_settling || common->ESM->compare_settling) break; //¶}©l¹CÀ¸«á °Êµe°±¤î«e¤£±µ¨ü«ü¥O
+            if (common->ESM->bet_settling || common->ESM->compare_settling) break; //é–‹å§‹éŠæˆ²å¾Œ å‹•ç•«åœæ­¢å‰ä¸æ¥å—æŒ‡ä»¤
 
             break;
         }
         case FUNCTION_BET_NUMBER: {
-            if (common->ESM->bet_settling || common->ESM->compare_settling) break; //¶}©l¹CÀ¸«á °Êµe°±¤î«e¤£±µ¨ü«ü¥O
+            if (common->ESM->bet_settling || common->ESM->compare_settling) break; //é–‹å§‹éŠæˆ²å¾Œ å‹•ç•«åœæ­¢å‰ä¸æ¥å—æŒ‡ä»¤
 
             if (common->SM->GetWinScore() > 0) {
-                MessageBox(hWnd, L"½Ğ¥ı«ö±o¤À", L"¿ù»~", MB_OK);
-                break; //­Y¦³±o¤À«h¤£¯à¹CÀ¸
+                MessageBox(hWnd, L"è«‹å…ˆæŒ‰å¾—åˆ†", L"éŒ¯èª¤", MB_OK);
+                break; //è‹¥æœ‰å¾—åˆ†å‰‡ä¸èƒ½éŠæˆ²
             }
             xPos -= FUNCTION_X;
             yPos -= FUNCTION_Y;
@@ -418,7 +418,7 @@ public:
             }
             common->SM->Bet_call(number, action);
             long long currentTime = common->ESM->currentTime;
-            // @ÂIÀ»¤ÏÀ³
+            // @é»æ“Šåæ‡‰
             if (action == 0) {
                 common->ESM->SetLightStatus(common->ESM->Clear_Light_call_map, currentTime , number, 1);
                 common->ESM->SetLightStatus(common->ESM->Clear_Light_call_map, currentTime + 200, number, 0);
@@ -435,22 +435,22 @@ public:
             break;
         }
         case FUNCTION_NUMBER: {
-            // TODO :: ÅÜ¼Æ­n§ï¦¨Draw_Function¦P¨B ,¥Ø¼Ğ¬°­×§ï¨ä¤¤¤@¤è§Y¥i
-            // width * 0.225 ¬°¤£¦nªº¥Îªk 0.225À³§ï¦¨ÅÜ¼Æ
+            // TODO :: è®Šæ•¸è¦æ”¹æˆDraw_FunctionåŒæ­¥ ,ç›®æ¨™ç‚ºä¿®æ”¹å…¶ä¸­ä¸€æ–¹å³å¯
+            // width * 0.225 ç‚ºä¸å¥½çš„ç”¨æ³• 0.225æ‡‰æ”¹æˆè®Šæ•¸
 
             xPos -= FUNCTION_X;
             int width = FUNCTION_WIDTH;
 
             if (xPos >= width * 0.225 &&
                 xPos <= width * 1.525) {
-                // Â÷¶}¹CÀ¸
-                //if (engine->bet_settling || engine->compare_settling) break; //¶}©l¹CÀ¸«á °Êµe°±¤î«e¤£±µ¨ü«ü¥O
+                // é›¢é–‹éŠæˆ²
+                //if (engine->bet_settling || engine->compare_settling) break; //é–‹å§‹éŠæˆ²å¾Œ å‹•ç•«åœæ­¢å‰ä¸æ¥å—æŒ‡ä»¤
                 if (common->ESM->state == STATE_IDLE)
                     SendMessage(hWnd, WM_CUSTOM_GAMEEND, 0, 0);
             }
             else if (xPos >= width * 1.725 &&
                 xPos <= width * 2.625) {
-                // ¤p
+                // å°
                 if (common->ESM->state == STATE_BET_SETTLING ||
                     common->ESM->state == STATE_COMPARE_SETTLING) {
                     common->ESM->compare_starting = 1;
@@ -459,7 +459,7 @@ public:
             }
             else if (xPos >= width * 2.825 &&
                 xPos <= width * 3.725) {
-                // ¤j
+                // å¤§
                 if (common->ESM->state == STATE_BET_SETTLING ||
                     common->ESM->state == STATE_COMPARE_SETTLING) {
                     common->ESM->compare_starting = 1;
@@ -469,7 +469,7 @@ public:
             }
             else if (xPos >= width * 3.925 &&
                 xPos <= width * 5.225) {
-                // ±o¤À
+                // å¾—åˆ†
                 if (common->ESM->state == STATE_BET_SETTLING ||
                     common->ESM->state == STATE_COMPARE_SETTLING) {
                     common->SM->WinToScore();
@@ -477,7 +477,7 @@ public:
             }
             else if (xPos >= width * 5.425 &&
                 xPos <= width * 6.325) {
-                // ¦Û°Ê
+                // è‡ªå‹•
                 if (common->ESM->autoing) {
                     common->ESM->autoing = 0;
                 }
@@ -490,22 +490,22 @@ public:
                 else {
                     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
                     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count() % 1000;
-                    common->ESM->endTime = seconds * 1000 + milliseconds - 2000; //±±¨î¦Û°Ê¶}©l®É¶¡
+                    common->ESM->endTime = seconds * 1000 + milliseconds - 2000; //æ§åˆ¶è‡ªå‹•é–‹å§‹æ™‚é–“
                     common->ESM->autoing = 1;
 
                 }
             }
             else if (xPos >= width * 6.525 &&
                 xPos <= width * 7.825) {
-                // ¶}©l
-                if (common->ESM->bet_settling || common->ESM->compare_settling) break; //¶}©l¹CÀ¸«á °Êµe°±¤î«e¤£±µ¨ü«ü¥O
+                // é–‹å§‹
+                if (common->ESM->bet_settling || common->ESM->compare_settling) break; //é–‹å§‹éŠæˆ²å¾Œ å‹•ç•«åœæ­¢å‰ä¸æ¥å—æŒ‡ä»¤
                 if (common->SM->GetWinScore() > 0) {
-                    MessageBox(hWnd, L"½Ğ¥ı«ö±o¤À", L"¿ù»~", MB_OK);
-                    break; //­Y¦³±o¤À«h¤£¯àÄ~Äò¹CÀ¸
+                    MessageBox(hWnd, L"è«‹å…ˆæŒ‰å¾—åˆ†", L"éŒ¯èª¤", MB_OK);
+                    break; //è‹¥æœ‰å¾—åˆ†å‰‡ä¸èƒ½ç¹¼çºŒéŠæˆ²
                 }
                 if (common->ESM->autoing) {
-                    MessageBox(hWnd, L"·|¦Û°Ê¶}©l", L"¿ù»~", MB_OK);
-                    break; //­Y¶}±Ò¦Û°Ê«h¥Ñ¦Û°Ê±Ò°Ê
+                    MessageBox(hWnd, L"æœƒè‡ªå‹•é–‹å§‹", L"éŒ¯èª¤", MB_OK);
+                    break; //è‹¥é–‹å•Ÿè‡ªå‹•å‰‡ç”±è‡ªå‹•å•Ÿå‹•
                 }
                 if (common->ESM->state == STATE_IDLE)
                     common->ESM->bet_starting = 1;
@@ -522,7 +522,7 @@ public:
         if (it != map.end()) {
             return it->second;
         }
-        // ¦pªG§ä¤£¨ì¹ïÀ³ªºÁä­È¡A¤]ªğ¦^ false
+        // å¦‚æœæ‰¾ä¸åˆ°å°æ‡‰çš„éµå€¼ï¼Œä¹Ÿè¿”å› false
         return false;
     }
 
