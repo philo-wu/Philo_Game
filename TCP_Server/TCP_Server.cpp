@@ -28,7 +28,6 @@ void TCP_Server::slot_newConnection()
 {
     // 把新加入的socket放入链表中
     QTcpSocket* socket = m_server->nextPendingConnection();
-
     m_sockets.push_back(socket);
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(slot_readMessage()));

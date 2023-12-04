@@ -40,7 +40,7 @@
     <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
-    <QtPlugin>true</QtPlugin>
+    <QtPlugin>false</QtPlugin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
     <QtInstall>5.15.2_msvc2019</QtInstall>
@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <IncludePath>$(QT_include);$(IncludePath);./moc/;./ui/;.\rcc\;</IncludePath>
-    <OutDir>$(SolutionDir)\TCP\TCP_Server\</OutDir>
+    <OutDir>$(SolutionDir)\執行檔\TCP_Server\</OutDir>
     <IntDir>.\Relay\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">

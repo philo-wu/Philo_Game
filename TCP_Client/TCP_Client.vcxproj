@@ -40,7 +40,7 @@
     <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
-    <QtPlugin>true</QtPlugin>
+    <QtPlugin>false</QtPlugin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
     <QtInstall>5.15.2_msvc2019</QtInstall>
@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
     <IncludePath>$(QT_include);$(IncludePath);./moc/;./rcc/;./ui/;</IncludePath>
-    <OutDir>$(SolutionDir)\TCP\TCP_Client\</OutDir>
+    <OutDir>$(SolutionDir)\執行檔\TCP_Client\</OutDir>
     <IntDir>.\Relay\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
@@ -105,6 +105,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <QtRcc Include="TCP_Client.qrc" />
+    <QtUic Include="Dialog_Login.ui" />
     <QtUic Include="TCP_Client.ui">
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"uic.exe" "%(FullPath)" -o ".\ui\ui_%(Filename).h"</Command>
@@ -115,6 +116,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"moc.exe" "%(FullPath)" -o ".\moc\moc_%(Filename).cpp"  "-f../%(Filename).h"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\moc\moc_%(Filename).cpp</Outputs>
     </QtMoc>
+    <ClCompile Include="Dialog_Login.cpp" />
     <ClCompile Include="moc\moc_TCP_Client.cpp" />
     <ClCompile Include="rcc\qrc_TCP_Client.cpp" />
     <ClCompile Include="TCP_Client.cpp" />
@@ -124,6 +126,8 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="Dialog_Login.h" />
+    <ClInclude Include="ui\ui_Dialog_Login.h" />
     <ClInclude Include="ui\ui_TCP_Client.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
