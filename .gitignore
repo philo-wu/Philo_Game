@@ -30,3 +30,5 @@ debug/moc_predefs.h
 debug/moc_mainwindow.cpp
 debug/qt.natvis
 debug/Philo.vcxproj.FileListAbsolute.txt
+TCP_Server/Debug
+TCP_Client/Debug

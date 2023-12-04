@@ -40,6 +40,7 @@
     <QtInstall>5.15.2_msvc2019</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
+    <QtPlugin>true</QtPlugin>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
     <QtInstall>5.15.2_msvc2019</QtInstall>
@@ -61,11 +62,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
-    <IncludePath>$(QT_include);$(IncludePath);./moc/</IncludePath>
+    <IncludePath>$(QT_include);$(IncludePath);./moc/;./ui/;.\rcc\;</IncludePath>
     <OutDir>$(SolutionDir)\TCP\TCP_Server\</OutDir>
+    <IntDir>.\Relay\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <QtMoc>
+      <QtMocDir>.\moc\</QtMocDir>
+    </QtMoc>
+    <QtRcc>
+      <QtRccDir>.\rcc\</QtRccDir>
+    </QtRcc>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
     <ClCompile>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -94,17 +104,24 @@
     <QtRcc Include="TCP_Server.qrc" />
     <QtUic Include="TCP_Server.ui">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del ".\ui\ui_%(Filename).h" "uic.exe" "%(FullPath)" -o ".\ui\ui_%(Filename).h"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">del".\ui\ui_%(Filename).h" 
+"uic.exe" "%(FullPath)" -o ".\ui\ui_%(Filename).h"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\ui\ui_%(Filename).h</Outputs>
-      <QtUicDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)uic\</QtUicDir>
+      <QtUicDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\ui\</QtUicDir>
     </QtUic>
     <QtMoc Include="TCP_Server.h">
       <ExecutionDescription Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">moc.exe %(Identity)</ExecutionDescription>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"moc.exe" "%(FullPath)" -o ".\moc\moc_%(Filename).cpp"  "-f../%(Filename).h"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\moc\moc_%(Filename).cpp</Outputs>
+      <Include Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Include)</Include>
     </QtMoc>
+    <ClCompile Include="moc\moc_TCP_Server.cpp" />
+    <ClCompile Include="rcc\qrc_TCP_Server.cpp" />
     <ClCompile Include="TCP_Server.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\ui_TCP_Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
