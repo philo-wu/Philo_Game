@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QDialog>
+#include <QtWidgets/QDialog>
 #include "ui_Dialog_Login.h"
 
 class Dialog_Login : public QDialog
@@ -11,6 +11,13 @@ public:
 	Dialog_Login(QWidget *parent = nullptr);
 	~Dialog_Login();
 
+private slots:
+    void on_Btn_ToSignup_clicked();
+
+    void on_Btn_Login_2_clicked();
+
+    void on_Btn_Setting_clicked();
+
 private:
-	Ui::Dialog_LoginClass ui;
+	Ui::Dialog_LoginClass* ui;
 };

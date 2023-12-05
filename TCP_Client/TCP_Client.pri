@@ -7,6 +7,14 @@
 message("You are running qmake on a generated .pro file. This may not work!")
 
 
-TEMPLATE = subdirs
-SUBDIRS += TCP_Server/TCP_Server.pro \
-    TCP_Client/TCP_Client.pro
+HEADERS += ./TCP_Client.h \
+    ./Dialog_Login.h \
+    ./ui/ui_Dialog_Login.h
+SOURCES += ./Dialog_Login.cpp \
+    ./TCP_Client.cpp \
+    ./main.cpp \
+    ./moc/moc_TCP_Client.cpp \
+    ./rcc/qrc_TCP_Client.cpp
+FORMS += ./Dialog_Login.ui \
+    ./TCP_Client.ui
+RESOURCES += TCP_Client.qrc

@@ -25,6 +25,8 @@ private slots:
     void slot_btnSendMsg();     // 点击发送按钮后，后发送消息
     void slot_login();          // 点击发送按钮后，后发送消息
 
+    void on_Btn_Signout_clicked();
+
 private:
     Ui::TCP_ClientClass* ui;
     //Dialog_Login Dlg_Login;

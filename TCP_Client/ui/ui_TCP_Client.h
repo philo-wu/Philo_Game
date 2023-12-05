@@ -26,7 +26,7 @@ QT_BEGIN_NAMESPACE
 class Ui_TCP_ClientClass
 {
 public:
-    QWidget *centralWidget;
+    QWidget *mainWidget;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *horizontalLayout_13;
@@ -85,9 +85,9 @@ public:
         palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
         TCP_ClientClass->setPalette(palette);
         TCP_ClientClass->setStyleSheet(QString::fromUtf8(""));
-        centralWidget = new QWidget(TCP_ClientClass);
-        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-        verticalLayout_2 = new QVBoxLayout(centralWidget);
+        mainWidget = new QWidget(TCP_ClientClass);
+        mainWidget->setObjectName(QString::fromUtf8("mainWidget"));
+        verticalLayout_2 = new QVBoxLayout(mainWidget);
         verticalLayout_2->setSpacing(0);
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
@@ -105,7 +105,7 @@ public:
 
         horizontalLayout_13->addItem(horizontalSpacer);
 
-        Btn_Signout = new QPushButton(centralWidget);
+        Btn_Signout = new QPushButton(mainWidget);
         Btn_Signout->setObjectName(QString::fromUtf8("Btn_Signout"));
         Btn_Signout->setFocusPolicy(Qt::NoFocus);
         Btn_Signout->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 141, 131);\n"
@@ -125,14 +125,14 @@ public:
         horizontalLayout_8 = new QHBoxLayout();
         horizontalLayout_8->setSpacing(6);
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
-        label_6 = new QLabel(centralWidget);
+        label_6 = new QLabel(mainWidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setMinimumSize(QSize(55, 0));
         label_6->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_8->addWidget(label_6);
 
-        LE_Name = new QLineEdit(centralWidget);
+        LE_Name = new QLineEdit(mainWidget);
         LE_Name->setObjectName(QString::fromUtf8("LE_Name"));
         LE_Name->setFocusPolicy(Qt::NoFocus);
         LE_Name->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -146,14 +146,14 @@ public:
         horizontalLayout_6 = new QHBoxLayout();
         horizontalLayout_6->setSpacing(6);
         horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        label_4 = new QLabel(centralWidget);
+        label_4 = new QLabel(mainWidget);
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setMinimumSize(QSize(55, 0));
         label_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_6->addWidget(label_4);
 
-        LE_IP = new QLineEdit(centralWidget);
+        LE_IP = new QLineEdit(mainWidget);
         LE_IP->setObjectName(QString::fromUtf8("LE_IP"));
         LE_IP->setFocusPolicy(Qt::NoFocus);
         LE_IP->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -167,14 +167,14 @@ public:
         horizontalLayout_7 = new QHBoxLayout();
         horizontalLayout_7->setSpacing(6);
         horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
-        label_5 = new QLabel(centralWidget);
+        label_5 = new QLabel(mainWidget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
         label_5->setMinimumSize(QSize(55, 0));
         label_5->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_7->addWidget(label_5);
 
-        LE_Port = new QLineEdit(centralWidget);
+        LE_Port = new QLineEdit(mainWidget);
         LE_Port->setObjectName(QString::fromUtf8("LE_Port"));
         LE_Port->setFocusPolicy(Qt::NoFocus);
         LE_Port->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -197,14 +197,14 @@ public:
         horizontalLayout_11 = new QHBoxLayout();
         horizontalLayout_11->setSpacing(6);
         horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
-        label_3 = new QLabel(centralWidget);
+        label_3 = new QLabel(mainWidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setMinimumSize(QSize(55, 0));
         label_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_11->addWidget(label_3);
 
-        LE_LoginTime = new QLineEdit(centralWidget);
+        LE_LoginTime = new QLineEdit(mainWidget);
         LE_LoginTime->setObjectName(QString::fromUtf8("LE_LoginTime"));
         LE_LoginTime->setFocusPolicy(Qt::NoFocus);
         LE_LoginTime->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -218,14 +218,14 @@ public:
         horizontalLayout_9 = new QHBoxLayout();
         horizontalLayout_9->setSpacing(6);
         horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
-        label_2 = new QLabel(centralWidget);
+        label_2 = new QLabel(mainWidget);
         label_2->setObjectName(QString::fromUtf8("label_2"));
         label_2->setMinimumSize(QSize(55, 0));
         label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_9->addWidget(label_2);
 
-        LE_LoginSec = new QLineEdit(centralWidget);
+        LE_LoginSec = new QLineEdit(mainWidget);
         LE_LoginSec->setObjectName(QString::fromUtf8("LE_LoginSec"));
         LE_LoginSec->setFocusPolicy(Qt::NoFocus);
         LE_LoginSec->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -233,7 +233,7 @@ public:
 
         horizontalLayout_9->addWidget(LE_LoginSec);
 
-        label = new QLabel(centralWidget);
+        label = new QLabel(mainWidget);
         label->setObjectName(QString::fromUtf8("label"));
 
         horizontalLayout_9->addWidget(label);
@@ -269,7 +269,7 @@ public:
         horizontalLayout_12->setSpacing(6);
         horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
         horizontalLayout_12->setContentsMargins(-1, -1, -1, 10);
-        TB_Chat = new QTextBrowser(centralWidget);
+        TB_Chat = new QTextBrowser(mainWidget);
         TB_Chat->setObjectName(QString::fromUtf8("TB_Chat"));
         TB_Chat->setFocusPolicy(Qt::NoFocus);
         TB_Chat->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -280,7 +280,7 @@ public:
         verticalLayout_5->setSpacing(0);
         verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
         verticalLayout_5->setContentsMargins(-1, -1, -1, 0);
-        label_7 = new QLabel(centralWidget);
+        label_7 = new QLabel(mainWidget);
         label_7->setObjectName(QString::fromUtf8("label_7"));
         label_7->setStyleSheet(QString::fromUtf8("background-color: rgb(10, 92, 117);\n"
 "color: rgb(255, 255, 255);"));
@@ -288,7 +288,7 @@ public:
 
         verticalLayout_5->addWidget(label_7);
 
-        TB_User = new QTextBrowser(centralWidget);
+        TB_User = new QTextBrowser(mainWidget);
         TB_User->setObjectName(QString::fromUtf8("TB_User"));
         TB_User->setFocusPolicy(Qt::NoFocus);
         TB_User->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
@@ -305,14 +305,14 @@ public:
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        lineEdit = new QLineEdit(centralWidget);
+        lineEdit = new QLineEdit(mainWidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setFocusPolicy(Qt::ClickFocus);
         lineEdit->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
 
         horizontalLayout->addWidget(lineEdit);
 
-        Btn_Send = new QPushButton(centralWidget);
+        Btn_Send = new QPushButton(mainWidget);
         Btn_Send->setObjectName(QString::fromUtf8("Btn_Send"));
         Btn_Send->setFocusPolicy(Qt::ClickFocus);
         Btn_Send->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);\n"
@@ -325,7 +325,7 @@ public:
 
         verticalLayout_2->setStretch(2, 1);
         verticalLayout_2->setStretch(3, 4);
-        TCP_ClientClass->setCentralWidget(centralWidget);
+        TCP_ClientClass->setCentralWidget(mainWidget);
 
         retranslateUi(TCP_ClientClass);
 

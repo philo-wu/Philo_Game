@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_TCP_Server.h"
+#include "./ui/ui_TCP_Server.h"
 
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>

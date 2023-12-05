@@ -1,10 +1,13 @@
 ﻿#include "TCP_Client.h"
 #include "Dialog_Login.h"
 
-TCP_Client::TCP_Client(QWidget *parent)
-    : QMainWindow(parent)
+TCP_Client::TCP_Client(QWidget *parent): 
+    QMainWindow(parent),
+    ui(new Ui::TCP_ClientClass())
 {
     ui->setupUi(this);
+
+
     connectToServer();
 
 }
@@ -51,7 +54,12 @@ void TCP_Client::slot_btnSendMsg()
 }
 
 void TCP_Client::slot_login() {
+
+}
+void TCP_Client::on_Btn_Signout_clicked()
+{
     Dialog_Login* Dlg = new Dialog_Login(this);
     Dlg->setModal(true);
     Dlg->exec();
 }
+
