@@ -52,6 +52,7 @@ public:
     QLineEdit *LE_LoginSec;
     QLabel *label;
     QHBoxLayout *horizontalLayout_10;
+    QLabel *label_8;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout_12;
     QTextBrowser *TB_Chat;
@@ -71,18 +72,28 @@ public:
         QBrush brush(QColor(255, 255, 255, 255));
         brush.setStyle(Qt::SolidPattern);
         palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
-        palette.setBrush(QPalette::Active, QPalette::Base, brush);
-        QBrush brush1(QColor(28, 25, 70, 255));
+        palette.setBrush(QPalette::Active, QPalette::Text, brush);
+        QBrush brush1(QColor(74, 74, 74, 255));
         brush1.setStyle(Qt::SolidPattern);
-        palette.setBrush(QPalette::Active, QPalette::Window, brush1);
-        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
-        palette.setBrush(QPalette::Inactive, QPalette::Base, brush);
-        palette.setBrush(QPalette::Inactive, QPalette::Window, brush1);
-        QBrush brush2(QColor(120, 120, 120, 255));
+        palette.setBrush(QPalette::Active, QPalette::Base, brush1);
+        QBrush brush2(QColor(28, 25, 70, 255));
         brush2.setStyle(Qt::SolidPattern);
-        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush2);
-        palette.setBrush(QPalette::Disabled, QPalette::Base, brush1);
-        palette.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+        palette.setBrush(QPalette::Active, QPalette::Window, brush2);
+        QBrush brush3(QColor(0, 50, 89, 255));
+        brush3.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Highlight, brush3);
+        QBrush brush4(QColor(0, 27, 47, 255));
+        brush4.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::AlternateBase, brush4);
+        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Text, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::Window, brush2);
+        palette.setBrush(QPalette::Inactive, QPalette::Highlight, brush3);
+        palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush4);
+        palette.setBrush(QPalette::Disabled, QPalette::Base, brush2);
+        palette.setBrush(QPalette::Disabled, QPalette::Window, brush2);
+        palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush4);
         TCP_ClientClass->setPalette(palette);
         TCP_ClientClass->setStyleSheet(QString::fromUtf8(""));
         mainWidget = new QWidget(TCP_ClientClass);
@@ -108,7 +119,7 @@ public:
         Btn_Signout = new QPushButton(mainWidget);
         Btn_Signout->setObjectName(QString::fromUtf8("Btn_Signout"));
         Btn_Signout->setFocusPolicy(Qt::NoFocus);
-        Btn_Signout->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 141, 131);\n"
+        Btn_Signout->setStyleSheet(QString::fromUtf8("background-color: rgb(180, 0, 0);\n"
 "color: rgb(255, 255, 255);"));
 
         horizontalLayout_13->addWidget(Btn_Signout);
@@ -135,7 +146,8 @@ public:
         LE_Name = new QLineEdit(mainWidget);
         LE_Name->setObjectName(QString::fromUtf8("LE_Name"));
         LE_Name->setFocusPolicy(Qt::NoFocus);
-        LE_Name->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        LE_Name->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
         LE_Name->setReadOnly(true);
 
         horizontalLayout_8->addWidget(LE_Name);
@@ -156,7 +168,8 @@ public:
         LE_IP = new QLineEdit(mainWidget);
         LE_IP->setObjectName(QString::fromUtf8("LE_IP"));
         LE_IP->setFocusPolicy(Qt::NoFocus);
-        LE_IP->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        LE_IP->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
         LE_IP->setReadOnly(true);
 
         horizontalLayout_6->addWidget(LE_IP);
@@ -177,7 +190,8 @@ public:
         LE_Port = new QLineEdit(mainWidget);
         LE_Port->setObjectName(QString::fromUtf8("LE_Port"));
         LE_Port->setFocusPolicy(Qt::NoFocus);
-        LE_Port->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        LE_Port->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
         LE_Port->setReadOnly(true);
 
         horizontalLayout_7->addWidget(LE_Port);
@@ -207,7 +221,8 @@ public:
         LE_LoginTime = new QLineEdit(mainWidget);
         LE_LoginTime->setObjectName(QString::fromUtf8("LE_LoginTime"));
         LE_LoginTime->setFocusPolicy(Qt::NoFocus);
-        LE_LoginTime->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        LE_LoginTime->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
         LE_LoginTime->setReadOnly(true);
 
         horizontalLayout_11->addWidget(LE_LoginTime);
@@ -228,7 +243,8 @@ public:
         LE_LoginSec = new QLineEdit(mainWidget);
         LE_LoginSec->setObjectName(QString::fromUtf8("LE_LoginSec"));
         LE_LoginSec->setFocusPolicy(Qt::NoFocus);
-        LE_LoginSec->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        LE_LoginSec->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
         LE_LoginSec->setReadOnly(true);
 
         horizontalLayout_9->addWidget(LE_LoginSec);
@@ -244,6 +260,16 @@ public:
         horizontalLayout_10 = new QHBoxLayout();
         horizontalLayout_10->setSpacing(6);
         horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        label_8 = new QLabel(mainWidget);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
+        label_8->setSizePolicy(sizePolicy);
+
+        horizontalLayout_10->addWidget(label_8);
+
 
         verticalLayout_3->addLayout(horizontalLayout_10);
 
@@ -271,8 +297,21 @@ public:
         horizontalLayout_12->setContentsMargins(-1, -1, -1, 10);
         TB_Chat = new QTextBrowser(mainWidget);
         TB_Chat->setObjectName(QString::fromUtf8("TB_Chat"));
+        QPalette palette1;
+        QBrush brush5(QColor(0, 0, 0, 255));
+        brush5.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Light, brush5);
+        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush5);
+        palette1.setBrush(QPalette::Active, QPalette::HighlightedText, brush);
+        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush5);
+        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush5);
+        palette1.setBrush(QPalette::Inactive, QPalette::HighlightedText, brush);
+        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush5);
+        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush5);
+        palette1.setBrush(QPalette::Disabled, QPalette::HighlightedText, brush);
+        TB_Chat->setPalette(palette1);
         TB_Chat->setFocusPolicy(Qt::NoFocus);
-        TB_Chat->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        TB_Chat->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_12->addWidget(TB_Chat);
 
@@ -290,8 +329,10 @@ public:
 
         TB_User = new QTextBrowser(mainWidget);
         TB_User->setObjectName(QString::fromUtf8("TB_User"));
+        QPalette palette2;
+        TB_User->setPalette(palette2);
         TB_User->setFocusPolicy(Qt::NoFocus);
-        TB_User->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        TB_User->setStyleSheet(QString::fromUtf8(""));
 
         verticalLayout_5->addWidget(TB_User);
 
@@ -308,7 +349,8 @@ public:
         lineEdit = new QLineEdit(mainWidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
         lineEdit->setFocusPolicy(Qt::ClickFocus);
-        lineEdit->setStyleSheet(QString::fromUtf8("background-color: rgb(100, 100, 100);"));
+        lineEdit->setStyleSheet(QString::fromUtf8("background-color: rgb(74, 74, 74);\n"
+"color: rgb(255, 255, 255);"));
 
         horizontalLayout->addWidget(lineEdit);
 
@@ -337,12 +379,14 @@ public:
         TCP_ClientClass->setWindowTitle(QCoreApplication::translate("TCP_ClientClass", "TCP_Client", nullptr));
         Btn_Signout->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\273\345\207\272", nullptr));
         label_6->setText(QCoreApplication::translate("TCP_ClientClass", "\347\224\250\346\210\266\345\220\215\347\250\261 :", nullptr));
-        label_4->setText(QCoreApplication::translate("TCP_ClientClass", "\344\274\272\346\234\215\345\231\250IP :", nullptr));
+        label_4->setText(QCoreApplication::translate("TCP_ClientClass", "\346\234\254\345\234\260IP :", nullptr));
         label_5->setText(QCoreApplication::translate("TCP_ClientClass", "\347\253\257\345\217\243 :", nullptr));
         label_3->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\273\345\205\245\346\231\202\351\226\223 :", nullptr));
         label_2->setText(QCoreApplication::translate("TCP_ClientClass", "\345\234\250\347\267\232\346\231\202\351\226\223 :", nullptr));
         label->setText(QCoreApplication::translate("TCP_ClientClass", "\347\247\222", nullptr));
+        label_8->setText(QString());
         label_7->setText(QCoreApplication::translate("TCP_ClientClass", "\347\267\232\344\270\212\347\224\250\346\210\266", nullptr));
+        lineEdit->setText(QCoreApplication::translate("TCP_ClientClass", "123123", nullptr));
         Btn_Send->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\274\351\200\201", nullptr));
     } // retranslateUi
 

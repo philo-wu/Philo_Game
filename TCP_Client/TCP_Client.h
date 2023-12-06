@@ -2,11 +2,13 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QLabel>
-
-#include "ui_TCP_Client.h"
-
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostAddress>
+#include <QTimer>
+
+#include "ui_TCP_Client.h"
+#include "Common.h"
+
 
 
 class TCP_Client : public QMainWindow
@@ -15,17 +17,24 @@ class TCP_Client : public QMainWindow
 public:
     TCP_Client(QWidget *parent = nullptr);
     ~TCP_Client();
+    ClientSetting m_Setting;
+    QTcpSocket* m_socket;      
 
-    QTcpSocket* m_socket;       // 客户端套接字
+    void update();
 
-    void connectToServer();     // 连接到服务器
+    // 本地指令
 
+    void Connect_init();
+    // Server指令
+    void Receive_Chat(MyPacket packet);
+
+    // Client指令
+    void Send_Chat();
 private slots:
-    void slot_readMessage();    // 处理接收服务器方发送的消息
-    void slot_btnSendMsg();     // 点击发送按钮后，后发送消息
-    void slot_login();          // 点击发送按钮后，后发送消息
-
+    void Server_to_Client();    
+    void Client_to_Server(Command command);
     void on_Btn_Signout_clicked();
+    void on_Btn_Send_clicked();
 
 private:
     Ui::TCP_ClientClass* ui;

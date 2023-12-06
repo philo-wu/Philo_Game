@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "./ui/ui_TCP_Server.h"
-
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QTcpServer>
+#include <QDateTime>
+
+#include "./ui/ui_TCP_Server.h"
+#include "Common.h"
 
 
 
@@ -24,7 +26,10 @@ public:
 public slots:
     void slot_newConnection();    //  对应客户端的 connectToHost();
 
-    void slot_readMessage();   // 每一个socket绑定
+    void Client_to_Server();   // 每一个socket绑定
+
+    void Server_to_Client(MyPacket packet);   // 
+
 private:
     Ui::TCP_ServerClass* ui;
 };

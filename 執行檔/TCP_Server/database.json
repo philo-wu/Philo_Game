@@ -1,0 +1,19 @@
+[
+    {
+        "User" : "test1",
+        "Pass" : "123",
+        "Permissions" : "admin"
+    },
+    {
+        "User" : "test2",
+        "Pass" : "123",
+        "Permissions" : "member"
+
+    }
+    ,
+    {
+        "User" : "test3",
+        "Pass" : "123",
+        "Permissions" : "member"
+    }
+]

@@ -62,7 +62,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
-    <IncludePath>$(QT_include);$(IncludePath);./moc/;./rcc/;./ui/;</IncludePath>
+    <IncludePath>$(QT_include);$(IncludePath);./moc/;./rcc/;./ui/;../Common/</IncludePath>
     <OutDir>$(SolutionDir)\執行檔\TCP_Client\</OutDir>
     <IntDir>.\Relay\</IntDir>
   </PropertyGroup>
@@ -126,6 +126,7 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ui\ui_TCP_Client.h" />
     <QtMoc Include="Dialog_Login.h" />
     <ClInclude Include="ui\ui_Dialog_Login.h" />
   </ItemGroup>

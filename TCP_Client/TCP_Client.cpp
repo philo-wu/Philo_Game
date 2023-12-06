@@ -6,9 +6,29 @@ TCP_Client::TCP_Client(QWidget *parent):
     ui(new Ui::TCP_ClientClass())
 {
     ui->setupUi(this);
+    m_socket = new QTcpSocket(this);
 
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, QOverload<>::of(&TCP_Client::update));
 
-    connectToServer();
+    Dialog_Login* Dlg = new Dialog_Login(m_socket,this);
+    Dlg->setModal(true);
+    connect(Dlg, &Dialog_Login::ToRoom, [=]() {
+        this->show();
+        //m_socket = Dlg->m_socket;
+        m_Setting = Dlg->m_Setting;
+        ui->LE_Name->setText(m_Setting.m_User);
+        ui->LE_IP->setText(m_socket->localAddress().toString());
+        ui->LE_Port->setText(QString::number(m_socket->localPort()));
+        ui->LE_LoginTime->setText(m_Setting.m_LoginTime.toString("yyyy-MM-dd hh:mm:ss"));
+        ui->LE_LoginSec->setText(QString::number(m_Setting.m_LoginSec));
+        timer->start(1000);
+        });
+    Dlg->exec();
+    if (Dlg)
+        delete Dlg;
+    Connect_init();
+
 
 }
 
@@ -16,50 +36,87 @@ TCP_Client::~TCP_Client()
 {
     delete ui;
 }
-
-
-void TCP_Client::connectToServer()
+void TCP_Client::update()
 {
-    m_socket = new QTcpSocket(this);
-
-    //连接到服务器
-
-    // 尝试连接到IP为"127.0.0.1" & 端口号为19999服务器
-    // 如果想要实现局域网通信, 只需将第一个IP地址设置为“服务器”所在主机的IP地址即可
-    // 如  m_socket->connectToHost("170.29.19.65", 19999);
-    m_socket->connectToHost(QHostAddress::LocalHost, 19999);
-
-    qDebug() << "Port" << m_socket->localPort();
-
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(slot_readMessage()));   // 告诉socket, 要用slot_readMessage()去处理接收的消息.
-
-    connect(ui->Btn_Send, SIGNAL(clicked()), this, SLOT(slot_btnSendMsg()));
-
-    connect(ui->Btn_Signout, SIGNAL(clicked()), this, SLOT(slot_login()));
-
+    m_Setting.m_LoginSec += 1;
+    ui->LE_LoginSec->setText(QString::number(m_Setting.m_LoginSec));
 }
 
-void TCP_Client::slot_readMessage()   // 只会在socket接收到server消息时调用
+
+void TCP_Client::Connect_init()
 {
-    QString str = m_socket->readAll().data();
-    ui->TB_Chat->setText(ui->TB_Chat->toPlainText() + "\n" + str);
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client())); 
 }
 
-void TCP_Client::slot_btnSendMsg()
+void TCP_Client::Client_to_Server(Command command)
 {
 
-    QString str = ui->lineEdit->text();
-    m_socket->write(str.toStdString().data());    // Exception
-    ui->lineEdit->clear();
+    switch (command) {
+    case MAIN_C_S_ACTION: {
+        Send_Chat();
+    }
+                       break;
+    default:
+        break;
+    }
+}
+void TCP_Client::Server_to_Client()
+{
+    MyPacket Packet;
+    Packet.deserialize(m_socket->readAll());
+    //Command receivedCommand = Packet.getCommand();
+    //MassageData receivedData = Packet.massageData;
+
+    switch (Packet.getCommand()) {
+    case MAIN_S_C_ACTION: {
+        Receive_Chat(Packet);
+    }
+        break;
+    default:
+        break;
+    }
 }
 
-void TCP_Client::slot_login() {
 
-}
 void TCP_Client::on_Btn_Signout_clicked()
 {
-    Dialog_Login* Dlg = new Dialog_Login(this);
-    Dlg->setModal(true);
-    Dlg->exec();
+
+}
+void TCP_Client::on_Btn_Send_clicked()
+{
+    Client_to_Server(MAIN_C_S_ACTION);
 }
 
+void TCP_Client::Receive_Chat(MyPacket packet)
+{
+    // TODO 處理更複雜的登入失敗訊息
+    if (packet.massageData.m_errorcode == 0) {
+
+        QString Name = packet.massageData.m_User;
+
+        QString currentDateTimeString = packet.massageData.m_Time.toString("yyyy-MM-dd hh:mm:ss");
+        QString str = Name + " < " + currentDateTimeString + " > : \n" + packet.massageData.m_Data + "\n";
+        ui->TB_Chat->setText(ui->TB_Chat->toPlainText()+ str);
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "Error", "An error occurred!");
+    }
+}
+
+
+void TCP_Client::Send_Chat()
+{
+    MyPacket packet;
+    QString str = ui->lineEdit->text();
+    packet.setCommand(MAIN_C_S_ACTION);
+    packet.massageData.m_User = m_Setting.m_User;
+    packet.massageData.m_Data = str;
+    packet.massageData.m_errorcode = 0;
+    packet.massageData.m_Time = QDateTime::currentDateTime();
+    ui->lineEdit->clear();
+
+    // 將封包序列化成 QByteArray 以便發送
+    QByteArray serializedPacket = packet.serialize();
+    m_socket->write(serializedPacket);    // Exception
+}

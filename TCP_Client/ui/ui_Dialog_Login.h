@@ -32,74 +32,54 @@ public:
     QVBoxLayout *verticalLayout;
     QStackedWidget *stackedWidget;
     QWidget *page;
-    QVBoxLayout *verticalLayout_4;
+    QPushButton *Btn_Login;
+    QPushButton *Btn_Setting;
+    QPushButton *Btn_quit;
+    QWidget *widget;
     QHBoxLayout *horizontalLayout_8;
-    QSpacerItem *horizontalSpacer_7;
     QLabel *label_8;
-    QLineEdit *lineEdit_3;
+    QLineEdit *lineEdit_User;
     QPushButton *Btn_ToSignup;
-    QSpacerItem *horizontalSpacer_8;
-    QHBoxLayout *horizontalLayout_9;
-    QSpacerItem *horizontalSpacer_9;
-    QLabel *label_9;
-    QLineEdit *lineEdit_4;
-    QPushButton *Btn_Findpass;
-    QSpacerItem *horizontalSpacer_10;
+    QWidget *widget1;
     QHBoxLayout *horizontalLayout_10;
     QSpacerItem *horizontalSpacer_11;
     QCheckBox *CB_Keeppass_2;
     QCheckBox *CB_Showpass_2;
     QSpacerItem *horizontalSpacer_12;
-    QHBoxLayout *horizontalLayout_6;
-    QHBoxLayout *horizontalLayout_7;
-    QLabel *label_6;
-    QPushButton *Btn_Login_2;
-    QLabel *label_7;
-    QPushButton *Btn_Setting;
+    QWidget *widget2;
+    QHBoxLayout *horizontalLayout_9;
+    QLabel *label_9;
+    QLineEdit *lineEdit_Pass;
+    QPushButton *Btn_Findpass;
     QWidget *page_2;
-    QVBoxLayout *verticalLayout_3;
+    QPushButton *Btn_Signup;
+    QPushButton *Btn_return;
+    QPushButton *Btn_Setting_2;
+    QPushButton *Btn_quit_2;
+    QWidget *widget3;
     QHBoxLayout *horizontalLayout_4;
-    QSpacerItem *horizontalSpacer_4;
     QLabel *label_2;
     QLineEdit *LE_Signup_name;
-    QSpacerItem *horizontalSpacer_3;
+    QWidget *widget4;
     QHBoxLayout *horizontalLayout_3;
-    QSpacerItem *horizontalSpacer_5;
     QLabel *label_3;
     QLineEdit *LE_Signup_pass;
-    QSpacerItem *horizontalSpacer_6;
+    QWidget *widget5;
     QHBoxLayout *horizontalLayout;
-    QSpacerItem *horizontalSpacer;
     QLabel *label_14;
     QLineEdit *LE_Signup_pass_double;
-    QSpacerItem *horizontalSpacer_2;
-    QHBoxLayout *horizontalLayout_2;
-    QHBoxLayout *horizontalLayout_5;
-    QPushButton *Btn_return;
-    QPushButton *Btn_Signup;
-    QLabel *label_5;
-    QPushButton *Btn_Setting_2;
     QWidget *page_3;
-    QVBoxLayout *verticalLayout_5;
+    QWidget *widget6;
     QHBoxLayout *horizontalLayout_13;
-    QSpacerItem *horizontalSpacer_13;
     QLabel *label_12;
-    QLineEdit *lineEdit_5;
-    QSpacerItem *horizontalSpacer_14;
-    QHBoxLayout *horizontalLayout_14;
-    QSpacerItem *horizontalSpacer_15;
-    QLabel *label_13;
-    QLineEdit *lineEdit_6;
-    QSpacerItem *horizontalSpacer_16;
-    QHBoxLayout *horizontalLayout_15;
-    QSpacerItem *horizontalSpacer_17;
-    QSpacerItem *horizontalSpacer_18;
-    QHBoxLayout *horizontalLayout_11;
-    QHBoxLayout *horizontalLayout_12;
-    QPushButton *Btn_Setting_return;
-    QLabel *label_11;
+    QLineEdit *lineEdit_IP;
     QPushButton *Btn_Setting_OK;
-    QLabel *label_4;
+    QPushButton *Btn_Setting_return;
+    QPushButton *Btn_quit_3;
+    QWidget *widget7;
+    QHBoxLayout *horizontalLayout_14;
+    QLabel *label_13;
+    QLineEdit *lineEdit_Port;
 
     void setupUi(QDialog *Dialog_LoginClass)
     {
@@ -129,7 +109,6 @@ public:
         font.setFamily(QString::fromUtf8("Bahnschrift SemiBold"));
         font.setPointSize(48);
         font.setBold(true);
-        font.setWeight(75);
         label->setFont(font);
         label->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 170, 255);"));
         label->setAlignment(Qt::AlignCenter);
@@ -139,98 +118,80 @@ public:
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(0);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setContentsMargins(-1, 10, -1, -1);
+        verticalLayout->setContentsMargins(-1, 0, -1, -1);
         stackedWidget = new QStackedWidget(Dialog_LoginClass);
         stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
         page = new QWidget();
         page->setObjectName(QString::fromUtf8("page"));
-        verticalLayout_4 = new QVBoxLayout(page);
-        verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_8 = new QHBoxLayout();
+        Btn_Login = new QPushButton(page);
+        Btn_Login->setObjectName(QString::fromUtf8("Btn_Login"));
+        Btn_Login->setGeometry(QRect(90, 150, 410, 30));
+        Btn_Login->setMinimumSize(QSize(410, 30));
+        Btn_Login->setMaximumSize(QSize(410, 16777215));
+        Btn_Setting = new QPushButton(page);
+        Btn_Setting->setObjectName(QString::fromUtf8("Btn_Setting"));
+        Btn_Setting->setGeometry(QRect(520, 190, 70, 25));
+        Btn_Setting->setMinimumSize(QSize(0, 0));
+        Btn_Setting->setMaximumSize(QSize(80, 16777215));
+        Btn_quit = new QPushButton(page);
+        Btn_quit->setObjectName(QString::fromUtf8("Btn_quit"));
+        Btn_quit->setGeometry(QRect(10, 190, 70, 25));
+        Btn_quit->setMinimumSize(QSize(0, 0));
+        Btn_quit->setMaximumSize(QSize(80, 16777215));
+        widget = new QWidget(page);
+        widget->setObjectName(QString::fromUtf8("widget"));
+        widget->setGeometry(QRect(90, 20, 491, 25));
+        horizontalLayout_8 = new QHBoxLayout(widget);
         horizontalLayout_8->setSpacing(6);
+        horizontalLayout_8->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
-        horizontalSpacer_7 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_8->addItem(horizontalSpacer_7);
-
-        label_8 = new QLabel(page);
+        horizontalLayout_8->setContentsMargins(0, 0, 0, 0);
+        label_8 = new QLabel(widget);
         label_8->setObjectName(QString::fromUtf8("label_8"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
+        label_8->setSizePolicy(sizePolicy);
         label_8->setMinimumSize(QSize(55, 0));
         label_8->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_8->addWidget(label_8);
 
-        lineEdit_3 = new QLineEdit(page);
-        lineEdit_3->setObjectName(QString::fromUtf8("lineEdit_3"));
-        lineEdit_3->setMinimumSize(QSize(250, 0));
+        lineEdit_User = new QLineEdit(widget);
+        lineEdit_User->setObjectName(QString::fromUtf8("lineEdit_User"));
+        lineEdit_User->setMinimumSize(QSize(250, 0));
 
-        horizontalLayout_8->addWidget(lineEdit_3);
+        horizontalLayout_8->addWidget(lineEdit_User);
 
-        Btn_ToSignup = new QPushButton(page);
+        Btn_ToSignup = new QPushButton(widget);
         Btn_ToSignup->setObjectName(QString::fromUtf8("Btn_ToSignup"));
 
         horizontalLayout_8->addWidget(Btn_ToSignup);
 
-        horizontalSpacer_8 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_8->addItem(horizontalSpacer_8);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_8);
-
-        horizontalLayout_9 = new QHBoxLayout();
-        horizontalLayout_9->setSpacing(6);
-        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
-        horizontalSpacer_9 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_9->addItem(horizontalSpacer_9);
-
-        label_9 = new QLabel(page);
-        label_9->setObjectName(QString::fromUtf8("label_9"));
-        label_9->setMinimumSize(QSize(55, 0));
-        label_9->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        horizontalLayout_9->addWidget(label_9);
-
-        lineEdit_4 = new QLineEdit(page);
-        lineEdit_4->setObjectName(QString::fromUtf8("lineEdit_4"));
-        lineEdit_4->setMinimumSize(QSize(250, 0));
-
-        horizontalLayout_9->addWidget(lineEdit_4);
-
-        Btn_Findpass = new QPushButton(page);
-        Btn_Findpass->setObjectName(QString::fromUtf8("Btn_Findpass"));
-        QFont font1;
-        font1.setFamily(QString::fromUtf8("Agency FB"));
-        font1.setStrikeOut(true);
-        Btn_Findpass->setFont(font1);
-
-        horizontalLayout_9->addWidget(Btn_Findpass);
-
-        horizontalSpacer_10 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_9->addItem(horizontalSpacer_10);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_9);
-
-        horizontalLayout_10 = new QHBoxLayout();
+        widget1 = new QWidget(page);
+        widget1->setObjectName(QString::fromUtf8("widget1"));
+        widget1->setGeometry(QRect(140, 100, 318, 23));
+        horizontalLayout_10 = new QHBoxLayout(widget1);
         horizontalLayout_10->setSpacing(30);
+        horizontalLayout_10->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        horizontalLayout_10->setContentsMargins(0, 0, 0, 0);
         horizontalSpacer_11 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_10->addItem(horizontalSpacer_11);
 
-        CB_Keeppass_2 = new QCheckBox(page);
+        CB_Keeppass_2 = new QCheckBox(widget1);
         CB_Keeppass_2->setObjectName(QString::fromUtf8("CB_Keeppass_2"));
+        QFont font1;
+        font1.setStrikeOut(true);
+        CB_Keeppass_2->setFont(font1);
 
         horizontalLayout_10->addWidget(CB_Keeppass_2);
 
-        CB_Showpass_2 = new QCheckBox(page);
+        CB_Showpass_2 = new QCheckBox(widget1);
         CB_Showpass_2->setObjectName(QString::fromUtf8("CB_Showpass_2"));
+        CB_Showpass_2->setFont(font1);
 
         horizontalLayout_10->addWidget(CB_Showpass_2);
 
@@ -238,282 +199,193 @@ public:
 
         horizontalLayout_10->addItem(horizontalSpacer_12);
 
+        widget2 = new QWidget(page);
+        widget2->setObjectName(QString::fromUtf8("widget2"));
+        widget2->setGeometry(QRect(90, 60, 491, 25));
+        horizontalLayout_9 = new QHBoxLayout(widget2);
+        horizontalLayout_9->setSpacing(6);
+        horizontalLayout_9->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        horizontalLayout_9->setContentsMargins(0, 0, 0, 0);
+        label_9 = new QLabel(widget2);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+        sizePolicy.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
+        label_9->setSizePolicy(sizePolicy);
+        label_9->setMinimumSize(QSize(55, 0));
+        label_9->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
-        verticalLayout_4->addLayout(horizontalLayout_10);
+        horizontalLayout_9->addWidget(label_9);
 
-        horizontalLayout_6 = new QHBoxLayout();
-        horizontalLayout_6->setSpacing(6);
-        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
-        horizontalLayout_7 = new QHBoxLayout();
-        horizontalLayout_7->setSpacing(6);
-        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
-        label_6 = new QLabel(page);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
+        lineEdit_Pass = new QLineEdit(widget2);
+        lineEdit_Pass->setObjectName(QString::fromUtf8("lineEdit_Pass"));
+        lineEdit_Pass->setMinimumSize(QSize(250, 0));
 
-        horizontalLayout_7->addWidget(label_6);
+        horizontalLayout_9->addWidget(lineEdit_Pass);
 
-        Btn_Login_2 = new QPushButton(page);
-        Btn_Login_2->setObjectName(QString::fromUtf8("Btn_Login_2"));
-        Btn_Login_2->setMinimumSize(QSize(150, 30));
+        Btn_Findpass = new QPushButton(widget2);
+        Btn_Findpass->setObjectName(QString::fromUtf8("Btn_Findpass"));
+        QFont font2;
+        font2.setFamily(QString::fromUtf8("Agency FB"));
+        font2.setStrikeOut(true);
+        Btn_Findpass->setFont(font2);
 
-        horizontalLayout_7->addWidget(Btn_Login_2);
-
-        label_7 = new QLabel(page);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
-
-        horizontalLayout_7->addWidget(label_7);
-
-        Btn_Setting = new QPushButton(page);
-        Btn_Setting->setObjectName(QString::fromUtf8("Btn_Setting"));
-        Btn_Setting->setMinimumSize(QSize(0, 0));
-
-        horizontalLayout_7->addWidget(Btn_Setting);
-
-        horizontalLayout_7->setStretch(0, 1);
-        horizontalLayout_7->setStretch(1, 3);
-        horizontalLayout_7->setStretch(3, 1);
-
-        horizontalLayout_6->addLayout(horizontalLayout_7);
-
-
-        verticalLayout_4->addLayout(horizontalLayout_6);
+        horizontalLayout_9->addWidget(Btn_Findpass);
 
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
         page_2->setObjectName(QString::fromUtf8("page_2"));
-        verticalLayout_3 = new QVBoxLayout(page_2);
-        verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        verticalLayout_3->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_4 = new QHBoxLayout();
+        Btn_Signup = new QPushButton(page_2);
+        Btn_Signup->setObjectName(QString::fromUtf8("Btn_Signup"));
+        Btn_Signup->setGeometry(QRect(300, 150, 200, 30));
+        Btn_Signup->setMinimumSize(QSize(0, 30));
+        Btn_Signup->setMaximumSize(QSize(400, 16777215));
+        Btn_return = new QPushButton(page_2);
+        Btn_return->setObjectName(QString::fromUtf8("Btn_return"));
+        Btn_return->setGeometry(QRect(90, 150, 200, 30));
+        Btn_return->setMaximumSize(QSize(400, 16777215));
+        Btn_Setting_2 = new QPushButton(page_2);
+        Btn_Setting_2->setObjectName(QString::fromUtf8("Btn_Setting_2"));
+        Btn_Setting_2->setGeometry(QRect(520, 190, 70, 25));
+        Btn_Setting_2->setMinimumSize(QSize(0, 0));
+        Btn_Setting_2->setMaximumSize(QSize(80, 16777215));
+        Btn_quit_2 = new QPushButton(page_2);
+        Btn_quit_2->setObjectName(QString::fromUtf8("Btn_quit_2"));
+        Btn_quit_2->setGeometry(QRect(10, 190, 70, 25));
+        Btn_quit_2->setMinimumSize(QSize(0, 0));
+        Btn_quit_2->setMaximumSize(QSize(80, 16777215));
+        widget3 = new QWidget(page_2);
+        widget3->setObjectName(QString::fromUtf8("widget3"));
+        widget3->setGeometry(QRect(90, 20, 405, 25));
+        horizontalLayout_4 = new QHBoxLayout(widget3);
         horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
-        horizontalSpacer_4 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_4->addItem(horizontalSpacer_4);
-
-        label_2 = new QLabel(page_2);
+        horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
+        label_2 = new QLabel(widget3);
         label_2->setObjectName(QString::fromUtf8("label_2"));
+        sizePolicy.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
+        label_2->setSizePolicy(sizePolicy);
         label_2->setMinimumSize(QSize(55, 0));
         label_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_4->addWidget(label_2);
 
-        LE_Signup_name = new QLineEdit(page_2);
+        LE_Signup_name = new QLineEdit(widget3);
         LE_Signup_name->setObjectName(QString::fromUtf8("LE_Signup_name"));
         LE_Signup_name->setMinimumSize(QSize(250, 0));
 
         horizontalLayout_4->addWidget(LE_Signup_name);
 
-        horizontalSpacer_3 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_4->addItem(horizontalSpacer_3);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_4);
-
-        horizontalLayout_3 = new QHBoxLayout();
+        widget4 = new QWidget(page_2);
+        widget4->setObjectName(QString::fromUtf8("widget4"));
+        widget4->setGeometry(QRect(90, 60, 405, 25));
+        horizontalLayout_3 = new QHBoxLayout(widget4);
         horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
-        horizontalSpacer_5 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_3->addItem(horizontalSpacer_5);
-
-        label_3 = new QLabel(page_2);
+        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
+        label_3 = new QLabel(widget4);
         label_3->setObjectName(QString::fromUtf8("label_3"));
+        sizePolicy.setHeightForWidth(label_3->sizePolicy().hasHeightForWidth());
+        label_3->setSizePolicy(sizePolicy);
         label_3->setMinimumSize(QSize(55, 0));
         label_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_3->addWidget(label_3);
 
-        LE_Signup_pass = new QLineEdit(page_2);
+        LE_Signup_pass = new QLineEdit(widget4);
         LE_Signup_pass->setObjectName(QString::fromUtf8("LE_Signup_pass"));
         LE_Signup_pass->setMinimumSize(QSize(250, 0));
 
         horizontalLayout_3->addWidget(LE_Signup_pass);
 
-        horizontalSpacer_6 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_3->addItem(horizontalSpacer_6);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_3);
-
-        horizontalLayout = new QHBoxLayout();
+        widget5 = new QWidget(page_2);
+        widget5->setObjectName(QString::fromUtf8("widget5"));
+        widget5->setGeometry(QRect(90, 100, 405, 25));
+        horizontalLayout = new QHBoxLayout(widget5);
         horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout->addItem(horizontalSpacer);
-
-        label_14 = new QLabel(page_2);
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
+        label_14 = new QLabel(widget5);
         label_14->setObjectName(QString::fromUtf8("label_14"));
+        sizePolicy.setHeightForWidth(label_14->sizePolicy().hasHeightForWidth());
+        label_14->setSizePolicy(sizePolicy);
         label_14->setMinimumSize(QSize(55, 0));
 
         horizontalLayout->addWidget(label_14);
 
-        LE_Signup_pass_double = new QLineEdit(page_2);
+        LE_Signup_pass_double = new QLineEdit(widget5);
         LE_Signup_pass_double->setObjectName(QString::fromUtf8("LE_Signup_pass_double"));
         LE_Signup_pass_double->setMinimumSize(QSize(250, 0));
 
         horizontalLayout->addWidget(LE_Signup_pass_double);
 
-        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout->addItem(horizontalSpacer_2);
-
-
-        verticalLayout_3->addLayout(horizontalLayout);
-
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-        horizontalLayout_5 = new QHBoxLayout();
-        horizontalLayout_5->setSpacing(6);
-        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
-        Btn_return = new QPushButton(page_2);
-        Btn_return->setObjectName(QString::fromUtf8("Btn_return"));
-
-        horizontalLayout_5->addWidget(Btn_return);
-
-        Btn_Signup = new QPushButton(page_2);
-        Btn_Signup->setObjectName(QString::fromUtf8("Btn_Signup"));
-        Btn_Signup->setMinimumSize(QSize(150, 30));
-
-        horizontalLayout_5->addWidget(Btn_Signup);
-
-        label_5 = new QLabel(page_2);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
-
-        horizontalLayout_5->addWidget(label_5);
-
-        Btn_Setting_2 = new QPushButton(page_2);
-        Btn_Setting_2->setObjectName(QString::fromUtf8("Btn_Setting_2"));
-        Btn_Setting_2->setMinimumSize(QSize(0, 0));
-
-        horizontalLayout_5->addWidget(Btn_Setting_2);
-
-        horizontalLayout_5->setStretch(1, 3);
-        horizontalLayout_5->setStretch(3, 1);
-
-        horizontalLayout_2->addLayout(horizontalLayout_5);
-
-
-        verticalLayout_3->addLayout(horizontalLayout_2);
-
         stackedWidget->addWidget(page_2);
         page_3 = new QWidget();
         page_3->setObjectName(QString::fromUtf8("page_3"));
-        verticalLayout_5 = new QVBoxLayout(page_3);
-        verticalLayout_5->setSpacing(6);
-        verticalLayout_5->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
-        verticalLayout_5->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_13 = new QHBoxLayout();
+        widget6 = new QWidget(page_3);
+        widget6->setObjectName(QString::fromUtf8("widget6"));
+        widget6->setGeometry(QRect(90, 20, 405, 25));
+        horizontalLayout_13 = new QHBoxLayout(widget6);
         horizontalLayout_13->setSpacing(6);
+        horizontalLayout_13->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
-        horizontalSpacer_13 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_13->addItem(horizontalSpacer_13);
-
-        label_12 = new QLabel(page_3);
+        horizontalLayout_13->setSizeConstraint(QLayout::SetDefaultConstraint);
+        horizontalLayout_13->setContentsMargins(0, 0, 0, 0);
+        label_12 = new QLabel(widget6);
         label_12->setObjectName(QString::fromUtf8("label_12"));
+        sizePolicy.setHeightForWidth(label_12->sizePolicy().hasHeightForWidth());
+        label_12->setSizePolicy(sizePolicy);
         label_12->setMinimumSize(QSize(55, 0));
         label_12->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_13->addWidget(label_12);
 
-        lineEdit_5 = new QLineEdit(page_3);
-        lineEdit_5->setObjectName(QString::fromUtf8("lineEdit_5"));
-        lineEdit_5->setMinimumSize(QSize(250, 0));
+        lineEdit_IP = new QLineEdit(widget6);
+        lineEdit_IP->setObjectName(QString::fromUtf8("lineEdit_IP"));
+        lineEdit_IP->setMinimumSize(QSize(250, 0));
 
-        horizontalLayout_13->addWidget(lineEdit_5);
+        horizontalLayout_13->addWidget(lineEdit_IP);
 
-        horizontalSpacer_14 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_13->addItem(horizontalSpacer_14);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_13);
-
-        horizontalLayout_14 = new QHBoxLayout();
+        Btn_Setting_OK = new QPushButton(page_3);
+        Btn_Setting_OK->setObjectName(QString::fromUtf8("Btn_Setting_OK"));
+        Btn_Setting_OK->setGeometry(QRect(300, 150, 200, 30));
+        Btn_Setting_OK->setMinimumSize(QSize(0, 0));
+        Btn_Setting_OK->setMaximumSize(QSize(410, 30));
+        Btn_Setting_return = new QPushButton(page_3);
+        Btn_Setting_return->setObjectName(QString::fromUtf8("Btn_Setting_return"));
+        Btn_Setting_return->setGeometry(QRect(90, 150, 200, 30));
+        Btn_Setting_return->setMinimumSize(QSize(0, 0));
+        Btn_Setting_return->setMaximumSize(QSize(400, 16777215));
+        Btn_quit_3 = new QPushButton(page_3);
+        Btn_quit_3->setObjectName(QString::fromUtf8("Btn_quit_3"));
+        Btn_quit_3->setGeometry(QRect(10, 190, 70, 25));
+        Btn_quit_3->setMinimumSize(QSize(0, 0));
+        Btn_quit_3->setMaximumSize(QSize(80, 16777215));
+        widget7 = new QWidget(page_3);
+        widget7->setObjectName(QString::fromUtf8("widget7"));
+        widget7->setGeometry(QRect(90, 60, 405, 25));
+        horizontalLayout_14 = new QHBoxLayout(widget7);
         horizontalLayout_14->setSpacing(6);
+        horizontalLayout_14->setContentsMargins(11, 11, 11, 11);
         horizontalLayout_14->setObjectName(QString::fromUtf8("horizontalLayout_14"));
-        horizontalSpacer_15 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_14->addItem(horizontalSpacer_15);
-
-        label_13 = new QLabel(page_3);
+        horizontalLayout_14->setSizeConstraint(QLayout::SetDefaultConstraint);
+        horizontalLayout_14->setContentsMargins(0, 0, 0, 0);
+        label_13 = new QLabel(widget7);
         label_13->setObjectName(QString::fromUtf8("label_13"));
+        sizePolicy.setHeightForWidth(label_13->sizePolicy().hasHeightForWidth());
+        label_13->setSizePolicy(sizePolicy);
         label_13->setMinimumSize(QSize(55, 0));
         label_13->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         horizontalLayout_14->addWidget(label_13);
 
-        lineEdit_6 = new QLineEdit(page_3);
-        lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
-        lineEdit_6->setMinimumSize(QSize(250, 0));
+        lineEdit_Port = new QLineEdit(widget7);
+        lineEdit_Port->setObjectName(QString::fromUtf8("lineEdit_Port"));
+        lineEdit_Port->setMinimumSize(QSize(250, 0));
 
-        horizontalLayout_14->addWidget(lineEdit_6);
-
-        horizontalSpacer_16 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_14->addItem(horizontalSpacer_16);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_14);
-
-        horizontalLayout_15 = new QHBoxLayout();
-        horizontalLayout_15->setSpacing(30);
-        horizontalLayout_15->setObjectName(QString::fromUtf8("horizontalLayout_15"));
-        horizontalSpacer_17 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_15->addItem(horizontalSpacer_17);
-
-        horizontalSpacer_18 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        horizontalLayout_15->addItem(horizontalSpacer_18);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_15);
-
-        horizontalLayout_11 = new QHBoxLayout();
-        horizontalLayout_11->setSpacing(6);
-        horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
-        horizontalLayout_12 = new QHBoxLayout();
-        horizontalLayout_12->setSpacing(6);
-        horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
-        Btn_Setting_return = new QPushButton(page_3);
-        Btn_Setting_return->setObjectName(QString::fromUtf8("Btn_Setting_return"));
-        Btn_Setting_return->setMinimumSize(QSize(0, 0));
-
-        horizontalLayout_12->addWidget(Btn_Setting_return);
-
-        label_11 = new QLabel(page_3);
-        label_11->setObjectName(QString::fromUtf8("label_11"));
-
-        horizontalLayout_12->addWidget(label_11);
-
-        Btn_Setting_OK = new QPushButton(page_3);
-        Btn_Setting_OK->setObjectName(QString::fromUtf8("Btn_Setting_OK"));
-        Btn_Setting_OK->setMinimumSize(QSize(150, 30));
-
-        horizontalLayout_12->addWidget(Btn_Setting_OK);
-
-        label_4 = new QLabel(page_3);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
-
-        horizontalLayout_12->addWidget(label_4);
-
-        horizontalLayout_12->setStretch(0, 1);
-        horizontalLayout_12->setStretch(2, 3);
-        horizontalLayout_12->setStretch(3, 1);
-
-        horizontalLayout_11->addLayout(horizontalLayout_12);
-
-
-        verticalLayout_5->addLayout(horizontalLayout_11);
+        horizontalLayout_14->addWidget(lineEdit_Port);
 
         stackedWidget->addWidget(page_3);
 
@@ -537,29 +409,29 @@ public:
     {
         Dialog_LoginClass->setWindowTitle(QCoreApplication::translate("Dialog_LoginClass", "Dialog_Login", nullptr));
         label->setText(QCoreApplication::translate("Dialog_LoginClass", "ChatRoom", nullptr));
+        Btn_Login->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\231\273\345\205\245", nullptr));
+        Btn_Setting->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\266\262\350\267\257\350\250\255\345\256\232", nullptr));
+        Btn_quit->setText(QCoreApplication::translate("Dialog_LoginClass", "\351\227\234\351\226\211", nullptr));
         label_8->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\224\250\346\210\266\345\220\215\347\250\261 :", nullptr));
         Btn_ToSignup->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\273\345\206\212\345\270\263\350\231\237", nullptr));
-        label_9->setText(QCoreApplication::translate("Dialog_LoginClass", "\345\257\206\347\242\274 :", nullptr));
-        Btn_Findpass->setText(QCoreApplication::translate("Dialog_LoginClass", "\346\211\276\345\233\236\345\257\206\347\242\274", nullptr));
         CB_Keeppass_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\230\344\275\217\345\257\206\347\242\274", nullptr));
         CB_Showpass_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\351\241\257\347\244\272\345\257\206\347\242\274", nullptr));
-        label_6->setText(QString());
-        Btn_Login_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\231\273\345\205\245", nullptr));
-        label_7->setText(QString());
-        Btn_Setting->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\266\262\350\267\257\350\250\255\345\256\232", nullptr));
+        label_9->setText(QCoreApplication::translate("Dialog_LoginClass", "\345\257\206\347\242\274 :", nullptr));
+        Btn_Findpass->setText(QCoreApplication::translate("Dialog_LoginClass", "\346\211\276\345\233\236\345\257\206\347\242\274", nullptr));
+        Btn_Signup->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\273\345\206\212", nullptr));
+        Btn_return->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\277\224\345\233\236", nullptr));
+        Btn_Setting_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\266\262\350\267\257\350\250\255\345\256\232", nullptr));
+        Btn_quit_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\351\227\234\351\226\211", nullptr));
         label_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\224\250\346\210\266\345\220\215\347\250\261 :", nullptr));
         label_3->setText(QCoreApplication::translate("Dialog_LoginClass", "\345\257\206\347\242\274 :", nullptr));
         label_14->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\242\272\350\252\215\345\257\206\347\242\274 :", nullptr));
-        Btn_return->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\277\224\345\233\236", nullptr));
-        Btn_Signup->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\273\345\206\212", nullptr));
-        label_5->setText(QString());
-        Btn_Setting_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\266\262\350\267\257\350\250\255\345\256\232", nullptr));
         label_12->setText(QCoreApplication::translate("Dialog_LoginClass", "\344\274\272\346\234\215\345\231\250IP :", nullptr));
-        label_13->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\253\257\345\217\243 :", nullptr));
-        Btn_Setting_return->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\277\224\345\233\236", nullptr));
-        label_11->setText(QString());
+        lineEdit_IP->setInputMask(QCoreApplication::translate("Dialog_LoginClass", "000.000.000.000", nullptr));
         Btn_Setting_OK->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\242\272\350\252\215", nullptr));
-        label_4->setText(QString());
+        Btn_Setting_return->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\277\224\345\233\236", nullptr));
+        Btn_quit_3->setText(QCoreApplication::translate("Dialog_LoginClass", "\351\227\234\351\226\211", nullptr));
+        label_13->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\253\257\345\217\243 :", nullptr));
+        lineEdit_Port->setInputMask(QCoreApplication::translate("Dialog_LoginClass", "00000", nullptr));
     } // retranslateUi
 
 };

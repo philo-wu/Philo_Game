@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_TCP_Client_t {
-    QByteArrayData data[6];
-    char stringdata0[79];
+    QByteArrayData data[8];
+    char stringdata0[105];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,16 +33,18 @@ struct qt_meta_stringdata_TCP_Client_t {
 static const qt_meta_stringdata_TCP_Client_t qt_meta_stringdata_TCP_Client = {
     {
 QT_MOC_LITERAL(0, 0, 10), // "TCP_Client"
-QT_MOC_LITERAL(1, 11, 16), // "slot_readMessage"
+QT_MOC_LITERAL(1, 11, 16), // "Server_to_Client"
 QT_MOC_LITERAL(2, 28, 0), // ""
-QT_MOC_LITERAL(3, 29, 15), // "slot_btnSendMsg"
-QT_MOC_LITERAL(4, 45, 10), // "slot_login"
-QT_MOC_LITERAL(5, 56, 22) // "on_Btn_Signout_clicked"
+QT_MOC_LITERAL(3, 29, 16), // "Client_to_Server"
+QT_MOC_LITERAL(4, 46, 7), // "Command"
+QT_MOC_LITERAL(5, 54, 7), // "command"
+QT_MOC_LITERAL(6, 62, 22), // "on_Btn_Signout_clicked"
+QT_MOC_LITERAL(7, 85, 19) // "on_Btn_Send_clicked"
 
     },
-    "TCP_Client\0slot_readMessage\0\0"
-    "slot_btnSendMsg\0slot_login\0"
-    "on_Btn_Signout_clicked"
+    "TCP_Client\0Server_to_Client\0\0"
+    "Client_to_Server\0Command\0command\0"
+    "on_Btn_Signout_clicked\0on_Btn_Send_clicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,13 +63,13 @@ static const uint qt_meta_data_TCP_Client[] = {
 
  // slots: name, argc, parameters, tag, flags
        1,    0,   34,    2, 0x08 /* Private */,
-       3,    0,   35,    2, 0x08 /* Private */,
-       4,    0,   36,    2, 0x08 /* Private */,
-       5,    0,   37,    2, 0x08 /* Private */,
+       3,    1,   35,    2, 0x08 /* Private */,
+       6,    0,   38,    2, 0x08 /* Private */,
+       7,    0,   39,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 4,    5,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -80,14 +82,13 @@ void TCP_Client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         auto *_t = static_cast<TCP_Client *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->slot_readMessage(); break;
-        case 1: _t->slot_btnSendMsg(); break;
-        case 2: _t->slot_login(); break;
-        case 3: _t->on_Btn_Signout_clicked(); break;
+        case 0: _t->Server_to_Client(); break;
+        case 1: _t->Client_to_Server((*reinterpret_cast< Command(*)>(_a[1]))); break;
+        case 2: _t->on_Btn_Signout_clicked(); break;
+        case 3: _t->on_Btn_Send_clicked(); break;
         default: ;
         }
     }
-    Q_UNUSED(_a);
 }
 
 QT_INIT_METAOBJECT const QMetaObject TCP_Client::staticMetaObject = { {

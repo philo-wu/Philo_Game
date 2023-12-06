@@ -30,18 +30,56 @@ void TCP_Server::slot_newConnection()
     QTcpSocket* socket = m_server->nextPendingConnection();
     m_sockets.push_back(socket);
 
-    connect(socket, SIGNAL(readyRead()), this, SLOT(slot_readMessage()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(Client_to_Server()));
 }
 
 // 每一个socket处理收到消息的函数
-void TCP_Server::slot_readMessage()
+void TCP_Server::Client_to_Server()
 {
     QTcpSocket* socket = (QTcpSocket*)QObject::sender();  // 获得是哪个socket收到了消息
 
-    QString str = socket->readAll().data();
+    MyPacket Packet;
+    Packet.deserialize(socket->readAll());
+    //Command Command = Packet.getCommand();
+    //MassageData Data = Packet.massageData;
 
-    for (int i = 0; i < m_sockets.size(); i++)
-    {
-        m_sockets[i]->write(str.toStdString().data());
+
+
+    switch (Packet.getCommand()){
+    case MAIN_C_S_LOGIN :{
+        //TODO 驗證帳號密碼並回傳
+        MyPacket receivedPacket;
+        receivedPacket.setCommand(MAIN_S_C_LOGIN);
+        receivedPacket.massageData.m_User = Packet.massageData.m_User;
+        receivedPacket.massageData.m_Data = "";
+        receivedPacket.massageData.m_errorcode = 0;
+        receivedPacket.massageData.m_Time = QDateTime::currentDateTime();
+
+        QByteArray serializedPacket = receivedPacket.serialize();
+        socket->write(serializedPacket);
+    }
+        break;
+    case MAIN_C_S_ACTION:{
+        MyPacket receivedPacket;
+        receivedPacket.setCommand(MAIN_S_C_ACTION);
+        receivedPacket.massageData.m_User = Packet.massageData.m_User;
+        //QString str = +" < " + currentDateTimeString + " > : \n" + Packet.massageData.m_Data;
+        receivedPacket.massageData.m_Data = Packet.massageData.m_Data;
+        receivedPacket.massageData.m_errorcode = 0;
+        receivedPacket.massageData.m_Time = QDateTime::currentDateTime();
+
+        QByteArray serializedPacket = receivedPacket.serialize();
+        for (int i = 0; i < m_sockets.size(); i++)
+        {
+            m_sockets[i]->write(serializedPacket);
+        }
+    }
+        break;
+    default:
+        break;
     }
 }
+void TCP_Server::Server_to_Client(MyPacket packet)
+{
+
+} 

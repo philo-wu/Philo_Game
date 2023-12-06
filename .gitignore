@@ -32,3 +32,6 @@ debug/qt.natvis
 debug/Philo.vcxproj.FileListAbsolute.txt
 TCP_Server/Debug
 TCP_Client/Debug
+Common/x64
+Common/Release
+Common/Debug

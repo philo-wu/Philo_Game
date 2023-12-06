@@ -1,0 +1,429 @@
+<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" FontFamily="Segoe UI" FontSize="12">
+  <FlowDocument.Tag><![CDATA[{
+  "timestamp": "2023-12-05 14:52:49",
+  "files": {
+    "C:\\Users\\philo.wu\\Documents\\GitHub\\Philo_Snake\\Common\\Common.vcxproj": {
+      "before": "7Vldb9s2FO3zgP2DPQhCCicPsZw4zZxFVtHKaWDM+UCcj5cBBS1dx1olUaCoNNm6/75LkaIsR0pjZHW7IHkIYPKSvDw891xeau+XV6/st7dRaNwASwMa982tdsc0IPaoH8TXfTPj082e+db5+Sf7lNE/wePGAKYkC/k5YdfA0775PgtC3zRwlhh/zThPfrOs1JtBRNJ2FHiMpnTK2x6NLB9uIKQJMCtKJ2KYtd3pdE2c3TDsIYfokNEsMUZkAmHfVAu6NJ4G1xkjHB1MpTGa1/Uaw9gLMx/65gAm2fWXqyDubhcjcExlKie3sa1qo3BF/NmnIeFTyiInn8S29G9pgQ0Sj7rhX3HuDEIgKXzFPWX1PRyU6N3u7jwVO5zimyD3kGuPxm1J52xLM1QSFgmAVOZ3FdIehnRCwpKml67iyaWMMGdrt92xrXvNilW/w91nynxJOjHStoomZaGmO8wC3/m7Q/a2Oj3S25y82drb3Oltw+ZeD/zNvcmbaZfs/ur73d4/mqr5GDXNGaX8mESQJsQDx6VRRGPbqrYqUwwAn35OZcAXYaC30xHbedBETJP7UKKlIj5KKOOG2lHfXFu/dJWsnBI+2/jjSKuHmyRtJTztBHFPTcOqOwWMRj8QQtE3W2vrldjc+LK2Xni/0er3W3Ma0TIL0akMKehfFY7zuwScd0kSBl6uSQsRmncr6C5SyFcZBRNGWACpw1kGtnW/XQ0oHDynNEyBOzdbO9tlBBWtytidEUY8DmyMlhdxgKKNc1daG7FH0MvjMJaBraJeqwNuilH1nyF3NaMhIATXjEQnCQ+i4K/8KNXxNHZ/V+C1Kq8O9OfDVhT71cH2XLg6XE6gq8IsB1eS48Eth1jcM1GwON4vVZrEzJovlNvOp4bK4DGqHfhSkh83otC48QzwpmoupXKV5JD7hEnsPh4o5EwkzUHAFtPVXLZpZ2hW5K05rYXbIOXpOmaqpedpbeiUNaIeCTEfDQgnRf7Q6fFR0D4FqIV08AKVrlUaLhy5Er3A1AxTwajnB1QRZxVdE6F/RESZrIO2ajcnGMvdaQuSjYL4E1bGDCKIOQnVJWex9dtfFZv8UelyBQ7NXaGanJFXnhX4UkvzxXWXhUaUqFgnBXFeBEmePZk/boj1YRKEoDDDTHhFWIwJfCQedJz8fxerwPlGeVVG0/Fg5M7A+6Rop39qg1MGCaMepCllpe+pczU87m7vfxwcvL843P/onhyPT0YH+6/XG+w3RI1ZP5NeCqEQbzok9uAIiyXl0mKrNMdKamHftjidEoNxNhnfpQg4ls9xigWFbZVNeslDiAHfrmQdOJTLiwJVrd3YXTih15TvDyVA87elJ556QcX8qatVVr0L+1/u3D9ksSc2mrND7AL5ojZd26URG8acBXhN9Aqzomqu6dCDNK1k/Oqf2qCJG5Jlx/9zlh3EZBKCe3I0eHf+gYbi8VZhXdejQVG1L5zBFBi++uoHipoOPaiRshL6xm45gW2tgtE1Qr8YzcuxWRNqWX696JfSzBXoV+XG+LTzLrTnB1evF9368XSrTMwoMW6ovkmV36bkY3t7Vlz3661EWVDayOApZ655injw7ZzLr3XFkmq4vB+qz236cUY9wde/tOiPCc6/",
+      "after": "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"
+    }
+  }
+}]]></FlowDocument.Tag>
+  <Section Margin="0,24" TextAlignment="Center">
+    <Paragraph FontSize="24" FontWeight="Bold" Margin="12,0">
+      <LineBreak />
+      <Span Foreground="Gray">Qt Visual Studio Tools</Span>
+    </Paragraph>
+    <Paragraph FontSize="42" Margin="12,0" FontWeight="Bold">
+      <Span TextDecorations="Underline">Project Format Conversion</Span>
+    </Paragraph>
+    <Paragraph Margin="12,8" FontSize="18">
+      <Span>Report generated on 2023-12-05 14:52:49</Span>
+    </Paragraph>
+  </Section>
+  <Section>
+    <Paragraph FontSize="32" FontWeight="Bold" Margin="12,0">
+      <Span>Files</Span>
+    </Paragraph>
+    <Paragraph Margin="24,12,0,0">
+      <Span FontFamily="Consolas" FontSize="14" Background="WhiteSmoke"><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+      <LineBreak />
+      <Hyperlink NavigateUri="file://C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj?before">[Before]</Hyperlink>
+      <Hyperlink NavigateUri="file://C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj?after">[After]</Hyperlink>
+      <Hyperlink NavigateUri="file://C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj?diff&amp;before&amp;after">
+                        [Diff before/after]
+                    </Hyperlink>
+      <Hyperlink NavigateUri="file://C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj?diff&amp;before&amp;current">
+                        [Diff before/current]
+                    </Hyperlink>
+      <Hyperlink NavigateUri="file://C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj?diff&amp;after&amp;current">
+                        [Diff after/current]
+                    </Hyperlink>
+      <LineBreak />
+    </Paragraph>
+  </Section>
+  <Section>
+    <Paragraph FontSize="32" FontWeight="Bold" Margin="12,0">
+      <Span>Changes</Span>
+    </Paragraph>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Enabling multi-processor compilation]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[      <MultiProcessorCompilation>true</MultiProcessorCompilation>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Project format version]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Keyword>QtVS_v304</Keyword>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Fallback for QTMSBUILD environment variable]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Default Qt properties]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Import Project="$(QtMsBuild)\qt_defaults.props" Condition="Exists('$(QtMsBuild)\qt_defaults.props')" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt build settings]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Warn if Qt/MSBuild is not found]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') OR !Exists('$(QtMsBuild)\Qt.props')">]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  </Target>]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt property sheet]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[    <Import Project="$(QtMsBuild)\Qt.props" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+    <Paragraph FontSize="20" FontWeight="Bold" Margin="12">
+      <Span><![CDATA[🡺 Qt targets]]></Span>
+    </Paragraph>
+    <Table CellSpacing="0" BorderBrush="Gray" BorderThickness="0.5">
+      <Table.Columns>
+        <TableColumn />
+        <TableColumn />
+      </Table.Columns>
+      <TableRowGroup>
+        <TableRow Background="Orange">
+          <TableCell ColumnSpan="2" BorderThickness="0.5" BorderBrush="Gray">
+            <Paragraph Margin="10,5" FontWeight="Bold">
+              <Span><![CDATA[C:\Users\philo.wu\Documents\GitHub\Philo_Snake\Common\Common.vcxproj]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell ColumnSpan="2" Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="0.5" />
+        </TableRow>
+        <TableRow>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0" />
+          </TableCell>
+          <TableCell BorderThickness="0, 0, 0.5, 0" BorderBrush="Gray">
+            <Paragraph FontFamily="Consolas" Margin="4, 0">
+              <Span Background="LightGreen"><![CDATA[  <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />]]></Span>
+            </Paragraph>
+          </TableCell>
+        </TableRow>
+      </TableRowGroup>
+    </Table>
+  </Section>
+  <Section>
+    <Paragraph />
+  </Section>
+</FlowDocument>
+<!--ZMxdxFxaIhQYyRk52BUMa3sRGEuDpGKQvvXjmwqG9lo=-->
