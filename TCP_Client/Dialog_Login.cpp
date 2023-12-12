@@ -7,12 +7,11 @@ Dialog_Login::Dialog_Login(QTcpSocket* p_Socket,QWidget *parent):
 {
 	ui->setupUi(this);
 	m_socket = p_Socket;
-	//m_socket = new QTcpSocket(this);
 
 	Dialog_init();
 	Connect_init();
 
-	Load_Setting();
+	//Load_Setting();
 }
 
 Dialog_Login::~Dialog_Login()
@@ -21,7 +20,7 @@ Dialog_Login::~Dialog_Login()
 void Dialog_Login::Connect_init()
 {
 	// socket
-	connect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_client()));   // 告诉socket, 要用slot_readMessage()去处理接收的消息.
+	connect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client())); 
 
 	// Setting
 	connect(ui->Btn_Setting_2, SIGNAL(clicked()), this, SLOT(on_Btn_Setting_clicked()));
@@ -35,6 +34,13 @@ void Dialog_Login::Connect_init()
 }
 void Dialog_Login::Dialog_init()
 {
+	m_timer = new QTimer(this);
+	connect(m_timer, &QTimer::timeout, this, [=]() {
+		m_timer->stop();
+		logining_Dialog->cancel();
+		QMessageBox::information(nullptr, "連線失敗", "無法取得連線");
+		});
+
 	ui->stackedWidget->setCurrentIndex(PAGEINDEX_LOGIN);
 
 	// 限制lineEdit_IP
@@ -44,27 +50,37 @@ void Dialog_Login::Dialog_init()
 		+ "\\." + ipRange
 		+ "\\." + ipRange + "$");
 	ui->lineEdit_IP->setValidator(new QRegExpValidator(ipRegex, this));
+
+
 }
 void Dialog_Login::Load_Setting()
 {
+
 	QString appDir = QCoreApplication::applicationDirPath();
 	QString filePath = appDir + "/Setting.ini";
 
 	QSettings settings(filePath, QSettings::IniFormat);
 	Save_IP(settings.value("Server_IP", "127.0.0.1").toString(), settings.value("Server_Port", 19999).toInt());
-
+	ui->lineEdit_Account->setText(settings.value("Saving_Account", "").toString());
+	if (settings.value("Saving_Account", "").toString() != "")
+		ui->CB_Keeppass->setCheckState(Qt::Checked);
 	ui->lineEdit_IP->setText(m_Setting.m_IP);
 	ui->lineEdit_Port->setText(QString::number(m_Setting.m_Port));
 
-
 }
-void Dialog_Login::Save_Setting()
+void Dialog_Login::Save_Setting(QString Account)
 {
 	QString appDir = QCoreApplication::applicationDirPath();
 	QString filePath = appDir + "/Setting.ini";
 	QSettings settings(filePath, QSettings::IniFormat);
 	settings.setValue("Server_IP", ui->lineEdit_IP->text());
 	settings.setValue("Server_Port", ui->lineEdit_Port->text());
+
+	if (ui->CB_Keeppass->checkState() == Qt::Checked)
+		settings.setValue("Saving_Account", Account);
+	else
+		settings.setValue("Saving_Account", "");
+
 	Save_IP(ui->lineEdit_IP->text(),ui->lineEdit_Port->text().toInt());
 }
 void Dialog_Login::Save_IP(QString IP, int Port)
@@ -73,35 +89,43 @@ void Dialog_Login::Save_IP(QString IP, int Port)
 	m_Setting.m_Port = Port;
 }
 
-
 void Dialog_Login::Client_to_Server(Command command)
 {
 	switch (command) {
 	case MAIN_C_S_LOGIN: {
-		Send_Login();
+		Send_Login(ui->lineEdit_Account->text(), ui->lineEdit_Pass->text());
+	}
+		break;
+	case MAIN_C_S_SINGUP: {
+		Send_SignUp(ui->LE_Signup_name->text(), ui->LE_Signup_pass->text());
 	}
 		break;
 	default:
 		break;
 	}
 }
-void Dialog_Login::Server_to_client()
+void Dialog_Login::Server_to_Client()
 {
-	if (0) {
-		close();
-		emit ToRoom();
-		return;
-	}
-	qDebug() << m_socket->bytesAvailable();
-
 	MyPacket Packet;
-	Packet.deserialize(m_socket->readAll());
+	QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
+	if (!receivedJsonDoc.isNull())
+		Packet.fromJsonObject(receivedJsonDoc.object());
+	else
+		return;
 
 	switch (Packet.getCommand()){
 	case MAIN_S_C_LOGIN:{
 		Receive_Login(Packet);
-	}
 		break;
+	}
+	case MAIN_S_C_SINGUP: {
+		Receive_SignUp(Packet);
+		break;
+	}
+	case MAIN_S_C_PAUSE: {
+		QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
+		break;
+	}
 	default:
 		break;
 	}
@@ -115,7 +139,32 @@ void Dialog_Login::on_Btn_ToSignup_clicked()
 }
 void Dialog_Login::on_Btn_Login_clicked()
 {
+	if (ui->lineEdit_Account->text() == "") {
+		QMessageBox::critical(nullptr, "登入失敗", "未輸入帳號");
+		return;
+	}
+	if (ui->lineEdit_Pass->text() == "") {
+		QMessageBox::critical(nullptr, "登入失敗", "未輸入密碼");
+		return;
+	}
 	Client_to_Server(MAIN_C_S_LOGIN);
+}
+void Dialog_Login::on_Btn_Signup_clicked()
+{
+	if (ui->LE_Signup_name->text() == "") {
+		QMessageBox::critical(nullptr, "創建失敗", "未輸入帳號");
+		return;
+	}
+	if (ui->LE_Signup_pass->text() == "" ||
+		ui->LE_Signup_pass_double->text() == "") {
+		QMessageBox::critical(nullptr, "創建失敗", "未輸入密碼");
+		return;
+	}
+	if (ui->LE_Signup_pass->text() != ui->LE_Signup_pass_double->text()) {
+		QMessageBox::critical(nullptr, "創建失敗", "兩次輸入密碼不相同");
+		return;
+	}
+	Client_to_Server(MAIN_C_S_SINGUP);
 }
 void Dialog_Login::on_Btn_Setting_clicked()
 {
@@ -125,6 +174,12 @@ void Dialog_Login::on_Btn_Setting_clicked()
 }
 void Dialog_Login::on_Btn_return_clicked()
 {
+	if (currentIndex == PAGEINDEX_SETTING)
+	{
+		ui->LE_Signup_name->setText("");
+		ui->LE_Signup_pass->setText("");
+		ui->LE_Signup_pass_double->setText("");
+	}
 	if (currentIndex == ui->stackedWidget->currentIndex())
 		currentIndex = PAGEINDEX_LOGIN;
 	ui->stackedWidget->setCurrentIndex(currentIndex);
@@ -140,34 +195,132 @@ void Dialog_Login::on_Btn_Setting_OK_clicked()
 }
 
 
+void Dialog_Login::Send_Login(QString Account, QString Pass)
+{
+
+	m_socket->connectToHost(m_Setting.m_IP, m_Setting.m_Port);
+	m_timer->start(5000);
+	logining_Dialog = new QProgressDialog("連線中...", "取消", 0, 0, this);
+	//logining_Dialog->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+	logining_Dialog->setWindowModality(Qt::WindowModal);
+	logining_Dialog->setMinimumDuration(0);
+
+	connect(logining_Dialog, &QProgressDialog::canceled, this, [=]() {
+		m_timer->stop();
+		logining_Dialog->cancel();
+		});
+
+	logining_Dialog->show();
+
+	MyPacket packet;
+	packet.setCommand(MAIN_C_S_LOGIN);
+	packet.massageData.m_Account = Account;
+	packet.massageData.m_Data["Pass"] = Pass;
+	packet.massageData.m_errorcode = Errorcode_OK;
+	packet.massageData.m_Time = QDateTime::currentDateTime();
+
+	QJsonDocument jsonDoc(packet.toJsonObject());
+	QByteArray jsonData = jsonDoc.toJson();
+	m_socket->write(jsonData);
+
+}
+void Dialog_Login::Send_SignUp(QString Account, QString Pass)
+{
+
+	m_socket->connectToHost(m_Setting.m_IP, m_Setting.m_Port);
+	MyPacket packet;
+	packet.setCommand(MAIN_C_S_SINGUP);
+	packet.massageData.m_Account = Account;
+	packet.massageData.m_Data["Pass"] = Pass;
+	packet.massageData.m_errorcode = Errorcode_OK;
+	packet.massageData.m_Time = QDateTime::currentDateTime();
+	// 將封包序列化成 QByteArray 以便發送
+	//QByteArray serializedPacket = packet.serialize();
+	//m_socket->write(serializedPacket);
+
+	QJsonDocument jsonDoc(packet.toJsonObject());
+	QByteArray jsonData = jsonDoc.toJson();
+	m_socket->write(jsonData);
+
+}
 
 void Dialog_Login::Receive_Login(MyPacket packet)
 {
-	// TODO 處理更複雜的登入失敗訊息
-	if (packet.massageData.m_errorcode == 0) {
-		m_Setting.m_User = packet.massageData.m_User;
+	switch (packet.massageData.m_errorcode)
+	{
+	case Errorcode_OK:
+	{
+		m_timer->stop();
+		logining_Dialog->cancel();
+
+		Local_User.m_Account = packet.massageData.m_Account;
 		m_Setting.m_LoginTime = packet.massageData.m_Time;
 		m_Setting.m_LoginSec = 0;
-		close();
+		Save_Setting(ui->lineEdit_Account->text());
+		disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client()));
 		emit ToRoom();
+
 	}
-	else
-	{	
-		QMessageBox::critical(nullptr, "Error", "登入失敗!");
+		break;
+	case Errorcode_ACCOUNT_NOTEXIST:
+	{
+		QMessageBox::critical(nullptr, "登入失敗", "帳號不存在");
+	}
+		break;
+	case Errorcode_PASSWORD_ERROR:
+	{
+		QMessageBox::critical(nullptr, "登入失敗", "密碼錯誤");
+	}
+		break;
+	case Errorcode_REPEAT_LOGIN:
+	{
+		QMessageBox::critical(nullptr, "登入失敗", "已經登入");
+	}
+		break;
+	default:
+		QMessageBox::critical(nullptr, "登入失敗", "登入失敗");
+		break;
 	}
 }
-
-void Dialog_Login::Send_Login()
+void Dialog_Login::Receive_SignUp(MyPacket packet)
 {
-	m_socket->connectToHost(m_Setting.m_IP, m_Setting.m_Port);
-	MyPacket packet;
-	packet.setCommand(MAIN_C_S_LOGIN);
-	packet.massageData.m_User = ui->lineEdit_User->text();
-	packet.massageData.m_Pass = ui->lineEdit_Pass->text();
-	packet.massageData.m_errorcode = 0;
-	packet.massageData.m_Time = QDateTime::currentDateTime();
-	// 將封包序列化成 QByteArray 以便發送
-	QByteArray serializedPacket = packet.serialize();
-	m_socket->write(serializedPacket);
+	switch (packet.massageData.m_errorcode)
+	{
+	case Errorcode_OK:
+	{
+		QMessageBox::information(nullptr, "創建成功", "帳號創造成功");
+		on_Btn_return_clicked();
+	}
+		break;
+	case Errorcode_ACCOUNT_EXIST:
+	{
+		QMessageBox::critical(nullptr, "創建失敗", "帳號已存在");
+	}
+		break;
+	default:
+		QMessageBox::critical(nullptr, "創建失敗", "創建失敗");
+		break;
+	}
+}
+
+void Dialog_Login::on_CB_Showpass_stateChanged(int arg1)
+{
+	switch (arg1) {
+	case Qt::Unchecked:
+		ui->lineEdit_Pass->setEchoMode(QLineEdit::Password);
+		break;
+	case Qt::PartiallyChecked:
+		ui->lineEdit_Pass->setEchoMode(QLineEdit::NoEcho);
+		break;
+	case Qt::Checked:
+		ui->lineEdit_Pass->setEchoMode(QLineEdit::NoEcho);
+		break;
+	default:
+		break;
+	}
+}
+void Dialog_Login::on_CB_Keeppass_stateChanged(int arg1)
+{
 
 }
+

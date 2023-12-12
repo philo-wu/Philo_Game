@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="User.h" />
+    <ClInclude Include="CSS_style.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="標頭檔案">
+      <UniqueIdentifier>{d4e9ef42-76b4-409b-86ed-8f532bbc207f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

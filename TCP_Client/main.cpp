@@ -7,8 +7,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    TCP_Client w;
 
+
+    TCP_Client w;
 
     return a.exec();
 }

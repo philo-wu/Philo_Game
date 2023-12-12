@@ -8,25 +8,13 @@ TCP_Client::TCP_Client(QWidget *parent):
     ui->setupUi(this);
     m_socket = new QTcpSocket(this);
 
-    QTimer* timer = new QTimer(this);
+    timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&TCP_Client::update));
+    ui->tableWidget_User->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    ui->tableWidget_User->setRowCount(0);
 
-    Dialog_Login* Dlg = new Dialog_Login(m_socket,this);
-    Dlg->setModal(true);
-    connect(Dlg, &Dialog_Login::ToRoom, [=]() {
-        this->show();
-        //m_socket = Dlg->m_socket;
-        m_Setting = Dlg->m_Setting;
-        ui->LE_Name->setText(m_Setting.m_User);
-        ui->LE_IP->setText(m_socket->localAddress().toString());
-        ui->LE_Port->setText(QString::number(m_socket->localPort()));
-        ui->LE_LoginTime->setText(m_Setting.m_LoginTime.toString("yyyy-MM-dd hh:mm:ss"));
-        ui->LE_LoginSec->setText(QString::number(m_Setting.m_LoginSec));
-        timer->start(1000);
-        });
-    Dlg->exec();
-    if (Dlg)
-        delete Dlg;
+    Diglog_Login();
+
     Connect_init();
 
 
@@ -45,33 +33,72 @@ void TCP_Client::update()
 
 void TCP_Client::Connect_init()
 {
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client())); 
 }
+void TCP_Client::Diglog_Login()
+{
+    Dialog_Login* Dlg = new Dialog_Login(m_socket);
+    disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client()));
+    //Dlg->setModal(true);
+    connect(Dlg, &Dialog_Login::ToRoom, [=]() {
+        this->show();
+        Dlg->hide();
+        m_Setting = Dlg->m_Setting;
+        Local_User = Dlg->Local_User;
+        ui->LE_Name->setText(Dlg->Local_User.m_Account);
+        ui->LE_IP->setText(m_socket->localAddress().toString());
+        ui->LE_Port->setText(QString::number(m_socket->localPort()));
+        ui->LE_LoginTime->setText(m_Setting.m_LoginTime.toString("yyyy-MM-dd hh:mm:ss"));
+        ui->LE_LoginSec->setText(QString::number(m_Setting.m_LoginSec));
+        ui->TB_Chat->clear();
+        connect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client()));
+        connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
+        timer->start(1000);
+        Client_to_Server(MAIN_C_S_LOGININIT);
+        });
+    this->close();
+    Dlg->show();
+    //if (Dlg)
+    //    delete Dlg;
+}
+
 
 void TCP_Client::Client_to_Server(Command command)
 {
 
     switch (command) {
-    case MAIN_C_S_ACTION: {
+    case MAIN_C_S_CHAT: {
         Send_Chat();
     }
-                       break;
+        break;
     default:
+    case MAIN_C_S_LOGININIT: {
+        Send_LoginInit();
+    }
         break;
     }
 }
 void TCP_Client::Server_to_Client()
 {
     MyPacket Packet;
-    Packet.deserialize(m_socket->readAll());
-    //Command receivedCommand = Packet.getCommand();
-    //MassageData receivedData = Packet.massageData;
+    QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
+    if (!receivedJsonDoc.isNull())
+        Packet.fromJsonObject(receivedJsonDoc.object());
+    else
+        return;
 
     switch (Packet.getCommand()) {
-    case MAIN_S_C_ACTION: {
+    case MAIN_S_C_CHAT: {
         Receive_Chat(Packet);
-    }
         break;
+    }
+    case MAIN_S_C_LOGININIT: {
+        Receive_LoginInit(Packet);
+        break;
+    }
+    case MAIN_S_C_PAUSE: {
+        QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
+        break;
+    }
     default:
         break;
     }
@@ -80,43 +107,87 @@ void TCP_Client::Server_to_Client()
 
 void TCP_Client::on_Btn_Signout_clicked()
 {
-
+    disconnect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
+    m_socket->disconnectFromHost();
+    Diglog_Login();
 }
 void TCP_Client::on_Btn_Send_clicked()
 {
-    Client_to_Server(MAIN_C_S_ACTION);
+    Client_to_Server(MAIN_C_S_CHAT);
 }
+void TCP_Client::socketStateChanged(QAbstractSocket::SocketState state)
+{
+    if (state == QAbstractSocket::UnconnectedState) {
+        // Socket 斷線，可以在這裡處理相應的邏輯
+        QMessageBox::critical(nullptr, "登出", "伺服器斷線");
+        on_Btn_Signout_clicked();
+
+    }
+
+}
+
 
 void TCP_Client::Receive_Chat(MyPacket packet)
 {
-    // TODO 處理更複雜的登入失敗訊息
-    if (packet.massageData.m_errorcode == 0) {
+    if (packet.massageData.m_errorcode == Errorcode_OK) {
 
-        QString Name = packet.massageData.m_User;
-
+        QString Account = packet.massageData.m_Account;
         QString currentDateTimeString = packet.massageData.m_Time.toString("yyyy-MM-dd hh:mm:ss");
-        QString str = Name + " < " + currentDateTimeString + " > : \n" + packet.massageData.m_Data + "\n";
+        QString str = Account + " < " + currentDateTimeString + " > : \n" + packet.massageData.m_Data["Message"].toString() + "\n";
         ui->TB_Chat->setText(ui->TB_Chat->toPlainText()+ str);
     }
     else
     {
-        QMessageBox::critical(nullptr, "Error", "An error occurred!");
+        QMessageBox::critical(nullptr, "聊天錯誤", "未知ErrorCode");
     }
+}
+void TCP_Client::Receive_LoginInit(MyPacket packet)
+{
+    if (packet.massageData.m_errorcode == Errorcode_OK) {
+        QJsonArray userListArray = packet.massageData.m_Data["UserList"].toArray();
+        int row = ui->tableWidget_User->rowCount();
+        ui->tableWidget_User->setRowCount(row + userListArray.size());
+
+        foreach(const QJsonValue & userValue, userListArray) {
+
+            QTableWidgetItem* Item = new QTableWidgetItem(userValue.toString());
+            ui->tableWidget_User->setItem(row++, 0, Item);
+        }
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, "玩家清單錯誤", "未知ErrorCode");
+    }
+
 }
 
 
 void TCP_Client::Send_Chat()
 {
-    MyPacket packet;
     QString str = ui->lineEdit->text();
-    packet.setCommand(MAIN_C_S_ACTION);
-    packet.massageData.m_User = m_Setting.m_User;
-    packet.massageData.m_Data = str;
-    packet.massageData.m_errorcode = 0;
+    if (str == "") return;
+    MyPacket packet;
+    packet.setCommand(MAIN_C_S_CHAT);
+    packet.massageData.m_Account = Local_User.m_Account;
+
+    packet.massageData.m_Data["Message"] = str;
+    packet.massageData.m_errorcode = Errorcode_OK;
     packet.massageData.m_Time = QDateTime::currentDateTime();
     ui->lineEdit->clear();
 
-    // 將封包序列化成 QByteArray 以便發送
-    QByteArray serializedPacket = packet.serialize();
-    m_socket->write(serializedPacket);    // Exception
+    QJsonDocument jsonDoc(packet.toJsonObject());
+    QByteArray jsonData = jsonDoc.toJson();
+    m_socket->write(jsonData);
+}
+void TCP_Client::Send_LoginInit()
+{
+    MyPacket packet;
+    packet.setCommand(MAIN_C_S_LOGININIT);
+    packet.massageData.m_errorcode = Errorcode_OK;
+    packet.massageData.m_Time = QDateTime::currentDateTime();
+
+    QJsonDocument jsonDoc(packet.toJsonObject());
+    QByteArray jsonData = jsonDoc.toJson();
+    m_socket->write(jsonData);
+
 }

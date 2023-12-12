@@ -559,20 +559,21 @@ color: rgb(255, 255, 255);</string>
          </widget>
         </item>
         <item>
-         <widget class="QTextBrowser" name="TB_User">
-          <property name="palette">
-           <palette>
-            <active/>
-            <inactive/>
-            <disabled/>
-           </palette>
+         <widget class="QTableWidget" name="tableWidget_User">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
           </property>
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
+          <attribute name="horizontalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <column>
+           <property name="text">
+            <string>User</string>
+           </property>
+          </column>
          </widget>
         </item>
        </layout>
@@ -591,7 +592,7 @@ color: rgb(255, 255, 255);</string>
 color: rgb(255, 255, 255);</string>
         </property>
         <property name="text">
-         <string>123123</string>
+         <string/>
         </property>
        </widget>
       </item>

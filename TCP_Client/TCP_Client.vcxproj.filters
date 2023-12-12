@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Dialog_Login.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="TCP_Client.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="rcc\qrc_TCP_Client.cpp">
+      <Filter>中繼檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="moc\moc_TCP_Client.cpp">
+      <Filter>中繼檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\ui_Dialog_Login.h">
+      <Filter>中繼檔案</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui_TCP_Client.h">
+      <Filter>中繼檔案</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="TCP_Client.h">
+      <Filter>標頭檔案</Filter>
+    </QtMoc>
+    <QtMoc Include="Dialog_Login.h">
+      <Filter>標頭檔案</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="TCP_Client.ui">
+      <Filter>ui</Filter>
+    </QtUic>
+    <QtUic Include="Dialog_Login.ui">
+      <Filter>ui</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ui">
+      <UniqueIdentifier>{f4115272-f594-4272-b219-bfbd194677cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="資源檔案">
+      <UniqueIdentifier>{bce99843-e9f5-48f8-b17f-bf7d4558a72f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="標頭檔案">
+      <UniqueIdentifier>{1ab1fdc7-2113-476f-a057-1e2a63d98ddf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="來源檔案">
+      <UniqueIdentifier>{9c838c2a-47bc-4826-b51f-cd215dac7fa5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="中繼檔案">
+      <UniqueIdentifier>{f8ef1f9d-af12-43d6-b478-060ae8965d3a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="TCP_Client.qrc">
+      <Filter>資源檔案</Filter>
+    </QtRcc>
+  </ItemGroup>
+</Project>

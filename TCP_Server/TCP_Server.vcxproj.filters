@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="TCP_Server.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="moc\moc_TCP_Server.cpp">
+      <Filter>中繼檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="rcc\qrc_TCP_Server.cpp">
+      <Filter>中繼檔案</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="中繼檔案">
+      <UniqueIdentifier>{6c3be850-0e69-4968-9a41-30b2996d7592}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="來源檔案">
+      <UniqueIdentifier>{4e1d3947-fc0a-42f2-8b2f-cfb0c286154b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="資源檔案">
+      <UniqueIdentifier>{962aa114-d100-4a14-8c8c-e25a89a741cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="標頭檔案">
+      <UniqueIdentifier>{42bae7f9-8108-4550-bf62-2c6974cb6cc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{041d1eef-f845-410a-85c2-aa153d338a87}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ui\ui_TCP_Server.h">
+      <Filter>中繼檔案</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="TCP_Server.h">
+      <Filter>標頭檔案</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="TCP_Server.qrc">
+      <Filter>資源檔案</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="TCP_Server.ui">
+      <Filter>ui</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+</Project>

@@ -12,11 +12,13 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -58,7 +60,7 @@ public:
     QTextBrowser *TB_Chat;
     QVBoxLayout *verticalLayout_5;
     QLabel *label_7;
-    QTextBrowser *TB_User;
+    QTableWidget *tableWidget_User;
     QHBoxLayout *horizontalLayout;
     QLineEdit *lineEdit;
     QPushButton *Btn_Send;
@@ -327,14 +329,17 @@ public:
 
         verticalLayout_5->addWidget(label_7);
 
-        TB_User = new QTextBrowser(mainWidget);
-        TB_User->setObjectName(QString::fromUtf8("TB_User"));
-        QPalette palette2;
-        TB_User->setPalette(palette2);
-        TB_User->setFocusPolicy(Qt::NoFocus);
-        TB_User->setStyleSheet(QString::fromUtf8(""));
+        tableWidget_User = new QTableWidget(mainWidget);
+        if (tableWidget_User->columnCount() < 1)
+            tableWidget_User->setColumnCount(1);
+        QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+        tableWidget_User->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        tableWidget_User->setObjectName(QString::fromUtf8("tableWidget_User"));
+        tableWidget_User->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        tableWidget_User->horizontalHeader()->setVisible(false);
+        tableWidget_User->verticalHeader()->setVisible(false);
 
-        verticalLayout_5->addWidget(TB_User);
+        verticalLayout_5->addWidget(tableWidget_User);
 
 
         horizontalLayout_12->addLayout(verticalLayout_5);
@@ -386,7 +391,9 @@ public:
         label->setText(QCoreApplication::translate("TCP_ClientClass", "\347\247\222", nullptr));
         label_8->setText(QString());
         label_7->setText(QCoreApplication::translate("TCP_ClientClass", "\347\267\232\344\270\212\347\224\250\346\210\266", nullptr));
-        lineEdit->setText(QCoreApplication::translate("TCP_ClientClass", "123123", nullptr));
+        QTableWidgetItem *___qtablewidgetitem = tableWidget_User->horizontalHeaderItem(0);
+        ___qtablewidgetitem->setText(QCoreApplication::translate("TCP_ClientClass", "User", nullptr));
+        lineEdit->setText(QString());
         Btn_Send->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\274\351\200\201", nullptr));
     } // retranslateUi
 
