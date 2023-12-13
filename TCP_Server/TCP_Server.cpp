@@ -48,6 +48,7 @@ void TCP_Server::Load_Setting()
     ui->LE_Servar_Port->setText(settings.value("Server_Port", 19999).toString());
     Server_Name = ui->LE_Servar_Name->text();
     m_Setting.m_Port = ui->LE_Servar_Port->text().toInt();
+    m_Setting.SetVersion();
 }
 void TCP_Server::Save_Setting()
 {
@@ -56,6 +57,7 @@ void TCP_Server::Save_Setting()
     QSettings settings(filePath, QSettings::IniFormat);
     settings.setValue("Server_Name", ui->LE_Servar_Name->text());
     settings.setValue("Server_Port", ui->LE_Servar_Port->text());
+    settings.setValue("Version", m_Setting.Version);
     Server_Name = ui->LE_Servar_Name->text();
     m_Setting.m_Port = ui->LE_Servar_Port->text().toInt();
 }
@@ -327,22 +329,17 @@ void TCP_Server::Client_to_Server()
 
     if (Server_State == SERVER_PAUSE)
     {
-        MyPacket receivedPacket;
-        receivedPacket.setCommand(MAIN_S_C_PAUSE);
-        receivedPacket.massageData.m_Time = QDateTime::currentDateTime();
+        MassageData p_massagedata;
+        p_massagedata.m_Time = QDateTime::currentDateTime();
 
-        QJsonDocument jsonDoc(receivedPacket.toJsonObject());
-        QByteArray jsonData = jsonDoc.toJson();
-        socket->write(jsonData);
+        auto head = Packet_head(m_Setting.Version, "MAIN_S_C_PAUSE");
+        auto body = Packet_body(MAIN_S_C_PAUSE, p_massagedata);
+        MyPacket receivedPacket(head, body);
+        socket->write(receivedPacket.XOR(XOR_KEY));
         return;
     }
 
-    MyPacket Packet;
-    QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(socket->readAll());
-    if (!receivedJsonDoc.isNull())
-        Packet.fromJsonObject(receivedJsonDoc.object());
-    else
-        return;
+    MyPacket Packet(socket->readAll(), XOR_KEY);
 
     switch (Packet.getCommand()){
     case MAIN_C_S_LOGIN :{
@@ -397,10 +394,10 @@ void TCP_Server::Server_to_Client(Command command , QTcpSocket* socket , MyPacke
 } 
 void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
 {
-    Errorcode errorcode = Common::isUserCredentialsValid(Packet.massageData.m_Account, Packet.massageData.m_Data["Pass"].toString(), Account_DataBase);
+    Errorcode errorcode = Common::isUserCredentialsValid(Packet.body.massageData.m_Account, Packet.body.massageData.m_Data["Pass"].toString(), Account_DataBase);
     if (errorcode == Errorcode_OK) {
         User p_user;
-        if (UM->User_find(Packet.massageData.m_Account, p_user))
+        if (UM->User_find(Packet.body.massageData.m_Account, p_user))
         {
             if (p_user.Online)
             {
@@ -417,7 +414,7 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
 
                 p_setting.m_IP = ipv4String;
                 p_setting.m_Port = socket->peerPort();
-                p_setting.m_LoginTime = Packet.massageData.m_Time;
+                p_setting.m_LoginTime = Packet.body.massageData.m_Time;
                 p_setting.m_LoginSec = 0;
                 UM->User_UpdateConnection(p_user, p_setting);
                 UserTotal += 1;
@@ -426,42 +423,46 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
             }
         }
     }
-    MyPacket receivedPacket;
-    receivedPacket.setCommand(MAIN_S_C_LOGIN);
-    receivedPacket.massageData.m_Account = Packet.massageData.m_Account;
-    receivedPacket.massageData.m_errorcode = errorcode;
-    receivedPacket.massageData.m_Time = QDateTime::currentDateTime();
 
-    QJsonDocument jsonDoc(receivedPacket.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
-    socket->write(jsonData);
+
+    MassageData p_massagedata;
+    p_massagedata.m_Account = Packet.body.massageData.m_Account;
+    p_massagedata.m_errorcode = errorcode;
+    p_massagedata.m_Time = QDateTime::currentDateTime();
+
+    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGIN");
+    auto body = Packet_body(MAIN_S_C_LOGIN, p_massagedata);
+    MyPacket receivedPacket(head, body);
+    socket->write(receivedPacket.XOR(XOR_KEY));
+
 }
 void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
 {
-    MyPacket receivedPacket;
-    receivedPacket.setCommand(MAIN_S_C_CHAT);
-    receivedPacket.massageData = Packet.massageData;
+    MassageData p_massagedata = Packet.body.massageData;;
 
-    QJsonDocument jsonDoc(receivedPacket.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
+    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_CHAT");
+    auto body = Packet_body(MAIN_S_C_CHAT, p_massagedata);
+    MyPacket receivedPacket(head, body);
     for (int i = 0; i < m_sockets.size(); i++)
     {
-        m_sockets[i]->write(jsonData);
+        m_sockets[i]->write(receivedPacket.XOR(XOR_KEY));
     }
 }
 void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
 {
-    Errorcode errorcode = Common::doesUserExist(Packet.massageData.m_Account, Account_DataBase);
+    Errorcode errorcode = Common::doesUserExist(Packet.body.massageData.m_Account, Account_DataBase);
     if (errorcode == Errorcode_OK)
-        SingUp("/database.json", Account_DataBase, Packet.massageData);
-    MyPacket receivedPacket;
-    receivedPacket.setCommand(MAIN_S_C_SINGUP);
-    receivedPacket.massageData.m_errorcode = errorcode;
-    receivedPacket.massageData.m_Time = QDateTime::currentDateTime();
+        SingUp("/database.json", Account_DataBase, Packet.body.massageData);
 
-    QJsonDocument jsonDoc(receivedPacket.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
-    socket->write(jsonData);
+
+    MassageData p_massagedata;
+    p_massagedata.m_errorcode = errorcode;
+    p_massagedata.m_Time = QDateTime::currentDateTime();
+
+    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_SINGUP");
+    auto body = Packet_body(MAIN_S_C_SINGUP, p_massagedata);
+    MyPacket receivedPacket(head, body);
+    socket->write(receivedPacket.XOR(XOR_KEY));
 }
 void TCP_Server::Send_LoginInit(QTcpSocket* socket)
 {
@@ -472,13 +473,14 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
             jsonArray.append(p_user.m_Account);
     }
 
-    MyPacket packet;
-    packet.setCommand(MAIN_S_C_LOGININIT);
-    packet.massageData.m_Data["UserList"] = jsonArray;
-    packet.massageData.m_errorcode = Errorcode_OK;
-    packet.massageData.m_Time = QDateTime::currentDateTime();
 
-    QJsonDocument jsonDoc(packet.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
-    socket->write(jsonData);
+    MassageData p_massagedata;
+    p_massagedata.m_Data["UserList"] = jsonArray;
+    p_massagedata.m_errorcode = Errorcode_OK;
+    p_massagedata.m_Time = QDateTime::currentDateTime();
+
+    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGININIT");
+    auto body = Packet_body(MAIN_S_C_LOGININIT, p_massagedata);
+    MyPacket receivedPacket(head, body);
+    socket->write(receivedPacket.XOR(XOR_KEY));
 }

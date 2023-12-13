@@ -18,7 +18,7 @@ class TCP_Client : public QMainWindow
 public:
     TCP_Client(QWidget *parent = nullptr);
     ~TCP_Client();
-    ConnectionSetting m_Setting;
+    DeviceSetting m_Setting;
     User Local_User;
     QTcpSocket* m_socket;      
     QTimer* timer;

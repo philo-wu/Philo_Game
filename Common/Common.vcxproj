@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="CSS_style.h" />
+    <ClInclude Include="framework.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -79,12 +79,7 @@ void TCP_Client::Client_to_Server(Command command)
 }
 void TCP_Client::Server_to_Client()
 {
-    MyPacket Packet;
-    QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
-    if (!receivedJsonDoc.isNull())
-        Packet.fromJsonObject(receivedJsonDoc.object());
-    else
-        return;
+    MyPacket Packet(m_socket->readAll(), XOR_KEY);
 
     switch (Packet.getCommand()) {
     case MAIN_S_C_CHAT: {
@@ -129,11 +124,11 @@ void TCP_Client::socketStateChanged(QAbstractSocket::SocketState state)
 
 void TCP_Client::Receive_Chat(MyPacket packet)
 {
-    if (packet.massageData.m_errorcode == Errorcode_OK) {
+    if (packet.body.massageData.m_errorcode == Errorcode_OK) {
 
-        QString Account = packet.massageData.m_Account;
-        QString currentDateTimeString = packet.massageData.m_Time.toString("yyyy-MM-dd hh:mm:ss");
-        QString str = Account + " < " + currentDateTimeString + " > : \n" + packet.massageData.m_Data["Message"].toString() + "\n";
+        QString Account = packet.body.massageData.m_Account;
+        QString currentDateTimeString = packet.body.massageData.m_Time.toString("yyyy-MM-dd hh:mm:ss");
+        QString str = Account + " < " + currentDateTimeString + " > : \n" + packet.body.massageData.m_Data["Message"].toString() + "\n";
         ui->TB_Chat->setText(ui->TB_Chat->toPlainText()+ str);
     }
     else
@@ -143,8 +138,8 @@ void TCP_Client::Receive_Chat(MyPacket packet)
 }
 void TCP_Client::Receive_LoginInit(MyPacket packet)
 {
-    if (packet.massageData.m_errorcode == Errorcode_OK) {
-        QJsonArray userListArray = packet.massageData.m_Data["UserList"].toArray();
+    if (packet.body.massageData.m_errorcode == Errorcode_OK) {
+        QJsonArray userListArray = packet.body.massageData.m_Data["UserList"].toArray();
         int row = ui->tableWidget_User->rowCount();
         ui->tableWidget_User->setRowCount(row + userListArray.size());
 
@@ -166,28 +161,28 @@ void TCP_Client::Send_Chat()
 {
     QString str = ui->lineEdit->text();
     if (str == "") return;
-    MyPacket packet;
-    packet.setCommand(MAIN_C_S_CHAT);
-    packet.massageData.m_Account = Local_User.m_Account;
 
-    packet.massageData.m_Data["Message"] = str;
-    packet.massageData.m_errorcode = Errorcode_OK;
-    packet.massageData.m_Time = QDateTime::currentDateTime();
+    MassageData p_massagedata;
+    p_massagedata.m_Account = Local_User.m_Account;
+    p_massagedata.m_Data["Message"] = str;
+    p_massagedata.m_errorcode = Errorcode_OK;
+    p_massagedata.m_Time = QDateTime::currentDateTime();
+
+    auto head = Packet_head(m_Setting.Version, "MAIN_C_S_CHAT");
+    auto body = Packet_body(MAIN_C_S_CHAT, p_massagedata);
+    MyPacket receivedPacket(head, body);
+    m_socket->write(receivedPacket.XOR(XOR_KEY));
     ui->lineEdit->clear();
-
-    QJsonDocument jsonDoc(packet.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
-    m_socket->write(jsonData);
 }
 void TCP_Client::Send_LoginInit()
 {
-    MyPacket packet;
-    packet.setCommand(MAIN_C_S_LOGININIT);
-    packet.massageData.m_errorcode = Errorcode_OK;
-    packet.massageData.m_Time = QDateTime::currentDateTime();
+    MassageData p_massagedata;
+    p_massagedata.m_Account = Local_User.m_Account;
+    p_massagedata.m_errorcode = Errorcode_OK;
+    p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    QJsonDocument jsonDoc(packet.toJsonObject());
-    QByteArray jsonData = jsonDoc.toJson();
-    m_socket->write(jsonData);
-
+    auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGININIT");
+    auto body = Packet_body(MAIN_C_S_LOGININIT, p_massagedata);
+    MyPacket receivedPacket(head, body);
+    m_socket->write(receivedPacket.XOR(XOR_KEY));
 }

@@ -7,24 +7,40 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QTextCodec>
 
+#include "framework.h"
 
 class role
 {
+public:
     int HP;
     //int MP;
     int ATK;
     int DEF;
 };
+class DeviceSetting
+{
+public:
+    QString	    m_IP;			    //IP
+    int	        m_Port = 0;			//端口
+    QDateTime	m_LoginTime;	    //登入時間
+    int	        m_LoginSec = -1;	//登入時長
+    QString     Version;
 
+    void SetVersion()
+    {
+        Version = QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + "." + QString::number(PATCH_VERSION);
+    }
+};
 class ConnectionSetting
 {
 public:
-    QString	    m_IP;			//IP
-    int	        m_Port = 0;			    //端口
+    QString	    m_IP;			    //IP
+    int	        m_Port = 0;			//端口
     //QString	    m_User;			//使用者名稱
-    QDateTime	m_LoginTime;	//登入時間
-    int	        m_LoginSec = -1;	    //登入時長
+    QDateTime	m_LoginTime;	    //登入時間
+    int	        m_LoginSec = -1;	//登入時長
 
     void Reset() {
         m_IP = "";
@@ -78,21 +94,7 @@ public:
     Errorcode m_errorcode;
     QDateTime m_Time; //訊息發送時間
     
-    // Json取代
-    /*
-    // 將 MassageData 序列化到資料流
-    friend QDataStream& operator<<(QDataStream& out, const MassageData& data) {
-        out << data.m_Account << data.m_Pass << data.m_Data << data.m_errorcode << data.m_Time;
-        return out;
-    }
-
-    // 從資料流中反序列化 MassageData
-    friend QDataStream& operator>>(QDataStream& in, MassageData& data) {
-        in >> data.m_Account >> data.m_Pass >> data.m_Data >> data.m_errorcode >> data.m_Time;
-        return in;
-    } 
-    */
-        // 將 MyPacket 轉換成 QJsonObject
+    // 將 MyPacket 轉換成 QJsonObject
     QJsonObject toJsonObject() const {
         QJsonObject obj;
         obj["Account"] = m_Account;
@@ -109,21 +111,72 @@ public:
         m_errorcode = static_cast<Errorcode>(obj["ErrorCode"].toInt());
         m_Time = QDateTime::fromString(obj["Time"].toString(), Qt::ISODate);
     }
+    // Json取代
+    /*
+    // 將 MassageData 序列化到資料流
+    friend QDataStream& operator<<(QDataStream& out, const MassageData& data) {
+        out << data.m_Account << data.m_Pass << data.m_Data << data.m_errorcode << data.m_Time;
+        return out;
+    }
+
+    // 從資料流中反序列化 MassageData
+    friend QDataStream& operator>>(QDataStream& in, MassageData& data) {
+        in >> data.m_Account >> data.m_Pass >> data.m_Data >> data.m_errorcode >> data.m_Time;
+        return in;
+    }
+    */
 };
 
-class MyPacket
+class Packet_head
 {
 public:
-
-
-    MyPacket() : command(0) {}
-
+    Packet_head() { ; }
+    Packet_head(QString p_version, QString p_protocol)
+        : Version(p_version), Protocol(p_protocol)
+    {}
+private:
+    QString Version;
+    QString Protocol;
+public:
+    QJsonObject toJsonObject() const {
+        QJsonObject obj;
+        obj["Version"] = Version;
+        obj["Protocol"] = Protocol;
+        return obj;
+    }
+    void fromJsonObject(const QJsonObject& obj) {
+        Version = obj["Version"].toString();
+        Protocol = obj["Protocol"].toString();
+    }
+};
+class Packet_body
+{
+public:
+    Packet_body() { ; }
+    Packet_body(quint32 p_command, MassageData p_massagedata)
+        : command(p_command), massageData(p_massagedata)
+    {}
+    quint32 command = 0; // 指令
+    MassageData massageData; // 包含指令相關資料的類別
+public:
     Command getCommand() const {
         return static_cast<Command>(command);
     }
-
     void setCommand(Command cmd) {
         command = static_cast<quint32>(cmd);
+    }
+    // 添加其他成員資料...
+    QJsonObject toJsonObject() const {
+        QJsonObject obj;
+        obj["Command"] = static_cast<int>(getCommand());
+        obj["MassageData"] = massageData.toJsonObject();
+        return obj;
+    }
+
+    // 從 QJsonObject 中反序列化 MyPacket
+    void fromJsonObject(const QJsonObject& obj) {
+        setCommand(static_cast<Command>(obj["Command"].toInt()));
+        massageData.fromJsonObject(obj["MassageData"].toObject());
     }
     /*
     QByteArray serialize() const {
@@ -138,21 +191,53 @@ public:
         stream >> command >> massageData;
     }
     */
-    quint32 command; // 指令
-    MassageData massageData; // 包含指令相關資料的類別
 
-    // 添加其他成員資料...
+};
+class MyPacket
+{
+public:
+    // @加解密
+    MyPacket(Packet_head p_head, Packet_body p_body)
+        : head(p_head), body(p_body)
+    {}
+    MyPacket(QByteArray bs , const char key)
+        : head(), body()
+    {
+        for (int i = 0; i < bs.size(); i++) {
+            bs[i] = bs[i] ^ key;
+        }
+        QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(bs);
+        if (!receivedJsonDoc.isNull())
+            fromJsonObject(receivedJsonDoc.object());
+    }
+    Packet_head head;
+    Packet_body body;
+public:
+    Command getCommand() const {
+        return static_cast<Command>(body.getCommand());
+    }
     QJsonObject toJsonObject() const {
         QJsonObject obj;
-        obj["Command"] = static_cast<int>(getCommand());
-        obj["MassageData"] = massageData.toJsonObject();
+        obj["head"] = head.toJsonObject();
+        obj["body"] = body.toJsonObject();
         return obj;
+
+    }
+    void fromJsonObject(const QJsonObject& obj) {
+        head.fromJsonObject(obj["head"].toObject());
+        body.fromJsonObject(obj["body"].toObject());
     }
 
-    // 從 QJsonObject 中反序列化 MyPacket
-    void fromJsonObject(const QJsonObject& obj) {
-        setCommand(static_cast<Command>(obj["Command"].toInt()));
-        massageData.fromJsonObject(obj["MassageData"].toObject());
+    QByteArray XOR(const char& key)
+    {
+        QJsonDocument jsonDoc(toJsonObject());
+        QByteArray bs = jsonDoc.toJson();
+        for (int i = 0; i < bs.size(); i++) {
+            bs[i] = bs[i] ^ key;
+        }
+
+        return bs;
     }
-private:
+
+
 };

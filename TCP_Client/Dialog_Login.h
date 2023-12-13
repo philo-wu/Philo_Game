@@ -31,7 +31,7 @@ public:
 	QTcpSocket* m_socket; 
 	QTimer* m_timer;
 	User Local_User;
-	ConnectionSetting m_Setting;
+	DeviceSetting m_Setting;
 	QProgressDialog* logining_Dialog;
 	// 本地指令
 	void Dialog_init();

@@ -4,6 +4,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="CSS_style.h" />
+    <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="標頭檔案">

@@ -376,6 +376,9 @@
             <property name="focusPolicy">
              <enum>Qt::StrongFocus</enum>
             </property>
+            <property name="text">
+             <string/>
+            </property>
             <property name="echoMode">
              <enum>QLineEdit::Password</enum>
             </property>
@@ -394,6 +397,25 @@
             </property>
             <property name="text">
              <string>找回密碼</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
             </property>
            </widget>
           </item>

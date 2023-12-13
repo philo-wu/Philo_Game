@@ -51,6 +51,7 @@ public:
     QLabel *label_9;
     QLineEdit *lineEdit_Pass;
     QPushButton *Btn_Findpass;
+    QLabel *label_4;
     QWidget *page_2;
     QPushButton *Btn_Signup;
     QPushButton *Btn_return;
@@ -238,6 +239,13 @@ public:
         Btn_Findpass->setFocusPolicy(Qt::NoFocus);
 
         horizontalLayout_9->addWidget(Btn_Findpass);
+
+        label_4 = new QLabel(layoutWidget2);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setMinimumSize(QSize(80, 0));
+        label_4->setMaximumSize(QSize(80, 16777215));
+
+        horizontalLayout_9->addWidget(label_4);
 
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
@@ -427,7 +435,9 @@ public:
         CB_Keeppass->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\230\344\275\217\345\270\263\350\231\237", nullptr));
         CB_Showpass->setText(QCoreApplication::translate("Dialog_LoginClass", "\351\241\257\347\244\272\345\257\206\347\242\274", nullptr));
         label_9->setText(QCoreApplication::translate("Dialog_LoginClass", "\345\257\206\347\242\274 :", nullptr));
+        lineEdit_Pass->setText(QString());
         Btn_Findpass->setText(QCoreApplication::translate("Dialog_LoginClass", "\346\211\276\345\233\236\345\257\206\347\242\274", nullptr));
+        label_4->setText(QString());
         Btn_Signup->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\250\273\345\206\212", nullptr));
         Btn_return->setText(QCoreApplication::translate("Dialog_LoginClass", "\350\277\224\345\233\236", nullptr));
         Btn_Setting_2->setText(QCoreApplication::translate("Dialog_LoginClass", "\347\266\262\350\267\257\350\250\255\345\256\232", nullptr));

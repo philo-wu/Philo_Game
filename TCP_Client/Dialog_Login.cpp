@@ -11,7 +11,7 @@ Dialog_Login::Dialog_Login(QTcpSocket* p_Socket,QWidget *parent):
 	Dialog_init();
 	Connect_init();
 
-	//Load_Setting();
+	Load_Setting();
 }
 
 Dialog_Login::~Dialog_Login()
@@ -50,7 +50,7 @@ void Dialog_Login::Dialog_init()
 		+ "\\." + ipRange
 		+ "\\." + ipRange + "$");
 	ui->lineEdit_IP->setValidator(new QRegExpValidator(ipRegex, this));
-
+	ui->Btn_Findpass->hide();
 
 }
 void Dialog_Login::Load_Setting()
@@ -66,7 +66,7 @@ void Dialog_Login::Load_Setting()
 		ui->CB_Keeppass->setCheckState(Qt::Checked);
 	ui->lineEdit_IP->setText(m_Setting.m_IP);
 	ui->lineEdit_Port->setText(QString::number(m_Setting.m_Port));
-
+	m_Setting.SetVersion();
 }
 void Dialog_Login::Save_Setting(QString Account)
 {
@@ -75,6 +75,7 @@ void Dialog_Login::Save_Setting(QString Account)
 	QSettings settings(filePath, QSettings::IniFormat);
 	settings.setValue("Server_IP", ui->lineEdit_IP->text());
 	settings.setValue("Server_Port", ui->lineEdit_Port->text());
+	settings.setValue("Version", m_Setting.Version);
 
 	if (ui->CB_Keeppass->checkState() == Qt::Checked)
 		settings.setValue("Saving_Account", Account);
@@ -106,12 +107,13 @@ void Dialog_Login::Client_to_Server(Command command)
 }
 void Dialog_Login::Server_to_Client()
 {
-	MyPacket Packet;
-	QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
-	if (!receivedJsonDoc.isNull())
-		Packet.fromJsonObject(receivedJsonDoc.object());
-	else
-		return;
+	//MyPacket Packet;
+	//QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
+	//if (!receivedJsonDoc.isNull())
+	//	Packet.fromJsonObject(receivedJsonDoc.object());
+	//else
+	//	return;
+	MyPacket Packet(m_socket->readAll(), XOR_KEY);
 
 	switch (Packet.getCommand()){
 	case MAIN_S_C_LOGIN:{
@@ -212,54 +214,49 @@ void Dialog_Login::Send_Login(QString Account, QString Pass)
 
 	logining_Dialog->show();
 
-	MyPacket packet;
-	packet.setCommand(MAIN_C_S_LOGIN);
-	packet.massageData.m_Account = Account;
-	packet.massageData.m_Data["Pass"] = Pass;
-	packet.massageData.m_errorcode = Errorcode_OK;
-	packet.massageData.m_Time = QDateTime::currentDateTime();
+	MassageData p_massagedata;
+	p_massagedata.m_Account = Account;
+	p_massagedata.m_Data["Pass"] = Pass;
+	p_massagedata.m_errorcode = Errorcode_OK;
+	p_massagedata.m_Time = QDateTime::currentDateTime();
 
-	QJsonDocument jsonDoc(packet.toJsonObject());
-	QByteArray jsonData = jsonDoc.toJson();
-	m_socket->write(jsonData);
-
+	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGIN");
+	auto body = Packet_body(MAIN_C_S_LOGIN, p_massagedata);
+	MyPacket receivedPacket(head, body);
+	m_socket->write(receivedPacket.XOR(XOR_KEY));
 }
 void Dialog_Login::Send_SignUp(QString Account, QString Pass)
 {
 
 	m_socket->connectToHost(m_Setting.m_IP, m_Setting.m_Port);
-	MyPacket packet;
-	packet.setCommand(MAIN_C_S_SINGUP);
-	packet.massageData.m_Account = Account;
-	packet.massageData.m_Data["Pass"] = Pass;
-	packet.massageData.m_errorcode = Errorcode_OK;
-	packet.massageData.m_Time = QDateTime::currentDateTime();
-	// 將封包序列化成 QByteArray 以便發送
-	//QByteArray serializedPacket = packet.serialize();
-	//m_socket->write(serializedPacket);
+	MassageData p_massagedata;
+	p_massagedata.m_Account = Account;
+	p_massagedata.m_Data["Pass"] = Pass;
+	p_massagedata.m_errorcode = Errorcode_OK;
+	p_massagedata.m_Time = QDateTime::currentDateTime();
 
-	QJsonDocument jsonDoc(packet.toJsonObject());
-	QByteArray jsonData = jsonDoc.toJson();
-	m_socket->write(jsonData);
+	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_SINGUP");
+	auto body = Packet_body(MAIN_C_S_SINGUP, p_massagedata);
+	MyPacket receivedPacket(head, body);
+	m_socket->write(receivedPacket.XOR(XOR_KEY));
 
 }
 
 void Dialog_Login::Receive_Login(MyPacket packet)
 {
-	switch (packet.massageData.m_errorcode)
+	m_timer->stop();
+	logining_Dialog->cancel();
+
+	switch (packet.body.massageData.m_errorcode)
 	{
 	case Errorcode_OK:
 	{
-		m_timer->stop();
-		logining_Dialog->cancel();
-
-		Local_User.m_Account = packet.massageData.m_Account;
-		m_Setting.m_LoginTime = packet.massageData.m_Time;
+		Local_User.m_Account = packet.body.massageData.m_Account;
+		m_Setting.m_LoginTime = packet.body.massageData.m_Time;
 		m_Setting.m_LoginSec = 0;
 		Save_Setting(ui->lineEdit_Account->text());
 		disconnect(m_socket, SIGNAL(readyRead()), this, SLOT(Server_to_Client()));
 		emit ToRoom();
-
 	}
 		break;
 	case Errorcode_ACCOUNT_NOTEXIST:
@@ -284,7 +281,7 @@ void Dialog_Login::Receive_Login(MyPacket packet)
 }
 void Dialog_Login::Receive_SignUp(MyPacket packet)
 {
-	switch (packet.massageData.m_errorcode)
+	switch (packet.body.massageData.m_errorcode)
 	{
 	case Errorcode_OK:
 	{
@@ -310,10 +307,10 @@ void Dialog_Login::on_CB_Showpass_stateChanged(int arg1)
 		ui->lineEdit_Pass->setEchoMode(QLineEdit::Password);
 		break;
 	case Qt::PartiallyChecked:
-		ui->lineEdit_Pass->setEchoMode(QLineEdit::NoEcho);
+		ui->lineEdit_Pass->setEchoMode(QLineEdit::Normal);
 		break;
 	case Qt::Checked:
-		ui->lineEdit_Pass->setEchoMode(QLineEdit::NoEcho);
+		ui->lineEdit_Pass->setEchoMode(QLineEdit::Normal);
 		break;
 	default:
 		break;

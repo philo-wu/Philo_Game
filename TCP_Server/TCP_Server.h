@@ -30,7 +30,7 @@ public:
     QTcpServer* m_server; 
     QTimer* timer;
     QList<QTcpSocket*> m_sockets;   
-    ConnectionSetting m_Setting;
+    DeviceSetting m_Setting;
     QString Server_Name;
     int UserTotal = 0;
     int Server_State = SERVER_STOP;
