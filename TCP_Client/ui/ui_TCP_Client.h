@@ -30,7 +30,6 @@ class Ui_TCP_ClientClass
 public:
     QWidget *mainWidget;
     QVBoxLayout *verticalLayout_2;
-    QHBoxLayout *horizontalLayout_2;
     QHBoxLayout *horizontalLayout_13;
     QSpacerItem *horizontalSpacer;
     QPushButton *Btn_Signout;
@@ -61,6 +60,9 @@ public:
     QVBoxLayout *verticalLayout_5;
     QLabel *label_7;
     QTableWidget *tableWidget_User;
+    QHBoxLayout *horizontalLayout_2;
+    QPushButton *Btn_Emoji;
+    QSpacerItem *horizontalSpacer_2;
     QHBoxLayout *horizontalLayout;
     QLineEdit *lineEdit;
     QPushButton *Btn_Send;
@@ -105,12 +107,6 @@ public:
         verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-
-        verticalLayout_2->addLayout(horizontalLayout_2);
-
         horizontalLayout_13 = new QHBoxLayout();
         horizontalLayout_13->setSpacing(6);
         horizontalLayout_13->setObjectName(QString::fromUtf8("horizontalLayout_13"));
@@ -348,6 +344,22 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout_12);
 
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        Btn_Emoji = new QPushButton(mainWidget);
+        Btn_Emoji->setObjectName(QString::fromUtf8("Btn_Emoji"));
+        Btn_Emoji->setMaximumSize(QSize(25, 16777215));
+
+        horizontalLayout_2->addWidget(Btn_Emoji);
+
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_2->addItem(horizontalSpacer_2);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_2);
+
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -370,8 +382,8 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout);
 
-        verticalLayout_2->setStretch(2, 1);
-        verticalLayout_2->setStretch(3, 4);
+        verticalLayout_2->setStretch(1, 1);
+        verticalLayout_2->setStretch(2, 4);
         TCP_ClientClass->setCentralWidget(mainWidget);
 
         retranslateUi(TCP_ClientClass);
@@ -393,6 +405,7 @@ public:
         label_7->setText(QCoreApplication::translate("TCP_ClientClass", "\347\267\232\344\270\212\347\224\250\346\210\266", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_User->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QCoreApplication::translate("TCP_ClientClass", "User", nullptr));
+        Btn_Emoji->setText(QCoreApplication::translate("TCP_ClientClass", "\360\237\230\200", nullptr));
         lineEdit->setText(QString());
         Btn_Send->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\274\351\200\201", nullptr));
     } // retranslateUi

@@ -66,8 +66,7 @@ protected:
             if (!m_queue->isEmpty() && !working) {
                 auto event = m_queue->dequeue();
                 working = 1;
-                // 在這裡處理事件，例如：
-                // socket->write(Common::Encryption_byXOR(event.first, XOR_KEY));
+
                 emit writeDataToSocket(event.first, event.second);
             }
         }

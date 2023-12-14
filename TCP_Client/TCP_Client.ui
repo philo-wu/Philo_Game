@@ -162,7 +162,7 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="mainWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,1,4,0">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,4,0,0">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -178,9 +178,6 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
-    </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_13">
       <item>
@@ -577,6 +574,36 @@ color: rgb(255, 255, 255);</string>
          </widget>
         </item>
        </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="Btn_Emoji">
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>😀</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </item>

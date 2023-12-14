@@ -16,6 +16,9 @@
     <ClCompile Include="main.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Dialog_face.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\ui_Dialog_Login.h">
@@ -32,12 +35,18 @@
     <QtMoc Include="Dialog_Login.h">
       <Filter>標頭檔案</Filter>
     </QtMoc>
+    <QtMoc Include="Dialog_face.h">
+      <Filter>標頭檔案</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="TCP_Client.ui">
       <Filter>ui</Filter>
     </QtUic>
     <QtUic Include="Dialog_Login.ui">
+      <Filter>ui</Filter>
+    </QtUic>
+    <QtUic Include="Dialog_face.ui">
       <Filter>ui</Filter>
     </QtUic>
   </ItemGroup>

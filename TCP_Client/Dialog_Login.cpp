@@ -6,12 +6,15 @@ Dialog_Login::Dialog_Login(QTcpSocket* p_Socket,QWidget *parent):
 
 {
 	ui->setupUi(this);
+	raise();
 	m_socket = p_Socket;
 
 	Dialog_init();
 	Connect_init();
 
 	Load_Setting();
+
+
 }
 
 Dialog_Login::~Dialog_Login()
