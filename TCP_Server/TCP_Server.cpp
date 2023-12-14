@@ -335,11 +335,12 @@ void TCP_Server::Client_to_Server()
         auto head = Packet_head(m_Setting.Version, "MAIN_S_C_PAUSE");
         auto body = Packet_body(MAIN_S_C_PAUSE, p_massagedata);
         MyPacket receivedPacket(head, body);
-        socket->write(receivedPacket.XOR(XOR_KEY));
+        QByteArray Bytes = receivedPacket.toQByteArray();
+        socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
         return;
     }
 
-    MyPacket Packet(socket->readAll(), XOR_KEY);
+    MyPacket Packet(Common::Encryption_byXOR(socket->readAll(), XOR_KEY));
 
     switch (Packet.getCommand()){
     case MAIN_C_S_LOGIN :{
@@ -433,7 +434,8 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGIN");
     auto body = Packet_body(MAIN_S_C_LOGIN, p_massagedata);
     MyPacket receivedPacket(head, body);
-    socket->write(receivedPacket.XOR(XOR_KEY));
+    QByteArray Bytes = receivedPacket.toQByteArray();
+    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 
 }
 void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
@@ -443,9 +445,11 @@ void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_CHAT");
     auto body = Packet_body(MAIN_S_C_CHAT, p_massagedata);
     MyPacket receivedPacket(head, body);
+        QByteArray Bytes = receivedPacket.toQByteArray();
+
     for (int i = 0; i < m_sockets.size(); i++)
     {
-        m_sockets[i]->write(receivedPacket.XOR(XOR_KEY));
+        socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
     }
 }
 void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
@@ -462,7 +466,8 @@ void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_SINGUP");
     auto body = Packet_body(MAIN_S_C_SINGUP, p_massagedata);
     MyPacket receivedPacket(head, body);
-    socket->write(receivedPacket.XOR(XOR_KEY));
+    QByteArray Bytes = receivedPacket.toQByteArray();
+    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }
 void TCP_Server::Send_LoginInit(QTcpSocket* socket)
 {
@@ -482,5 +487,6 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGININIT");
     auto body = Packet_body(MAIN_S_C_LOGININIT, p_massagedata);
     MyPacket receivedPacket(head, body);
-    socket->write(receivedPacket.XOR(XOR_KEY));
+    QByteArray Bytes = receivedPacket.toQByteArray();
+    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }

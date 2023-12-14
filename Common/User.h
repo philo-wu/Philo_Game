@@ -200,12 +200,9 @@ public:
     MyPacket(Packet_head p_head, Packet_body p_body)
         : head(p_head), body(p_body)
     {}
-    MyPacket(QByteArray bs , const char key)
+    MyPacket(QByteArray bs)
         : head(), body()
     {
-        for (int i = 0; i < bs.size(); i++) {
-            bs[i] = bs[i] ^ key;
-        }
         QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(bs);
         if (!receivedJsonDoc.isNull())
             fromJsonObject(receivedJsonDoc.object());
@@ -228,16 +225,11 @@ public:
         body.fromJsonObject(obj["body"].toObject());
     }
 
-    QByteArray XOR(const char& key)
+    QByteArray toQByteArray()
     {
         QJsonDocument jsonDoc(toJsonObject());
         QByteArray bs = jsonDoc.toJson();
-        for (int i = 0; i < bs.size(); i++) {
-            bs[i] = bs[i] ^ key;
-        }
-
         return bs;
     }
-
 
 };

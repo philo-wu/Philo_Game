@@ -79,7 +79,7 @@ void TCP_Client::Client_to_Server(Command command)
 }
 void TCP_Client::Server_to_Client()
 {
-    MyPacket Packet(m_socket->readAll(), XOR_KEY);
+    MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
 
     switch (Packet.getCommand()) {
     case MAIN_S_C_CHAT: {
@@ -171,8 +171,8 @@ void TCP_Client::Send_Chat()
     auto head = Packet_head(m_Setting.Version, "MAIN_C_S_CHAT");
     auto body = Packet_body(MAIN_C_S_CHAT, p_massagedata);
     MyPacket receivedPacket(head, body);
-    m_socket->write(receivedPacket.XOR(XOR_KEY));
-    ui->lineEdit->clear();
+    QByteArray Bytes = receivedPacket.toQByteArray();
+    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));    ui->lineEdit->clear();
 }
 void TCP_Client::Send_LoginInit()
 {
@@ -184,5 +184,6 @@ void TCP_Client::Send_LoginInit()
     auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGININIT");
     auto body = Packet_body(MAIN_C_S_LOGININIT, p_massagedata);
     MyPacket receivedPacket(head, body);
-    m_socket->write(receivedPacket.XOR(XOR_KEY));
+    QByteArray Bytes = receivedPacket.toQByteArray();
+    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }

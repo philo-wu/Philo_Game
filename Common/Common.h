@@ -92,6 +92,14 @@ public:
 
         return Errorcode_ACCOUNT_NOTEXIST;
     }
+    static  QByteArray Encryption_byXOR(QByteArray bs ,const char& key)
+    {
+        for (int i = 0; i < bs.size(); i++) {
+            bs[i] = bs[i] ^ key;
+        }
+        return bs;
+    }
+
 };
 
 class UserManager

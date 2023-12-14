@@ -113,7 +113,7 @@ void Dialog_Login::Server_to_Client()
 	//	Packet.fromJsonObject(receivedJsonDoc.object());
 	//else
 	//	return;
-	MyPacket Packet(m_socket->readAll(), XOR_KEY);
+	MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
 
 	switch (Packet.getCommand()){
 	case MAIN_S_C_LOGIN:{
@@ -223,7 +223,8 @@ void Dialog_Login::Send_Login(QString Account, QString Pass)
 	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGIN");
 	auto body = Packet_body(MAIN_C_S_LOGIN, p_massagedata);
 	MyPacket receivedPacket(head, body);
-	m_socket->write(receivedPacket.XOR(XOR_KEY));
+	QByteArray Bytes = receivedPacket.toQByteArray();
+	m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }
 void Dialog_Login::Send_SignUp(QString Account, QString Pass)
 {
@@ -238,8 +239,8 @@ void Dialog_Login::Send_SignUp(QString Account, QString Pass)
 	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_SINGUP");
 	auto body = Packet_body(MAIN_C_S_SINGUP, p_massagedata);
 	MyPacket receivedPacket(head, body);
-	m_socket->write(receivedPacket.XOR(XOR_KEY));
-
+	QByteArray Bytes = receivedPacket.toQByteArray();
+	m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }
 
 void Dialog_Login::Receive_Login(MyPacket packet)
