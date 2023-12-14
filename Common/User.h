@@ -66,7 +66,6 @@ public:
 
 
 enum Command {
-    MAIN_S_C_PAUSE      ,
     MAIN_C_S_LOGIN      ,        // 登入
     MAIN_S_C_LOGIN      ,        
     MAIN_C_S_CHAT       ,        // 聊天行為
@@ -215,8 +214,8 @@ public:
     }
     QJsonObject toJsonObject() const {
         QJsonObject obj;
-        obj["head"] = head.toJsonObject();
         obj["body"] = body.toJsonObject();
+        obj["head"] = head.toJsonObject();
         return obj;
 
     }

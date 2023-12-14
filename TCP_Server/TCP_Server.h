@@ -10,14 +10,29 @@
 #include <QTimer>
 #include <QSettings>
 
+#include "EventManager.h"
 #include "./ui/ui_TCP_Server.h"
 #include "Common.h"
 
 enum ServerState {
     SERVER_START,                  // 成功
-    SERVER_STOP,
-    SERVER_PAUSE
+    SERVER_STOP
 };
+
+//class TcpServerHelper : public QTcpServer
+//{
+//    Q_OBJECT
+//public:
+//    explicit TcpServerHelper(QObject* parent = nullptr) : QTcpServer(parent) {}
+//protected:
+//    //重写incomingConnection,用于多线程通讯，子线程中不能使用主线程中创建的套接字对象
+//    void incomingConnection(qintptr socketDescriptor)
+//    {
+//        emit newSockDescriptor(socketDescriptor);
+//    }
+//signals:
+//    void newSockDescriptor(qintptr _sock);
+//};
 
 class TCP_Server : public QMainWindow
 {
@@ -27,11 +42,15 @@ public:
     TCP_Server(QWidget *parent = nullptr);
     ~TCP_Server();
 
-    QTcpServer* m_server; 
+    QTcpServer* m_server;
     QTimer* timer;
     QList<QTcpSocket*> m_sockets;   
     DeviceSetting m_Setting;
     QString Server_Name;
+
+    //QThread* eventThread;
+
+
     int UserTotal = 0;
     int Server_State = SERVER_STOP;
     CSS m_CSS;
@@ -54,17 +73,23 @@ public:
     void Send_Chat(QTcpSocket* socket , MyPacket Packet);
     void Send_Singup(QTcpSocket* socket , MyPacket Packet);
     void Send_LoginInit(QTcpSocket* socket);
+
 public slots:
     void on_Btn_Start_clicked();
-    void on_Btn_Pause_clicked();
 
     void slot_newConnection();
     void slot_disConnected();
     void Client_to_Server();   
     void Server_to_Client(Command command ,QTcpSocket* socket , MyPacket Packet);
+    void Send_Packet(QTcpSocket* socket, QByteArray Packet);
+
+signals:
+    void SendFinish();
 
 private:
     Ui::TCP_ServerClass* ui;
     QJsonDocument Account_DataBase; //User資訊與帳號密碼不共存
     UserManager* UM;
+    EventThread* ET; //@緩衝區 事件隊列
+
 };

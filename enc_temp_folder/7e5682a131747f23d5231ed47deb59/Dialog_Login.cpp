@@ -107,7 +107,7 @@ void Dialog_Login::Client_to_Server(Command command)
 }
 void Dialog_Login::Server_to_Client()
 {
-	// @解密
+
 	MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
 
 	switch (Packet.getCommand()){

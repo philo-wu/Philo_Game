@@ -78,7 +78,8 @@ void TCP_Client::Client_to_Server(Command command)
     }
 }
 void TCP_Client::Server_to_Client()
-{
+{    
+    // @解密
     MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
 
     switch (Packet.getCommand()) {
@@ -90,10 +91,10 @@ void TCP_Client::Server_to_Client()
         Receive_LoginInit(Packet);
         break;
     }
-    case MAIN_S_C_PAUSE: {
-        QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
-        break;
-    }
+    //case MAIN_S_C_PAUSE: {
+    //    QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
+    //    break;
+    //}
     default:
         break;
     }

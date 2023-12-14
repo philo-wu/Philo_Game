@@ -124,6 +124,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="EventManager.h" />
     <ClInclude Include="ui\ui_TCP_Server.h" />
   </ItemGroup>
   <ItemGroup>

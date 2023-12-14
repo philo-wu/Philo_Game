@@ -470,7 +470,6 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
 
 void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray Packet)
 {
-    // @加密
     // 加密後傳輸
     socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
     emit SendFinish();
