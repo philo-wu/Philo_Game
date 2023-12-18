@@ -27,7 +27,7 @@ public:
     QDateTime	m_LoginTime;	    //登入時間
     int	        m_LoginSec = -1;	//登入時長
     QString     Version;
-
+    // @版本號
     void SetVersion()
     {
         Version = QString::number(MAJOR_VERSION) + "." + QString::number(MINOR_VERSION) + "." + QString::number(PATCH_VERSION);
@@ -129,10 +129,10 @@ public:
 class Packet_head
 {
 public:
-    Packet_head() { ; }
+    Packet_head() { ; } //空建構用於接收資料
     Packet_head(QString p_version, QString p_protocol)
         : Version(p_version), Protocol(p_protocol)
-    {}
+    {} //非空建構用於發送資料
 private:
     QString Version;
     QString Protocol;
@@ -151,10 +151,10 @@ public:
 class Packet_body
 {
 public:
-    Packet_body() { ; }
+    Packet_body() { ; } //空建構用於接收資料
     Packet_body(quint32 p_command, MassageData p_massagedata)
         : command(p_command), massageData(p_massagedata)
-    {}
+    {} //非空建構用於發送資料
     quint32 command = 0; // 指令
     MassageData massageData; // 包含指令相關資料的類別
 public:
@@ -192,6 +192,7 @@ public:
     */
 
 };
+// @新封包格式
 class MyPacket
 {
 public:

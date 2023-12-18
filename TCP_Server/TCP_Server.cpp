@@ -400,11 +400,13 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
     p_massagedata.m_errorcode = errorcode;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
+    // @新封包格式 實際應用
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGIN");
     auto body = Packet_body(MAIN_S_C_LOGIN, p_massagedata);
     MyPacket receivedPacket(head, body);
     QByteArray Bytes = receivedPacket.toQByteArray();
     //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    // @緩衝區 實際應用
     ET->addEvent(socket, Bytes);
 
 }
