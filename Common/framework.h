@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-//ª©¥»¸¹
+//ç‰ˆæœ¬è™Ÿ
 #define MAJOR_VERSION	1
 #define MINOR_VERSION	1
 #define PATCH_VERSION	0
@@ -8,7 +8,7 @@
 
 
 /*
-1.1.0ª©¥» ·s¼Wªí±¡²Å¸¹
+1.1.0ç‰ˆæœ¬ æ–°å¢žè¡¨æƒ…ç¬¦è™Ÿ
 
 
 */

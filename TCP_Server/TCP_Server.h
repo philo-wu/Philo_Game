@@ -84,6 +84,7 @@ public slots:
     void Send_Packet(QTcpSocket* socket, QByteArray Packet);
 
 signals:
+    // @緩衝區 通知EventManager:MainThread目前為空閒狀態
     void SendFinish();
 
 private:
