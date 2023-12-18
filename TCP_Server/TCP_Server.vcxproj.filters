@@ -40,6 +40,9 @@
     <QtMoc Include="TCP_Server.h">
       <Filter>標頭檔案</Filter>
     </QtMoc>
+    <QtMoc Include="EventManager.h">
+      <Filter>標頭檔案</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="TCP_Server.qrc">

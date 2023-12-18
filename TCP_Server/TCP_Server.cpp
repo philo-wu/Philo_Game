@@ -16,9 +16,30 @@ TCP_Server::TCP_Server(QWidget *parent):
     ui->tableWidget_log->setRowCount(0);
     loadDataBase("/database.json" , Account_DataBase);
     Load_Setting();
+
+    //eventThread = new QThread();
+    //eventManager = new EventManager();
+
+    //// 將事件管理器移動到事件線程
+    //eventManager->moveToThread(eventThread);
+    //// 連接事件線程的啟動信號
+    //connect(eventThread, &QThread::started, eventManager, &EventManager::processEvents);
+    //// 啟動事件線程
+    //eventThread->start();
+    ET = new EventThread();
+    ET->start();
+    connect(ET, &EventThread::writeDataToSocket, this, [=](QTcpSocket* socket ,QByteArray packet) {
+        Send_Packet(socket, packet);
+        });
+    connect(this, SIGNAL(SendFinish()), ET, SLOT(ThreadFinish()));  //
+
 }
 TCP_Server::~TCP_Server()
 {
+    delete UM;
+    //delete eventThread;
+    //delete eventManager;
+    delete timer;
 
 }
 void TCP_Server::update()
@@ -184,50 +205,6 @@ void TCP_Server::on_Btn_Start_clicked()
 
     }
     break;
-    case SERVER_PAUSE:
-    {
-        Server_State = SERVER_STOP;
-        ui->Btn_Start->setText("啟動伺服器");
-        ui->Btn_Pause->setText("伺服器暫停");
-        ui->Btn_Pause->setEnabled(false);
-        ui->LE_Servar_Name->setStyleSheet(m_CSS.Write_EditLine);
-        ui->LE_Servar_Port->setStyleSheet(m_CSS.Write_EditLine);
-        ui->LE_Servar_Name->setReadOnly(false);
-        ui->LE_Servar_Port->setReadOnly(false);
-        Log("伺服器停止");
-
-    }
-    break;
-    default:
-    break;
-    }
-    updateServerState();
-}
-void TCP_Server::on_Btn_Pause_clicked()
-{
-    switch (Server_State)
-    {
-    case SERVER_START:
-    {
-        Server_State = SERVER_PAUSE;
-        ui->Btn_Pause->setText("伺服器繼續");
-        Log("伺服器繼續");
-
-    }
-    break;
-    case SERVER_STOP:
-    {
-
-    }
-    break;
-    case SERVER_PAUSE:
-    {
-        Server_State = SERVER_START;
-        ui->Btn_Pause->setText("伺服器暫停");
-        Log("伺服器暫停");
-
-    }
-    break;
     default:
     break;
     }
@@ -249,12 +226,6 @@ void TCP_Server::updateServerState()
         ui->LE_Servar_State->setText("未啟動");
         ui->LE_Servar_State->setStyleSheet(m_CSS.ServerState_Stop);
 
-    }
-    break;
-    case SERVER_PAUSE:
-    {
-        ui->LE_Servar_State->setText("暫停");
-        ui->LE_Servar_State->setStyleSheet(m_CSS.ServerState_Pause);
     }
     break;
     default:
@@ -293,6 +264,7 @@ void TCP_Server::slot_newConnection()
 {
     QTcpSocket* socket = m_server->nextPendingConnection();
     m_sockets.push_back(socket);
+
     connect(socket, SIGNAL(readyRead()), this, SLOT(Client_to_Server()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(slot_disConnected()));
 
@@ -326,19 +298,19 @@ void TCP_Server::slot_disConnected()
 void TCP_Server::Client_to_Server()
 {
     QTcpSocket* socket = (QTcpSocket*)QObject::sender();  // 获得是哪个socket收到了消息
+    
+    //if (0)
+    //{
+    //    MassageData p_massagedata;
+    //    p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    if (Server_State == SERVER_PAUSE)
-    {
-        MassageData p_massagedata;
-        p_massagedata.m_Time = QDateTime::currentDateTime();
-
-        auto head = Packet_head(m_Setting.Version, "MAIN_S_C_PAUSE");
-        auto body = Packet_body(MAIN_S_C_PAUSE, p_massagedata);
-        MyPacket receivedPacket(head, body);
-        QByteArray Bytes = receivedPacket.toQByteArray();
-        socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
-        return;
-    }
+    //    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_PAUSE");
+    //    auto body = Packet_body(MAIN_S_C_PAUSE, p_massagedata);
+    //    MyPacket receivedPacket(head, body);
+    //    QByteArray Bytes = receivedPacket.toQByteArray();
+    //    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    //    return;
+    //}
 
     MyPacket Packet(Common::Encryption_byXOR(socket->readAll(), XOR_KEY));
 
@@ -359,10 +331,7 @@ void TCP_Server::Client_to_Server()
         Server_to_Client(MAIN_S_C_LOGININIT,socket , Packet);
         break;
     }
-    case MAIN_S_C_PAUSE: {
-        Server_to_Client(MAIN_S_C_LOGININIT, socket, Packet);
-        break;
-    }
+
     default:
         break;
     }
@@ -435,7 +404,8 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
     auto body = Packet_body(MAIN_S_C_LOGIN, p_massagedata);
     MyPacket receivedPacket(head, body);
     QByteArray Bytes = receivedPacket.toQByteArray();
-    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    ET->addEvent(socket, Bytes);
 
 }
 void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
@@ -445,11 +415,15 @@ void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
     auto head = Packet_head(m_Setting.Version, "MAIN_S_C_CHAT");
     auto body = Packet_body(MAIN_S_C_CHAT, p_massagedata);
     MyPacket receivedPacket(head, body);
-        QByteArray Bytes = receivedPacket.toQByteArray();
+    QByteArray Bytes = receivedPacket.toQByteArray();
 
     for (int i = 0; i < m_sockets.size(); i++)
     {
-        socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+        //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+        //QMetaObject::invokeMethod(eventManager, "addEvent", Qt::QueuedConnection,
+        //    Q_ARG(QByteArray, Bytes), Q_ARG(QTcpSocket*, socket));
+        ET->addEvent(m_sockets[i], Bytes);
+
     }
 }
 void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
@@ -467,7 +441,9 @@ void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
     auto body = Packet_body(MAIN_S_C_SINGUP, p_massagedata);
     MyPacket receivedPacket(head, body);
     QByteArray Bytes = receivedPacket.toQByteArray();
-    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    ET->addEvent(socket, Bytes);
+
 }
 void TCP_Server::Send_LoginInit(QTcpSocket* socket)
 {
@@ -488,5 +464,14 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
     auto body = Packet_body(MAIN_S_C_LOGININIT, p_massagedata);
     MyPacket receivedPacket(head, body);
     QByteArray Bytes = receivedPacket.toQByteArray();
-    socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    ET->addEvent(socket, Bytes);
+}
+
+void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray Packet)
+{
+    // @加密
+    // 加密後傳輸
+    socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
+    emit SendFinish();
 }

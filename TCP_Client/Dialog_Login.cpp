@@ -107,12 +107,7 @@ void Dialog_Login::Client_to_Server(Command command)
 }
 void Dialog_Login::Server_to_Client()
 {
-	//MyPacket Packet;
-	//QJsonDocument receivedJsonDoc = QJsonDocument::fromJson(m_socket->readAll());
-	//if (!receivedJsonDoc.isNull())
-	//	Packet.fromJsonObject(receivedJsonDoc.object());
-	//else
-	//	return;
+	// @解密
 	MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
 
 	switch (Packet.getCommand()){
@@ -124,10 +119,10 @@ void Dialog_Login::Server_to_Client()
 		Receive_SignUp(Packet);
 		break;
 	}
-	case MAIN_S_C_PAUSE: {
-		QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
-		break;
-	}
+	//case MAIN_S_C_PAUSE: {
+	//	QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
+	//	break;
+	//}
 	default:
 		break;
 	}
