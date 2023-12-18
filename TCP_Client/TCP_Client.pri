@@ -8,13 +8,17 @@ message("You are running qmake on a generated .pro file. This may not work!")
 
 
 HEADERS += ./TCP_Client.h \
+    ./Dialog_face.h \
     ./Dialog_Login.h \
+    ./ui/ui_TCP_Client.h \
     ./ui/ui_Dialog_Login.h
-SOURCES += ./Dialog_Login.cpp \
+SOURCES += ./Dialog_face.cpp \
+    ./Dialog_Login.cpp \
     ./TCP_Client.cpp \
     ./main.cpp \
     ./moc/moc_TCP_Client.cpp \
     ./rcc/qrc_TCP_Client.cpp
-FORMS += ./Dialog_Login.ui \
+FORMS += ./Dialog_face.ui \
+    ./Dialog_Login.ui \
     ./TCP_Client.ui
 RESOURCES += TCP_Client.qrc

@@ -467,7 +467,7 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
     //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
     ET->addEvent(socket, Bytes);
 }
-
+// @緩衝區  通知MainThread處理事件
 void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray Packet)
 {
     // @加密

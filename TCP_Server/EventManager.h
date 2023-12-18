@@ -66,8 +66,8 @@ protected:
             if (!m_queue->isEmpty() && !working) {
                 auto event = m_queue->dequeue();
                 working = 1;
-                // 在這裡處理事件，例如：
-                // socket->write(Common::Encryption_byXOR(event.first, XOR_KEY));
+                // 因QTCPsocket 無法跨Thread呼叫或使用,故由第二條Thread儲存及管理,
+                // 待MainThread 有空閒時才通知MainThread進行下一件事情
                 emit writeDataToSocket(event.first, event.second);
             }
         }

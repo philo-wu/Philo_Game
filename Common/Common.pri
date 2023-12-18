@@ -7,12 +7,7 @@
 message("You are running qmake on a generated .pro file. This may not work!")
 
 
-HEADERS += ./ui/ui_TCP_Server.h \
-    ./TCP_Server.h \
-    ./EventManager.h
-SOURCES += ./moc/moc_TCP_Server.cpp \
-    ./rcc/qrc_TCP_Server.cpp \
-    ./TCP_Server.cpp \
-    ./main.cpp
-FORMS += ./TCP_Server.ui
-RESOURCES += TCP_Server.qrc
+HEADERS += ./Common.h \
+    ./CSS_style.h \
+    ./framework.h \
+    ./User.h

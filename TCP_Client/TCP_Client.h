@@ -9,6 +9,7 @@
 
 #include "ui_TCP_Client.h"
 #include "Common.h"
+#include "Dialog_face.h"
 
 
 
@@ -43,9 +44,13 @@ private slots:
     void on_Btn_Signout_clicked();
     void on_Btn_Send_clicked();
     void socketStateChanged(QAbstractSocket::SocketState state);
+    void on_Btn_Emoji_clicked();
+    void on_catchFace(int row , int column, int page);
+
 private:
     Ui::TCP_ClientClass* ui;
     //Dialog_Login Dlg_Login;
+    Dialog_face* face;
 
 protected:
     void keyPressEvent(QKeyEvent* event) override {

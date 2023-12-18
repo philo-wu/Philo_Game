@@ -16,7 +16,8 @@ TCP_Client::TCP_Client(QWidget *parent):
     Diglog_Login();
 
     Connect_init();
-
+    face = new Dialog_face();
+    connect(face, SIGNAL(catchFace(int, int, int)), this, SLOT(on_catchFace(int, int, int)));
 
 }
 
@@ -111,6 +112,27 @@ void TCP_Client::on_Btn_Send_clicked()
 {
     Client_to_Server(MAIN_C_S_CHAT);
 }
+void TCP_Client::on_Btn_Emoji_clicked()
+{
+    // @表情符號
+    QPoint buttonPos = ui->Btn_Emoji->mapToGlobal(QPoint(0, 0));
+    face->move(buttonPos.x(), buttonPos.y() - face->height());
+
+    if (face->isHidden())
+        face->show();
+    else
+        face->hide();
+}
+void TCP_Client::on_catchFace(int row, int column, int page)
+{
+    // @表情符號
+    char32_t  t[] = { 0x1F601,0x0 };	//加上0x00是為了防止表情後面跟隨亂碼
+    t[0] = 0x1F601 + row * 11 + column + page * 132;
+    QString faceFileName = QString::fromUcs4(t);
+    QString str = ui->lineEdit->text();
+    ui->lineEdit->setText(str + faceFileName);
+    face->hide();
+}
 void TCP_Client::socketStateChanged(QAbstractSocket::SocketState state)
 {
     if (state == QAbstractSocket::UnconnectedState) {
@@ -155,6 +177,13 @@ void TCP_Client::Receive_LoginInit(MyPacket packet)
         QMessageBox::critical(nullptr, "玩家清單錯誤", "未知ErrorCode");
     }
 
+    //char32_t  t[] = { 0x1F601,0x0 };	//加上0x00是为了防止表情后面跟随乱码
+
+    //for (char32_t i = 0x1F601; i <= 0x1F64F; ++i)
+    //{
+    //    t[0] = i;
+    //    ui->TB_Chat->insertPlainText(QString::fromUcs4(t));
+    //}
 }
 
 
@@ -173,7 +202,8 @@ void TCP_Client::Send_Chat()
     auto body = Packet_body(MAIN_C_S_CHAT, p_massagedata);
     MyPacket receivedPacket(head, body);
     QByteArray Bytes = receivedPacket.toQByteArray();
-    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));    ui->lineEdit->clear();
+    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    ui->lineEdit->clear();
 }
 void TCP_Client::Send_LoginInit()
 {
@@ -188,3 +218,5 @@ void TCP_Client::Send_LoginInit()
     QByteArray Bytes = receivedPacket.toQByteArray();
     m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
 }
+
+
