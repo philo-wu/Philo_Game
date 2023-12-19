@@ -27,7 +27,7 @@ TCP_Server::TCP_Server(QWidget *parent):
     //// 啟動事件線程
     //eventThread->start();
     m_server = new QTcpServer(this);
-    ET = new EventThread(this);
+    ET = new EventThread();
     ET->start();
     connect(ET, &EventThread::writeDataToSocket, this, [=](QTcpSocket* socket ,QByteArray packet) {
         Send_Packet(socket, packet);
@@ -38,8 +38,10 @@ TCP_Server::TCP_Server(QWidget *parent):
 TCP_Server::~TCP_Server()
 {
     delete UM;
+    ET->exit();
+    //delete ET; //使用exit();
+
     //  @dalete
-    //delete ET;        //當TCP_Servere關閉時會自動delete (父類關閉)
     //delete timer;     //當TCP_Servere關閉時會自動delete (父類關閉)
     //delete m_server;  //當TCP_Servere關閉時會自動delete (父類關閉)
 
