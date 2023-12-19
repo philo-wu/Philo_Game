@@ -38,6 +38,7 @@ TCP_Server::TCP_Server(QWidget *parent):
 TCP_Server::~TCP_Server()
 {
     delete UM;
+    //  @dalete
     //delete ET;        //當TCP_Servere關閉時會自動delete (父類關閉)
     //delete timer;     //當TCP_Servere關閉時會自動delete (父類關閉)
     //delete m_server;  //當TCP_Servere關閉時會自動delete (父類關閉)
@@ -463,6 +464,11 @@ void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray& Packet)
 {
     // @加密
     // 加密後傳輸
-    socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
-    emit SendFinish();
+    // @多緒Locker
+    QMutex mutex;
+    {
+        QMutexLocker locker(&mutex);
+        socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
+        emit SendFinish();
+    }
 }

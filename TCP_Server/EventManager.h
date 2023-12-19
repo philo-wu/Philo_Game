@@ -33,6 +33,7 @@ public:
 
 private:
     QQueue<T> m_queue;
+    // @locker
     mutable QMutex m_mutex;
 };
 
@@ -57,16 +58,13 @@ public:
 public slots:
     void ThreadFinish()
     {
-        working = 0;
     }
 
 protected:
-    bool working = 0;
     void run() override {
         while (true) {
-            if (!m_queue->isEmpty() && !working) {
+            if (!m_queue->isEmpty()) {
                 auto event = m_queue->dequeue();
-                working = 1;
                 // 因QTCPsocket 無法跨Thread呼叫或使用,故由第二條Thread儲存及管理,
                 // 待MainThread 有空閒時才通知MainThread進行下一件事情
                 emit writeDataToSocket(event.first, event.second);
