@@ -26,7 +26,8 @@ TCP_Server::TCP_Server(QWidget *parent):
     //connect(eventThread, &QThread::started, eventManager, &EventManager::processEvents);
     //// 啟動事件線程
     //eventThread->start();
-    ET = new EventThread();
+    m_server = new QTcpServer(this);
+    ET = new EventThread(this);
     ET->start();
     connect(ET, &EventThread::writeDataToSocket, this, [=](QTcpSocket* socket ,QByteArray packet) {
         Send_Packet(socket, packet);
@@ -37,9 +38,9 @@ TCP_Server::TCP_Server(QWidget *parent):
 TCP_Server::~TCP_Server()
 {
     delete UM;
-    //delete eventThread;
-    //delete eventManager;
-    delete timer;
+    //delete ET;        //當TCP_Servere關閉時會自動delete (父類關閉)
+    //delete timer;     //當TCP_Servere關閉時會自動delete (父類關閉)
+    //delete m_server;  //當TCP_Servere關閉時會自動delete (父類關閉)
 
 }
 void TCP_Server::update()
@@ -121,7 +122,6 @@ void TCP_Server::startServer()
     ui->LE_Servar_IP->setText(m_Setting.m_IP);
     ui->LE_Servar_Port->setText(QString::number(m_Setting.m_Port));
 
-    m_server = new QTcpServer(this);
     m_server->listen(QHostAddress::Any, ui->LE_Servar_Port->text().toInt());
     connect(m_server, SIGNAL(newConnection()), this, SLOT(slot_newConnection()));  //
 }
@@ -401,30 +401,25 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
     // @新封包格式 實際應用
-    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGIN");
-    auto body = Packet_body(MAIN_S_C_LOGIN, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
+
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_LOGIN", MAIN_S_C_LOGIN, p_massagedata);
     //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
     // @緩衝區 實際應用
-    ET->addEvent(socket, Bytes);
+    ET->addEvent(socket, receivedPacket.toQByteArray());
 
 }
 void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
 {
     MassageData p_massagedata = Packet.body.massageData;;
 
-    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_CHAT");
-    auto body = Packet_body(MAIN_S_C_CHAT, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_CHAT", MAIN_S_C_CHAT, p_massagedata);
 
     for (int i = 0; i < m_sockets.size(); i++)
     {
         //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
         //QMetaObject::invokeMethod(eventManager, "addEvent", Qt::QueuedConnection,
         //    Q_ARG(QByteArray, Bytes), Q_ARG(QTcpSocket*, socket));
-        ET->addEvent(m_sockets[i], Bytes);
+        ET->addEvent(m_sockets[i], receivedPacket.toQByteArray());
 
     }
 }
@@ -439,12 +434,9 @@ void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
     p_massagedata.m_errorcode = errorcode;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_SINGUP");
-    auto body = Packet_body(MAIN_S_C_SINGUP, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_SINGUP", MAIN_S_C_SINGUP, p_massagedata);
     //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
-    ET->addEvent(socket, Bytes);
+    ET->addEvent(socket, receivedPacket.toQByteArray());
 
 }
 void TCP_Server::Send_LoginInit(QTcpSocket* socket)
@@ -462,15 +454,12 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    auto head = Packet_head(m_Setting.Version, "MAIN_S_C_LOGININIT");
-    auto body = Packet_body(MAIN_S_C_LOGININIT, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_LOGININIT", MAIN_S_C_LOGININIT, p_massagedata);
     //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
-    ET->addEvent(socket, Bytes);
+    ET->addEvent(socket, receivedPacket.toQByteArray());
 }
 // @緩衝區  通知MainThread處理事件
-void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray Packet)
+void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray& Packet)
 {
     // @加密
     // 加密後傳輸

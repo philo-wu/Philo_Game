@@ -130,7 +130,7 @@ class Packet_head
 {
 public:
     Packet_head() { ; } //空建構用於接收資料
-    Packet_head(QString p_version, QString p_protocol)
+    Packet_head(QString& p_version, QString p_protocol)
         : Version(p_version), Protocol(p_protocol)
     {} //非空建構用於發送資料
 private:
@@ -152,7 +152,7 @@ class Packet_body
 {
 public:
     Packet_body() { ; } //空建構用於接收資料
-    Packet_body(quint32 p_command, MassageData p_massagedata)
+    Packet_body(quint32 p_command, MassageData& p_massagedata)
         : command(p_command), massageData(p_massagedata)
     {} //非空建構用於發送資料
     quint32 command = 0; // 指令
@@ -197,6 +197,9 @@ class MyPacket
 {
 public:
     // @加解密
+    MyPacket(QString& p_version, QString p_protocol, quint32 p_command, MassageData& p_massagedata)
+        : head(p_version, p_protocol), body(p_command, p_massagedata)
+    {}
     MyPacket(Packet_head p_head, Packet_body p_body)
         : head(p_head), body(p_body)
     {}

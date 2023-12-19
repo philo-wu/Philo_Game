@@ -41,7 +41,8 @@ class EventThread : public QThread
 {
     Q_OBJECT
 public:
-    EventThread()
+    EventThread(QObject* parent = nullptr)
+        : QThread(parent)
     {
         m_queue = new ThreadSafeQueue<QPair<QTcpSocket*, QByteArray>>();
     }

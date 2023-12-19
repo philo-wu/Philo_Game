@@ -16,13 +16,17 @@ TCP_Client::TCP_Client(QWidget *parent):
     Diglog_Login();
 
     Connect_init();
-    face = new Dialog_face();
+    face = new Dialog_face(this);
     connect(face, SIGNAL(catchFace(int, int, int)), this, SLOT(on_catchFace(int, int, int)));
 
 }
 
 TCP_Client::~TCP_Client()
 {
+    //  @dalete
+    //delete face;      //當TCP_Servere關閉時會自動delete (父類關閉)
+    //delete timer;     //當TCP_Servere關閉時會自動delete (父類關閉)
+    //delete m_socket;  //當TCP_Servere關閉時會自動delete (父類關閉)
     delete ui;
 }
 void TCP_Client::update()
@@ -186,7 +190,12 @@ void TCP_Client::Receive_LoginInit(MyPacket packet)
     //}
 }
 
-
+void TCP_Client::Send_Packet(QByteArray Packet)
+{
+    // @加密
+    // 加密後傳輸
+    m_socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
+}
 void TCP_Client::Send_Chat()
 {
     QString str = ui->lineEdit->text();
@@ -198,11 +207,8 @@ void TCP_Client::Send_Chat()
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    auto head = Packet_head(m_Setting.Version, "MAIN_C_S_CHAT");
-    auto body = Packet_body(MAIN_C_S_CHAT, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
-    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_C_S_CHAT", MAIN_C_S_CHAT, p_massagedata);
+    Send_Packet(receivedPacket.toQByteArray());
     ui->lineEdit->clear();
 }
 void TCP_Client::Send_LoginInit()
@@ -212,11 +218,8 @@ void TCP_Client::Send_LoginInit()
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGININIT");
-    auto body = Packet_body(MAIN_C_S_LOGININIT, p_massagedata);
-    MyPacket receivedPacket(head, body);
-    QByteArray Bytes = receivedPacket.toQByteArray();
-    m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    MyPacket receivedPacket(m_Setting.Version, "MAIN_C_S_LOGININIT", MAIN_C_S_LOGININIT, p_massagedata);
+    Send_Packet(receivedPacket.toQByteArray());
 }
 
 

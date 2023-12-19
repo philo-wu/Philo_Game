@@ -81,7 +81,7 @@ public slots:
     void slot_disConnected();
     void Client_to_Server();   
     void Server_to_Client(Command command ,QTcpSocket* socket , MyPacket Packet);
-    void Send_Packet(QTcpSocket* socket, QByteArray Packet);
+    void Send_Packet(QTcpSocket* socket, QByteArray& Packet);
 
 signals:
     // @緩衝區 通知EventManager:MainThread目前為空閒狀態
