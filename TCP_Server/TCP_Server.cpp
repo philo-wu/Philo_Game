@@ -166,6 +166,7 @@ void TCP_Server::SingUp(QString fileName, QJsonDocument& jsonDocument,MassageDat
 
         if (!UM->User_Add(p_User))
             QMessageBox::critical(nullptr, "系統錯誤", "Error : loadDataBase\nUser_Add失敗");
+        Log("創建帳號成功 Account: " + Data.m_Account);
     }
     updateUserList();
 }
@@ -400,6 +401,10 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
                 ui->LE_Servar_UserTotal->setText(QString::number(UserTotal));
                 Log("玩家登入 Account: " + p_user.m_Account);
             }
+        }
+        else
+        {
+            Log("玩家角色不存在 Account: " + p_user.m_Account);
         }
     }
 
