@@ -41,6 +41,7 @@ public:
 
 
 	// Client指令
+	void Send_Packet(QByteArray& Packet);
 	void Send_Login(QString User, QString Pass);
 	void Send_SignUp(QString User, QString Pass);
 	// Sever指令

@@ -190,7 +190,7 @@ void TCP_Client::Receive_LoginInit(MyPacket packet)
     //}
 }
 
-void TCP_Client::Send_Packet(QByteArray Packet)
+void TCP_Client::Send_Packet(QByteArray& Packet)
 {
     // @加密
     // 加密後傳輸
@@ -206,9 +206,9 @@ void TCP_Client::Send_Chat()
     p_massagedata.m_Data["Message"] = str;
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
-
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_C_S_CHAT", MAIN_C_S_CHAT, p_massagedata);
-    Send_Packet(receivedPacket.toQByteArray());
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_C_S_CHAT", MAIN_C_S_CHAT, p_massagedata).toQByteArray();
+    Send_Packet(Bytes);
     ui->lineEdit->clear();
 }
 void TCP_Client::Send_LoginInit()
@@ -218,8 +218,9 @@ void TCP_Client::Send_LoginInit()
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_C_S_LOGININIT", MAIN_C_S_LOGININIT, p_massagedata);
-    Send_Packet(receivedPacket.toQByteArray());
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_C_S_LOGININIT", MAIN_C_S_LOGININIT, p_massagedata).toQByteArray();
+    Send_Packet(Bytes);
 }
 
 

@@ -195,6 +195,13 @@ void Dialog_Login::on_Btn_Setting_OK_clicked()
 }
 
 
+void Dialog_Login::Send_Packet(QByteArray& Packet)
+{
+	// @加密
+	// 加密後傳輸
+	m_socket->write(Common::Encryption_byXOR(Packet, XOR_KEY));
+}
+
 void Dialog_Login::Send_Login(QString Account, QString Pass)
 {
 
@@ -218,11 +225,10 @@ void Dialog_Login::Send_Login(QString Account, QString Pass)
 	p_massagedata.m_errorcode = Errorcode_OK;
 	p_massagedata.m_Time = QDateTime::currentDateTime();
 
-	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_LOGIN");
-	auto body = Packet_body(MAIN_C_S_LOGIN, p_massagedata);
-	MyPacket receivedPacket(head, body);
-	QByteArray Bytes = receivedPacket.toQByteArray();
-	m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+	QByteArray Bytes;
+	Bytes = MyPacket(m_Setting.Version, "MAIN_C_S_LOGIN", MAIN_C_S_LOGIN, p_massagedata).toQByteArray();
+	Send_Packet(Bytes);
+
 }
 void Dialog_Login::Send_SignUp(QString Account, QString Pass)
 {
@@ -234,11 +240,10 @@ void Dialog_Login::Send_SignUp(QString Account, QString Pass)
 	p_massagedata.m_errorcode = Errorcode_OK;
 	p_massagedata.m_Time = QDateTime::currentDateTime();
 
-	auto head = Packet_head(m_Setting.Version, "MAIN_C_S_SINGUP");
-	auto body = Packet_body(MAIN_C_S_SINGUP, p_massagedata);
-	MyPacket receivedPacket(head, body);
-	QByteArray Bytes = receivedPacket.toQByteArray();
-	m_socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+	QByteArray Bytes;
+	Bytes = MyPacket(m_Setting.Version, "MAIN_C_S_SINGUP", MAIN_C_S_SINGUP, p_massagedata).toQByteArray();
+	Send_Packet(Bytes);
+
 }
 
 void Dialog_Login::Receive_Login(MyPacket packet)

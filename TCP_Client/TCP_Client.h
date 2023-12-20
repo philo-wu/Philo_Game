@@ -35,7 +35,7 @@ public:
     void Receive_LoginInit(MyPacket packet);
 
     // Client指令
-    void Send_Packet(QByteArray Packet);
+    void Send_Packet(QByteArray& Packet);
     void Send_Chat();
     void Send_LoginInit();
 

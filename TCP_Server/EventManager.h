@@ -47,7 +47,7 @@ public:
     {
         m_queue = new ThreadSafeQueue<QPair<QTcpSocket*, QByteArray>>();
     }
-    void addEvent( QTcpSocket* socket,  QByteArray packet) {
+    void addEvent( QTcpSocket* socket,  QByteArray& packet) {
         // 將事件加入到事件隊列
         m_queue->enqueue({socket, packet });
     }

@@ -160,6 +160,12 @@ void TCP_Server::SingUp(QString fileName, QJsonDocument& jsonDocument,MassageDat
         jsonArray.append(newData);
         jsonDocument = QJsonDocument(jsonArray);
         Common::writeJsonFile(filePath, jsonDocument);
+
+        User p_User;
+        p_User.m_Account = Data.m_Account;
+
+        if (!UM->User_Add(p_User))
+            QMessageBox::critical(nullptr, "系統錯誤", "Error : loadDataBase\nUser_Add失敗");
     }
     updateUserList();
 }
@@ -404,26 +410,25 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
     // @新封包格式 實際應用
-
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_LOGIN", MAIN_S_C_LOGIN, p_massagedata);
-    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_LOGIN", MAIN_S_C_LOGIN, p_massagedata).toQByteArray();
     // @緩衝區 實際應用
-    ET->addEvent(socket, receivedPacket.toQByteArray());
+    ET->addEvent(socket, Bytes);
 
 }
 void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
 {
     MassageData p_massagedata = Packet.body.massageData;;
 
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_CHAT", MAIN_S_C_CHAT, p_massagedata);
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_CHAT", MAIN_S_C_CHAT, p_massagedata).toQByteArray();
 
     for (int i = 0; i < m_sockets.size(); i++)
     {
         //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
         //QMetaObject::invokeMethod(eventManager, "addEvent", Qt::QueuedConnection,
         //    Q_ARG(QByteArray, Bytes), Q_ARG(QTcpSocket*, socket));
-        ET->addEvent(m_sockets[i], receivedPacket.toQByteArray());
-
+        ET->addEvent(m_sockets[i], Bytes);
     }
 }
 void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
@@ -437,10 +442,9 @@ void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
     p_massagedata.m_errorcode = errorcode;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_SINGUP", MAIN_S_C_SINGUP, p_massagedata);
-    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
-    ET->addEvent(socket, receivedPacket.toQByteArray());
-
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_SINGUP", MAIN_S_C_SINGUP, p_massagedata).toQByteArray();
+    ET->addEvent(socket, Bytes);
 }
 void TCP_Server::Send_LoginInit(QTcpSocket* socket)
 {
@@ -457,9 +461,9 @@ void TCP_Server::Send_LoginInit(QTcpSocket* socket)
     p_massagedata.m_errorcode = Errorcode_OK;
     p_massagedata.m_Time = QDateTime::currentDateTime();
 
-    MyPacket receivedPacket(m_Setting.Version, "MAIN_S_C_LOGININIT", MAIN_S_C_LOGININIT, p_massagedata);
-    //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
-    ET->addEvent(socket, receivedPacket.toQByteArray());
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_LOGININIT", MAIN_S_C_LOGININIT, p_massagedata).toQByteArray();
+    ET->addEvent(socket, Bytes);
 }
 // @緩衝區  通知MainThread處理事件
 void TCP_Server::Send_Packet(QTcpSocket* socket, QByteArray& Packet)
