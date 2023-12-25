@@ -10,15 +10,10 @@
 #include <QTextCodec>
 
 #include "framework.h"
+#include "Role_Player.h"
+#include "Role_Monster.h"
 
-class role
-{
-public:
-    int HP;
-    //int MP;
-    int ATK;
-    int DEF;
-};
+
 class DeviceSetting
 {
 public:
@@ -27,6 +22,7 @@ public:
     QDateTime	m_LoginTime;	    //登入時間
     int	        m_LoginSec = -1;	//登入時長
     QString     Version;
+
     // @版本號
     void SetVersion()
     {
@@ -52,28 +48,68 @@ public:
 class User
 {
 public:
+    User()
+        :m_Player()
+    {
+    }
+    ~User()
+    {
+
+    }
     QString	m_Account;
     //QString	m_Pass; //密碼不應該被握住
     QString	m_Permissions;
-    bool Online = 0;
     ConnectionSetting m_setting;
-    //role m_role;
+    Player* m_Player;
     bool operator==(const User& other) const {
         return m_Account == other.m_Account;
     }
+    void player_Update(QJsonObject Json_Player)
+    {
+        m_Player = new Player();
+        QPoint position;
+        position.setX(Json_Player["Position"].toObject()["X"].toInt());
+        position.setY(Json_Player["Position"].toObject()["Y"].toInt());
+
+        m_Player->Set_Role(Json_Player["NAME"].toString(),
+            Json_Player["HP"].toInt(),
+            Json_Player["HPMAX"].toInt(),
+            Json_Player["MP"].toInt(),
+            Json_Player["MPMAX"].toInt(),
+            Json_Player["ATK"].toInt(),
+            Json_Player["DEF"].toInt(),
+            Json_Player["LV"].toInt(),
+            Json_Player["EXP"].toInt(),
+            Json_Player["Money"].toInt(), 
+            Json_Player["UID"].toInt(),
+            position);
+        m_Player->Set_playstate(static_cast<MUN_Command>(Json_Player["playstate"].toInt()));
+    }
+    bool isOnline() {
+        return Online;
+    }
+    void SetOnline(bool bol) {
+        Online = bol;
+    }
+private:
+    bool Online = 0;
 
 };
 
 
 enum Command {
-    MAIN_C_S_LOGIN      ,        // 登入
+    MAIN_C_S_LOGIN      ,       // 登入
     MAIN_S_C_LOGIN      ,        
-    MAIN_C_S_CHAT       ,        // 聊天行為
+    MAIN_C_S_CHAT       ,       // 聊天行為
     MAIN_S_C_CHAT       ,
-    MAIN_C_S_SINGUP     ,        // 註冊帳號
+    MAIN_C_S_SINGUP     ,       // 註冊帳號
     MAIN_S_C_SINGUP     ,
-    MAIN_C_S_LOGININIT  ,        // 在線清單
-    MAIN_S_C_LOGININIT  
+    MAIN_C_S_LOGININIT  ,       // 在線清單
+    MAIN_S_C_LOGININIT  ,
+    MAIN_C_S_GAMEING    ,       // MUD
+    MAIN_S_C_GAMEING    ,
+    MAIN_C_S_ROLEINFO   ,       // 角色資訊
+    MAIN_S_C_ROLEINFO
 
 };
 enum Errorcode {
@@ -82,7 +118,8 @@ enum Errorcode {
     Errorcode_ACCOUNT_NOTEXIST,     // 登入回應
     Errorcode_ACCOUNT_EXIST,
     Errorcode_PASSWORD_ERROR,
-    Errorcode_REPEAT_LOGIN
+    Errorcode_REPEAT_LOGIN,
+    Errorcode_GAME_UNKNOWCOMMAND
 };
 class MassageData
 {
@@ -213,6 +250,8 @@ public:
     Packet_head head;
     Packet_body body;
 public:
+    static const QByteArray PACKET_SEPARATOR;
+
     Command getCommand() const {
         return static_cast<Command>(body.getCommand());
     }
@@ -232,7 +271,7 @@ public:
     {
         QJsonDocument jsonDoc(toJsonObject());
         QByteArray bs = jsonDoc.toJson();
-        return bs;
+        return bs + PACKET_SEPARATOR;
     }
 
 };

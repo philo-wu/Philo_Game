@@ -89,15 +89,37 @@ public:
         QBrush brush4(QColor(0, 27, 47, 255));
         brush4.setStyle(Qt::SolidPattern);
         palette.setBrush(QPalette::Active, QPalette::AlternateBase, brush4);
+        QBrush brush5(QColor(255, 255, 255, 128));
+        brush5.setStyle(Qt::NoBrush);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette::Active, QPalette::PlaceholderText, brush5);
+#endif
         palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
         palette.setBrush(QPalette::Inactive, QPalette::Text, brush);
         palette.setBrush(QPalette::Inactive, QPalette::Base, brush1);
         palette.setBrush(QPalette::Inactive, QPalette::Window, brush2);
         palette.setBrush(QPalette::Inactive, QPalette::Highlight, brush3);
         palette.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush4);
+        QBrush brush6(QColor(255, 255, 255, 128));
+        brush6.setStyle(Qt::NoBrush);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette::Inactive, QPalette::PlaceholderText, brush6);
+#endif
+        QBrush brush7(QColor(120, 120, 120, 255));
+        brush7.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush7);
+        palette.setBrush(QPalette::Disabled, QPalette::Text, brush7);
         palette.setBrush(QPalette::Disabled, QPalette::Base, brush2);
         palette.setBrush(QPalette::Disabled, QPalette::Window, brush2);
+        QBrush brush8(QColor(0, 120, 215, 255));
+        brush8.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Disabled, QPalette::Highlight, brush8);
         palette.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush4);
+        QBrush brush9(QColor(0, 0, 0, 128));
+        brush9.setStyle(Qt::NoBrush);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette::Disabled, QPalette::PlaceholderText, brush9);
+#endif
         TCP_ClientClass->setPalette(palette);
         TCP_ClientClass->setStyleSheet(QString::fromUtf8(""));
         mainWidget = new QWidget(TCP_ClientClass);
@@ -296,16 +318,16 @@ public:
         TB_Chat = new QTextBrowser(mainWidget);
         TB_Chat->setObjectName(QString::fromUtf8("TB_Chat"));
         QPalette palette1;
-        QBrush brush5(QColor(0, 0, 0, 255));
-        brush5.setStyle(Qt::SolidPattern);
-        palette1.setBrush(QPalette::Active, QPalette::Light, brush5);
-        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush5);
+        QBrush brush10(QColor(0, 0, 0, 255));
+        brush10.setStyle(Qt::SolidPattern);
+        palette1.setBrush(QPalette::Active, QPalette::Light, brush10);
+        palette1.setBrush(QPalette::Active, QPalette::Midlight, brush10);
         palette1.setBrush(QPalette::Active, QPalette::HighlightedText, brush);
-        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush5);
-        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush5);
+        palette1.setBrush(QPalette::Inactive, QPalette::Light, brush10);
+        palette1.setBrush(QPalette::Inactive, QPalette::Midlight, brush10);
         palette1.setBrush(QPalette::Inactive, QPalette::HighlightedText, brush);
-        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush5);
-        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush5);
+        palette1.setBrush(QPalette::Disabled, QPalette::Light, brush10);
+        palette1.setBrush(QPalette::Disabled, QPalette::Midlight, brush10);
         palette1.setBrush(QPalette::Disabled, QPalette::HighlightedText, brush);
         TB_Chat->setPalette(palette1);
         TB_Chat->setFocusPolicy(Qt::NoFocus);
@@ -326,10 +348,12 @@ public:
         verticalLayout_5->addWidget(label_7);
 
         tableWidget_User = new QTableWidget(mainWidget);
-        if (tableWidget_User->columnCount() < 1)
-            tableWidget_User->setColumnCount(1);
+        if (tableWidget_User->columnCount() < 2)
+            tableWidget_User->setColumnCount(2);
         QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
         tableWidget_User->setHorizontalHeaderItem(0, __qtablewidgetitem);
+        QTableWidgetItem *__qtablewidgetitem1 = new QTableWidgetItem();
+        tableWidget_User->setHorizontalHeaderItem(1, __qtablewidgetitem1);
         tableWidget_User->setObjectName(QString::fromUtf8("tableWidget_User"));
         tableWidget_User->setEditTriggers(QAbstractItemView::NoEditTriggers);
         tableWidget_User->horizontalHeader()->setVisible(false);
@@ -402,9 +426,11 @@ public:
         label_2->setText(QCoreApplication::translate("TCP_ClientClass", "\345\234\250\347\267\232\346\231\202\351\226\223 :", nullptr));
         label->setText(QCoreApplication::translate("TCP_ClientClass", "\347\247\222", nullptr));
         label_8->setText(QString());
-        label_7->setText(QCoreApplication::translate("TCP_ClientClass", "\347\267\232\344\270\212\347\224\250\346\210\266", nullptr));
+        label_7->setText(QCoreApplication::translate("TCP_ClientClass", "\350\247\222\350\211\262\347\213\200\346\205\213", nullptr));
         QTableWidgetItem *___qtablewidgetitem = tableWidget_User->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QCoreApplication::translate("TCP_ClientClass", "User", nullptr));
+        ___qtablewidgetitem->setText(QCoreApplication::translate("TCP_ClientClass", "\345\220\215\347\250\261", nullptr));
+        QTableWidgetItem *___qtablewidgetitem1 = tableWidget_User->horizontalHeaderItem(1);
+        ___qtablewidgetitem1->setText(QCoreApplication::translate("TCP_ClientClass", "\346\225\270\345\200\274", nullptr));
         Btn_Emoji->setText(QCoreApplication::translate("TCP_ClientClass", "\360\237\230\200", nullptr));
         lineEdit->setText(QString());
         Btn_Send->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\274\351\200\201", nullptr));

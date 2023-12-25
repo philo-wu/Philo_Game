@@ -13,6 +13,9 @@
     <ClCompile Include="rcc\qrc_TCP_Server.cpp">
       <Filter>中繼檔案</Filter>
     </ClCompile>
+    <ClCompile Include="MUD_Engine.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="中繼檔案">
@@ -34,6 +37,9 @@
   <ItemGroup>
     <ClInclude Include="ui\ui_TCP_Server.h">
       <Filter>中繼檔案</Filter>
+    </ClInclude>
+    <ClInclude Include="MUD_Engine.h">
+      <Filter>標頭檔案</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

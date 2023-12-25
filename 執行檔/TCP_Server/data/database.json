@@ -1,0 +1,48 @@
+[
+    {
+        "Account": "222",
+        "Pass": "222",
+        "Permissions": "member",
+        "Player": {
+            "ATK": 4,
+            "DEF": 4,
+            "EXP": 56,
+            "HP": 130,
+            "HPMAX": 130,
+            "LV": 4,
+            "MP": 115,
+            "MPMAX": 115,
+            "Money": 56,
+            "NAME": "222",
+            "Position": {
+                "X": 9,
+                "Y": 4
+            },
+            "UID": 1,
+            "playstate": 3
+        }
+    },
+    {
+        "Account": "333",
+        "Pass": "333",
+        "Permissions": "member",
+        "Player": {
+            "ATK": 1,
+            "DEF": 1,
+            "EXP": 0,
+            "HP": 100,
+            "HPMAX": 100,
+            "LV": 1,
+            "MP": 100,
+            "MPMAX": 100,
+            "Money": 0,
+            "NAME": "333",
+            "Position": {
+                "X": 9,
+                "Y": 2
+            },
+            "UID": 2,
+            "playstate": 0
+        }
+    }
+]

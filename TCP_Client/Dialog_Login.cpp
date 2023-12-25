@@ -111,24 +111,35 @@ void Dialog_Login::Client_to_Server(Command command)
 void Dialog_Login::Server_to_Client()
 {
 	// @解密
-	MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
+	//MyPacket Packet(Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY));
+	//QByteArray Bytes = m_socket->readAll();
+	//MyPacket Packet(Bytes);
 
-	switch (Packet.getCommand()){
-	case MAIN_S_C_LOGIN:{
-		Receive_Login(Packet);
-		break;
+	QByteArray Bytes = Common::Encryption_byXOR(m_socket->readAll(), XOR_KEY);
+	const char* split = MyPacket::PACKET_SEPARATOR;
+	QList<QByteArray> packets = Bytes.split(*split);
+	for (const QByteArray& packetData : packets) {
+		if (!packetData.isEmpty()) {
+			MyPacket Packet(packetData);
+			switch (Packet.getCommand()) {
+			case MAIN_S_C_LOGIN: {
+				Receive_Login(Packet);
+				break;
+			}
+			case MAIN_S_C_SINGUP: {
+				Receive_SignUp(Packet);
+				break;
+			}
+				//case MAIN_S_C_PAUSE: {
+				//	QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
+				//	break;
+				//}
+			default:
+				break;
+			}
+		}
 	}
-	case MAIN_S_C_SINGUP: {
-		Receive_SignUp(Packet);
-		break;
-	}
-	//case MAIN_S_C_PAUSE: {
-	//	QMessageBox::critical(nullptr, "錯誤", "伺服器暫停中");
-	//	break;
-	//}
-	default:
-		break;
-	}
+
 }
 
 void Dialog_Login::on_Btn_ToSignup_clicked()

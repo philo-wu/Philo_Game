@@ -6,6 +6,8 @@
 #include <QtNetwork/QHostAddress>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QScrollBar>
+#include <QPropertyAnimation>
 
 #include "ui_TCP_Client.h"
 #include "Common.h"
@@ -33,11 +35,16 @@ public:
     // Server指令
     void Receive_Chat(MyPacket packet);
     void Receive_LoginInit(MyPacket packet);
+    void Receive_MudGame(MyPacket packet);
+    void Receive_RoleInfo(MyPacket packet);
 
     // Client指令
     void Send_Packet(QByteArray& Packet);
     void Send_Chat();
     void Send_LoginInit();
+    void Send_MudGame();
+    void Send_MudGame_GetScenes();
+    void Send_RoleInfo();
 
 private slots:
     void Server_to_Client();    

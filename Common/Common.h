@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QFile>
 #include <QMessageBox>
@@ -22,7 +22,7 @@ public:
     static QJsonDocument  readJsonFile(QString filePath) {
 
         QJsonDocument jsonDocument;
-        // Åª¨ú JSON ÀÉ®×
+        // è®€å– JSON æª”æ¡ˆ
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(nullptr, "Error", "Failed to open file for reading!");
@@ -30,7 +30,7 @@ public:
             return jsonDocument;
         }
 
-        // Åª¨ú JSON ¤º®e
+        // è®€å– JSON å…§å®¹
         QByteArray jsonData = file.readAll();
         file.close();
         jsonDocument = QJsonDocument::fromJson(jsonData);
@@ -40,14 +40,14 @@ public:
 
     static void writeJsonFile(QString filePath , QJsonDocument jsonDocument) {
 
-        // ¼g¤J  JSON ÀÉ®×
+        // å¯«å…¥  JSON æª”æ¡ˆ
         QFile file(filePath);
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             qDebug() << "Failed to open file for writing.";
             return;
         }
 
-        // ¼g¤J JSON ¤º®e
+        // å¯«å…¥ JSON å…§å®¹
         //QJsonDocument modifiedJsonDocument(jsonArray);
         file.write(jsonDocument.toJson(QJsonDocument::Indented));
         file.close();
@@ -61,14 +61,14 @@ public:
                 if (jsonValue.isObject()) {
                     QJsonObject jsonObject = jsonValue.toObject();
 
-                    // ÀË¬d User Äİ©Ê¬O§_¦s¦b¨Ã¥B»P¥Ø¼Ğ¬Û²Å
+                    // æª¢æŸ¥ User å±¬æ€§æ˜¯å¦å­˜åœ¨ä¸¦ä¸”èˆ‡ç›®æ¨™ç›¸ç¬¦
                     if (jsonObject.contains("Account") && jsonObject["Account"].toString() == targetUser) {
-                        return Errorcode_ACCOUNT_EXIST;  // §ä¨ì¤F¥Ø¼Ğ User
+                        return Errorcode_ACCOUNT_EXIST;  // æ‰¾åˆ°äº†ç›®æ¨™ User
                     }
                 }
             }
         }
-        return Errorcode_OK;  // §ä¤£¨ì¥Ø¼Ğ User
+        return Errorcode_OK;  // æ‰¾ä¸åˆ°ç›®æ¨™ User
     }
     static Errorcode isUserCredentialsValid(const QString inputUser, const QString inputPass, const QJsonDocument jsonDoc) {
         if (jsonDoc.isArray()) {
@@ -78,7 +78,7 @@ public:
                 if (jsonValue.isObject()) {
                     QJsonObject jsonObject = jsonValue.toObject();
 
-                    // ÀË¬d User ©M Pass Äİ©Ê¬O§_¦s¦b¨Ã¥B»P´£¨Ñªº¬Û²Å
+                    // æª¢æŸ¥ User å’Œ Pass å±¬æ€§æ˜¯å¦å­˜åœ¨ä¸¦ä¸”èˆ‡æä¾›çš„ç›¸ç¬¦
                     if (jsonObject.contains("Account") && 
                         jsonObject["Account"].toString() == inputUser) {
                         if (jsonObject["Pass"].toString() == inputPass)
@@ -112,7 +112,7 @@ public:
     }
 
     bool User_Add(User p_User) {
-        // ÀË¬d¬O§_¤w¸g¦s¦b¬Û¦Pªº User
+        // æª¢æŸ¥æ˜¯å¦å·²ç¶“å­˜åœ¨ç›¸åŒçš„ User
         int index = -1;
         for (int i = 0; i < m_Users.size(); ++i) {
             if (m_Users.at(i).m_Account == p_User.m_Account) {
@@ -122,11 +122,11 @@ public:
         }
 
         if (index != -1) {
-            // ¦pªG¦s¦b¡A¶i¦æ§ó·s
+            // å¦‚æœå­˜åœ¨ï¼Œé€²è¡Œæ›´æ–°
             m_Users[index] = p_User;
         }
         else {
-            // ¦pªG¤£¦s¦b¡A°l¥[¨ì¦Cªí¤¤
+            // å¦‚æœä¸å­˜åœ¨ï¼Œè¿½åŠ åˆ°åˆ—è¡¨ä¸­
             m_Users.append(p_User);
         }
 

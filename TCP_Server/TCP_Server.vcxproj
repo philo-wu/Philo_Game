@@ -119,12 +119,14 @@
       <Include Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Include)</Include>
     </QtMoc>
     <ClCompile Include="moc\moc_TCP_Server.cpp" />
+    <ClCompile Include="MUD_Engine.cpp" />
     <ClCompile Include="rcc\qrc_TCP_Server.cpp" />
     <ClCompile Include="TCP_Server.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="EventManager.h" />
+    <ClInclude Include="MUD_Engine.h" />
     <ClInclude Include="ui\ui_TCP_Server.h" />
   </ItemGroup>
   <ItemGroup>

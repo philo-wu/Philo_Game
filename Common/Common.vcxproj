@@ -162,7 +162,13 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="CSS_style.h" />
+    <ClInclude Include="Equipment.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MapManager.h" />
+    <ClInclude Include="Map_Scenes.h" />
+    <ClInclude Include="Role.h" />
+    <ClInclude Include="Role_Monster.h" />
+    <ClInclude Include="Role_Player.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

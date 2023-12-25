@@ -5,6 +5,12 @@
     <ClInclude Include="User.h" />
     <ClInclude Include="CSS_style.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Equipment.h" />
+    <ClInclude Include="MapManager.h" />
+    <ClInclude Include="Map_Scenes.h" />
+    <ClInclude Include="Role.h" />
+    <ClInclude Include="Role_Player.h" />
+    <ClInclude Include="Role_Monster.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="標頭檔案">

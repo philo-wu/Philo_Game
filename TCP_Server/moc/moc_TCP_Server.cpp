@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_TCP_Server_t {
-    QByteArrayData data[16];
-    char stringdata0[190];
+    QByteArrayData data[15];
+    char stringdata0[178];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -46,15 +46,14 @@ QT_MOC_LITERAL(10, 131, 11), // "QTcpSocket*"
 QT_MOC_LITERAL(11, 143, 6), // "socket"
 QT_MOC_LITERAL(12, 150, 8), // "MyPacket"
 QT_MOC_LITERAL(13, 159, 6), // "Packet"
-QT_MOC_LITERAL(14, 166, 11), // "Send_Packet"
-QT_MOC_LITERAL(15, 178, 11) // "QByteArray&"
+QT_MOC_LITERAL(14, 166, 11) // "Send_Packet"
 
     },
     "TCP_Server\0SendFinish\0\0on_Btn_Start_clicked\0"
     "slot_newConnection\0slot_disConnected\0"
     "Client_to_Server\0Server_to_Client\0"
     "Command\0command\0QTcpSocket*\0socket\0"
-    "MyPacket\0Packet\0Send_Packet\0QByteArray&"
+    "MyPacket\0Packet\0Send_Packet"
 };
 #undef QT_MOC_LITERAL
 
@@ -91,7 +90,7 @@ static const uint qt_meta_data_TCP_Server[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 8, 0x80000000 | 10, 0x80000000 | 12,    9,   11,   13,
-    QMetaType::Void, 0x80000000 | 10, 0x80000000 | 15,   11,   13,
+    QMetaType::Void, 0x80000000 | 10, QMetaType::QByteArray,   11,   13,
 
        0        // eod
 };

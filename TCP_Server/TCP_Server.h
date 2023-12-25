@@ -13,7 +13,7 @@
 #include "EventManager.h"
 #include "./ui/ui_TCP_Server.h"
 #include "Common.h"
-
+#include "MUD_Engine.h"
 enum ServerState {
     SERVER_START,                  // 成功
     SERVER_STOP
@@ -59,7 +59,11 @@ public:
     void Load_Setting();
     void Save_Setting();
 
-    void loadDataBase(QString fileName, QJsonDocument& jsonDocument);
+    void LoadDataBase(QString fileName, QJsonDocument& jsonDocument);
+    void SaveDataBase(QString fileName, QJsonDocument& jsonDocument);
+
+    void SavePlayer(User& user);
+
     void SingUp(QString fileName, QJsonDocument& jsonDocument,MassageData Data);
     void updateServerState();
     void updateUserList();
@@ -73,6 +77,8 @@ public:
     void Send_Chat(QTcpSocket* socket , MyPacket Packet);
     void Send_Singup(QTcpSocket* socket , MyPacket Packet);
     void Send_LoginInit(QTcpSocket* socket);
+    void Send_MudGame(QTcpSocket* socket, MyPacket Packet);
+    void Send_RoleInfo(QTcpSocket* socket, MyPacket Packet);
 
 public slots:
     void on_Btn_Start_clicked();
@@ -81,7 +87,7 @@ public slots:
     void slot_disConnected();
     void Client_to_Server();   
     void Server_to_Client(Command command ,QTcpSocket* socket , MyPacket Packet);
-    void Send_Packet(QTcpSocket* socket, QByteArray& Packet);
+    void Send_Packet(QTcpSocket* socket, QByteArray Packet);
 
 signals:
     // @緩衝區 通知EventManager:MainThread目前為空閒狀態
@@ -90,7 +96,7 @@ signals:
 private:
     Ui::TCP_ServerClass* ui;
     QJsonDocument Account_DataBase; //User資訊與帳號密碼不共存
-    UserManager* UM;
+    UserManager* UM; 
     EventThread* ET; //@緩衝區 事件隊列
-
+    MUD_Engine* MUD;
 };
