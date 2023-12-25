@@ -162,7 +162,8 @@
   <ItemGroup>
     <ClInclude Include="Common.h" />
     <ClInclude Include="CSS_style.h" />
-    <ClInclude Include="Equipment.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Item_Equipment.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Map_Scenes.h" />

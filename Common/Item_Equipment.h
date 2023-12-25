@@ -1,21 +1,15 @@
 ﻿#pragma once
-#include <QString>
-#include <QPoint>
-#include <QDebug>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QDebug>
 
-enum equipmentParts
+#include "Item.h"
+
+enum Item_equipmentParts
 {
     Part_Helmet,
     Part_Armor,
     Part_Shoe,
     Part_Weapon
 };
-enum equipmentID
+enum Item_equipmentID
 {
     Eq_Null,
     Tiro_Helmet,
@@ -43,12 +37,10 @@ enum equipmentID
     Ruins_Shoe,
     Ruins_Sword
 };
-class equipment
+class Item_equipment : public Item
 {
-    QString name;
-    equipmentParts Part;
-    equipmentID UID;
+    Item_equipmentParts Part;
+    Item_equipmentID UID;
     int ATK;
     int DEF;
-    int Price;
 };

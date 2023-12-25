@@ -50,51 +50,35 @@ private:
 class MonsterTable
 {
 public:
-    // 獲取特定等級的經驗值
-    int GetEXP(int level)
+    void Get_Monster(MonsterID ID, Monster& p_monster)
     {
-        auto it = Monster_EXPTable.find(level);
-        if (it != Monster_EXPTable.end())
-        {
-            return it.value();
-        }
-        // 如果等級不存在，返回一個適當的預設值（這裡返回0）
-        return 0;
+        p_monster = MonsterTable[ID];
     }
-    int GetMoney(int level)
-    {
-        auto it = Monster_EXPTable.find(level);
-        if (it != Monster_EXPTable.end())
-        {
-            return it.value();
-        }
-        // 如果等級不存在，返回一個適當的預設值（這裡返回0）
-        return 0;
-    }
-    void parseTable(QString fileName)
+    void parseTable(QString fileName)   
     {
         QString appDir = QCoreApplication::applicationDirPath();
         QString filePath = appDir + fileName;
-        QJsonObject jsonObject = Common::readJsonFile(filePath).object();
+        QJsonDocument jsonDocument = Common::readJsonFile(filePath);
+        if (jsonDocument.isArray()) {
+            // 取得 JSON 陣列
+            QJsonArray jsonArray = jsonDocument.array();
+            // 在這裡進行讀取和修改操作
+            for (int row = 0; row < jsonArray.size(); ++row) {
+                QJsonObject jsonObject = jsonArray[row].toObject();
 
-        QJsonObject EXP = jsonObject["EXP"].toObject();
-        for (auto it = EXP.begin(); it != EXP.end(); ++it)
-        {
-            int level = it.key().toInt();
-            int experience = it.value().toInt();
-            Monster_EXPTable[level] = experience;
+                // 讀取資料
+                MonsterID ID = static_cast<MonsterID>(jsonObject["MonsterID"].toInt());
+                Monster p_monster;
+                p_monster.Monster_Create(jsonObject["Monster"].toObject());
+
+                MonsterTable[ID] = p_monster;
+            }
         }
-        QJsonObject Money = jsonObject["Money"].toObject();
-        for (auto it = Money.begin(); it != Money.end(); ++it)
-        {
-            int level = it.key().toInt();
-            int Money = it.value().toInt();
-            Monster_MoneyTable[level] = Money;
-        }
+
     }
 private:
-    QMap<int, int> Monster_EXPTable;
-    QMap<int, int> Monster_MoneyTable;
+    QMap<MonsterID, Monster> MonsterTable;
+
 
 };
 class ExperienceTable
@@ -129,6 +113,8 @@ private:
 
 
 };
+
+
 
 class MUD_Engine
 {

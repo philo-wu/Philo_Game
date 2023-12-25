@@ -7,7 +7,7 @@
             "ATK": 4,
             "DEF": 4,
             "EXP": 56,
-            "HP": 130,
+            "HP": 110,
             "HPMAX": 130,
             "LV": 4,
             "MP": 115,
@@ -16,10 +16,10 @@
             "NAME": "222",
             "Position": {
                 "X": 9,
-                "Y": 4
+                "Y": 2
             },
             "UID": 1,
-            "playstate": 3
+            "playstate": 0
         }
     },
     {

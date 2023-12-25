@@ -1,26 +1,123 @@
-{
-    "EXP" : {
-        "1": 7,
-        "2": 12,
-        "3": 20,
-        "4": 35,
-        "5": 53,
-        "6": 80,
-        "7": 120,
-        "8": 170,
-        "9": 230,
-        "10": 1800
-        },
-    "Money": {
-        "1": 1,
-        "2": 3,
-        "3": 5,
-        "4": 8,
-        "5": 10,
-        "6": 15,
-        "7": 22,
-        "8": 30,
-        "9": 38,
-        "10": 100
+
+[
+    {
+        "MonsterID": 0,
+        "Monster": {
+            "ATK": 3,
+            "DEF": 0,
+            "EXP": 7,
+            "HP": 5,
+            "LV": 4,
+            "Money": 1,
+            "NAME": "史萊姆"
         }
-}
+    },
+    {
+        "MonsterID": 1,
+        "Monster": {
+            "ATK": 4,
+            "DEF": 1,
+            "EXP": 12,
+            "HP": 100,
+            "LV": 2,
+            "Money": 3,
+            "NAME": "狼"
+        }
+    },
+    {
+        "MonsterID": 2,
+        "Monster": {
+            "ATK": 6,
+            "DEF": 1,
+            "EXP": 20,
+            "HP": 100,
+            "LV": 3,
+            "Money": 5,
+            "NAME": "哥布林"
+        }
+    },
+    {
+        "MonsterID": 3,
+        "Monster": {
+            "ATK": 8,
+            "DEF": 1,
+            "EXP": 35,
+            "HP": 20,
+            "LV": 4,
+            "Money": 8,
+            "NAME": "森林史萊姆"
+        }
+    },
+    {
+        "MonsterID": 4,
+        "Monster": {
+            "ATK": 7,
+            "DEF": 4,
+            "EXP": 53,
+            "HP": 25,
+            "LV": 5,
+            "Money": 10,
+            "NAME": "森林狼"
+        }
+    },
+    {
+        "MonsterID": 5,
+        "Monster": {
+            "ATK": 10,
+            "DEF": 2,
+            "EXP": 80,
+            "HP": 30,
+            "LV": 6,
+            "Money": 15,
+            "NAME": "森林哥布林"
+        }
+    },
+    {
+        "MonsterID": 6,
+        "Monster": {
+            "ATK": 9,
+            "DEF": 5,
+            "EXP": 120,
+            "HP": 50,
+            "LV": 7,
+            "Money": 22,
+            "NAME": "廢墟史萊姆"
+        }
+    },
+    {
+        "MonsterID": 7,
+        "Monster": {
+            "ATK": 10,
+            "DEF": 6,
+            "EXP": 0,
+            "HP": 60,
+            "LV": 8,
+            "Money": 30,
+            "NAME": "廢墟狼"
+        }
+    },
+    {
+        "MonsterID": 8,
+        "Monster": {
+            "ATK": 10,
+            "DEF": 8,
+            "EXP": 230,
+            "HP": 70,
+            "LV": 9,
+            "Money": 38,
+            "NAME": "廢墟哥布林"
+        }
+    },
+    {
+        "MonsterID": 9,
+        "Monster": {
+            "ATK": 17,
+            "DEF": 10,
+            "EXP": 1800,
+            "HP": 200,
+            "LV": 10,
+            "Money": 100,
+            "NAME": "惡龍"
+        }
+    }
+]

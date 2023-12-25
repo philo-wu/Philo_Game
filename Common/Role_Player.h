@@ -43,7 +43,7 @@ public:
 protected:
     //int UID;
 
-    QMap<equipmentParts, equipment> Eqs_Using;
+    QMap<Item_equipmentParts, Item_equipment> Eqs_Using;
     QList<int> Sight_Role;
     MUN_Command playstate;
 

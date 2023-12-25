@@ -173,6 +173,7 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 	QString str ;
 	//str += "歡迎來到勇者鬥惡龍\n";
 	//str += "qwer";
+	str += "\n";
 
 	switch (player->Get_playstate())
 	{
@@ -222,143 +223,9 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 void MUD_Engine::Spawn_Monsters(MonsterID MID, QPoint pos)
 {
 	Monster* Mons = new Monster;
-	Mons->Set_Position(pos);
+	Mon_Table.Get_Monster(MID, *Mons);
 	Mons->Set_UID(UID_Table.GetMonsterUID());
-
-	switch (MID)
-	{
-	case LV1_Slime:{
-		int LV = 1;
-		Mons->Set_NAME("史萊姆");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(5);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(3);
-		Mons->Set_DEF(0);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-	}
-		break;
-	case LV2_Wolf: {
-		int LV = 2;
-		Mons->Set_NAME("狼");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(10);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(3);
-		Mons->Set_DEF(1);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV3_Goblin: {
-		int LV = 3;
-		Mons->Set_NAME("哥布林");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(15);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(4);
-		Mons->Set_DEF(1);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV4_ForestSlime: {
-		int LV = 4;
-		Mons->Set_NAME("森林史萊姆");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(20);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(4);
-		Mons->Set_DEF(0);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV5_ForestWolf: {
-		int LV = 5;
-		Mons->Set_NAME("森林狼");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(25);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(4);
-		Mons->Set_DEF(1);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV6_ForestGoblin: {
-		int LV = 6;
-		Mons->Set_NAME("森林哥布林");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(30);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(5);
-		Mons->Set_DEF(1);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV7_RuinSlime: {
-		int LV = 7;
-		Mons->Set_NAME("廢墟史萊姆");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(50);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(7);
-		Mons->Set_DEF(0);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV8_RuinWolf: {
-		int LV = 8;
-		Mons->Set_NAME("廢墟狼");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(60);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(8);
-		Mons->Set_DEF(2);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV9_RuinGoblin: {
-		int LV = 9;
-		Mons->Set_NAME("廢墟哥布林");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(70);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(8);
-		Mons->Set_DEF(3);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-
-	}
-		break;
-	case LV10_Dragon: {
-		int LV = 10;
-		Mons->Set_NAME("惡龍");
-		Mons->Set_LV(LV);
-		Mons->Set_HP(200);
-		Mons->Set_MP(0);
-		Mons->Set_ATK(15);
-		Mons->Set_DEF(12);
-		Mons->Set_EXP(Mon_Table.GetEXP(LV));
-		Mons->Set_Money(Mon_Table.GetMoney(LV));
-	}
-		break;
-	default:
-		break;
-	}
-
+	Mons->Set_Position(pos);
 	Map.AddUID(pos, Mons->Get_UID());
 	Role_Map.insert(Mons->Get_UID(),Mons);
 }
@@ -574,6 +441,12 @@ void MUD_Engine::Observe(MassageData& p_massagedata, QString& str, Player* playe
 {
 	if (Minorcommand > player->Get_SightRole().size())
 	{
+		if (player->Get_SightRole().size() == 0)
+		{
+			player->Set_playstate(Player_Idle);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			return;
+		}
 		player->Set_playstate(Player_Observe);
 		str += "沒有這個敵人\n";
 		p_massagedata.m_errorcode = Errorcode_OK;
@@ -608,8 +481,15 @@ void MUD_Engine::Observe(MassageData& p_massagedata, QString& str, Player* playe
 }
 void MUD_Engine::Attack(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand)
 {
-	if (Minorcommand > player->Get_SightRole().size()-1)
+	if (Minorcommand > player->Get_SightRole().size())
 	{
+		if (player->Get_SightRole().size() == 0)
+		{
+			player->Set_playstate(Player_Idle);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			return;
+		}
+
 		player->Set_playstate(Player_Attack);
 		str += "沒有這個敵人\n";
 		p_massagedata.m_errorcode = Errorcode_OK;

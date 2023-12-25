@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 
-#include "Equipment.h"
+#include "Item_Equipment.h"
 #include <QCoreApplication>
 
 enum RoleID

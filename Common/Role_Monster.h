@@ -31,7 +31,23 @@ public:
     {
         ;
     }
+    void Monster_Create(QJsonObject Json_Player)
+    {
+        QPoint pos = QPoint(0, 0);
+        Set_Role(Json_Player["NAME"].toString(),
+            Json_Player["HP"].toInt(),
+            Json_Player["HP"].toInt(),
+            0,
+            0,
+            Json_Player["ATK"].toInt(),
+            Json_Player["DEF"].toInt(),
+            Json_Player["LV"].toInt(),
+            Json_Player["EXP"].toInt(),
+            Json_Player["Money"].toInt(),
+            0,
+            pos);
+    }
 protected:
     bool IsBoss;
-    QList<equipment> Eq_Drop;
+    QList<Item> Eq_Drop;
 };
