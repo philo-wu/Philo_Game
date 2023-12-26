@@ -83,6 +83,16 @@ public:
             Json_Player["Money"].toInt(), 
             Json_Player["UID"].toInt(),
             position);
+        QJsonObject Equipment = Json_Player["Equipment"].toObject();
+        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Weapon)].toInt()));
+        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Helmet)].toInt()));
+        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Armor)].toInt()));
+        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Shoe)].toInt()));
+        QJsonArray m_Backpack = Json_Player["Backpack"].toArray();
+        for (int i = 0; i < m_Backpack.size(); ++i)
+        {
+            m_Player->Backpack.append(m_Backpack[i].toInt());
+        }
         m_Player->Set_playstate(static_cast<MUN_Command>(Json_Player["playstate"].toInt()));
     }
     bool isOnline() {

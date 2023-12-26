@@ -1,0 +1,23 @@
+
+[
+    {
+        "EquipmentID": 0,
+        "Item": {
+            "ItemID": 10001,
+            "HP": 0,
+            "MP": 0,
+            "Money": 10,
+            "NAME": "小紅藥"
+        }
+    },
+    {
+        "EquipmentID": 1,
+        "Item": {
+            "ItemID": 10002,
+            "HP": 0,
+            "MP": 0,
+            "Money": 30,
+            "NAME": "中紅藥"
+        }
+    }
+]

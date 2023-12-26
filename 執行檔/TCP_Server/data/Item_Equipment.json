@@ -1,0 +1,224 @@
+
+[
+    {
+        "EquipmentID": 0,
+        "Equipment": {
+            "ItemID": 0,
+            "Part" : 0,
+            "ATK": 0,
+            "DEF": 0,
+            "HP": 0,
+            "MP": 0,
+            "Money": 0,
+            "NAME": "無裝備"
+        }
+    },
+    {
+        "EquipmentID": 1,
+        "Equipment": {
+            "ItemID": 1,
+            "Part" : 0,
+            "ATK": 1,
+            "DEF": 0,
+            "HP": 0,
+            "MP": 0,
+            "Money": 20,
+            "NAME": "新手劍"
+        }
+    },
+    {
+        "EquipmentID": 2,
+        "Equipment": {
+            "ItemID": 2,
+            "Part" : 0,
+            "ATK": 0,
+            "DEF": 1,
+            "HP": 0,
+            "MP": 5,
+            "Money": 15,
+            "NAME": "新手頭盔"
+        }
+    },
+    {
+        "EquipmentID": 3,
+        "Equipment": {
+            "ItemID": 3,
+            "Part" : 0,
+            "ATK": 0,
+            "DEF": 1,
+            "HP": 10,
+            "MP": 0,
+            "Money": 20,
+            "NAME": "新手盔甲"
+        }
+    },
+    {
+        "EquipmentID": 4,
+        "Equipment": {
+            "ItemID": 4,
+            "Part" : 0,
+            "ATK": 0,
+            "DEF": 1,
+            "HP": 5,
+            "MP": 0,
+            "Money": 15,
+            "NAME": "新手腿甲"
+        }
+    },
+    {
+        "EquipmentID": 5,
+        "Equipment": {
+            "ItemID": 5,
+            "Part" : 0,
+            "ATK": 2,
+            "DEF": 0,
+            "HP": 0,
+            "MP": 0,
+            "Money": 50,
+            "NAME": "鐵劍"
+        }
+    },
+    {
+        "EquipmentID": 6,
+        "Equipment": {
+            "ItemID": 6,
+            "Part" : 1,
+            "ATK": 1,
+            "DEF": 1,
+            "HP": 5,
+            "MP": 10,
+            "Money": 30,
+            "NAME": "鐵頭盔"
+        }
+    },
+    {
+        "EquipmentID": 7,
+        "Equipment": {
+            "ItemID": 7,
+            "Part" : 2,
+            "ATK": 0,
+            "DEF": 2,
+            "HP": 20,
+            "MP": 0,
+            "Money": 50,
+            "NAME": "鐵盔甲"
+        }
+    },
+    {
+        "EquipmentID": 8,
+        "Equipment": {
+            "ItemID": 8,
+            "Part" : 3,
+            "ATK": 1,
+            "DEF": 1,
+            "HP": 10,
+            "MP": 0,
+            "Money": 30,
+            "NAME": "鐵腿甲"
+        }
+    },
+    {
+        "EquipmentID": 9,
+        "Equipment": {
+            "ItemID": 9,
+            "Part" : 0,
+            "ATK": 2,
+            "DEF": 0,
+            "HP": 0,
+            "MP": 0,
+            "Money": 60,
+            "NAME": "森林劍"
+        }
+    },
+    {
+        "EquipmentID": 10,
+        "Equipment": {
+            "ItemID": 10,
+            "Part" : 1,
+            "ATK": 1,
+            "DEF": 1,
+            "HP": 5,
+            "MP": 10,
+            "Money": 40,
+            "NAME": "森林盔"
+        }
+    },
+    {
+        "EquipmentID": 11,
+        "Equipment": {
+            "ItemID": 11,
+            "Part" : 2,
+            "ATK": 0,
+            "DEF": 2,
+            "HP": 20,
+            "MP": 0,
+            "Money": 60,
+            "NAME": "森林甲"
+        }
+    },
+    {
+        "EquipmentID": 12,
+        "Equipment": {
+            "ItemID": 12,
+            "Part" : 3,
+            "ATK": 1,
+            "DEF": 1,
+            "HP": 10,
+            "MP": 0,
+            "Money": 40,
+            "NAME": "森林腿甲"
+        }
+    },
+    {
+        "EquipmentID": 13,
+        "Equipment": {
+            "ItemID": 13,
+            "Part" : 0,
+            "ATK": 3,
+            "DEF": 0,
+            "HP": 0,
+            "MP": 0,
+            "Money": 50,
+            "NAME": "廢墟劍"
+        }
+    },
+    {
+        "EquipmentID": 14,
+        "Equipment": {
+            "ItemID": 14,
+            "Part" : 1,
+            "ATK": 2,
+            "DEF": 1,
+            "HP": 10,
+            "MP": 20,
+            "Money": 100,
+            "NAME": "廢墟盔"
+        }
+    },
+    {
+        "EquipmentID": 15,
+        "Equipment": {
+            "ItemID": 15,
+            "Part" : 2,
+            "ATK": 0,
+            "DEF": 3,
+            "HP": 30,
+            "MP": 0,
+            "Money": 150,
+            "NAME": "廢墟甲"
+        }
+    },
+    {
+        "EquipmentID": 16,
+        "Equipment": {
+            "ItemID": 16,
+            "Part" : 3,
+            "ATK": 1,
+            "DEF": 2,
+            "HP": 20,
+            "MP": 0,
+            "Money": 100,
+            "NAME": "廢墟腿甲"
+        }
+    }
+]

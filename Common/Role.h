@@ -1,8 +1,14 @@
 ﻿#pragma once
 
 
+
 #include "Item_Equipment.h"
-#include <QCoreApplication>
+#include "Item_Potion.h"
+
+#define PLAYER_UID_START	1
+#define PLAYER_UID_END	    10000
+#define MONSTER_UID_START	10001
+#define MONSTER_UID_END		20000
 
 enum RoleID
 {
@@ -52,21 +58,27 @@ public:
     }
     virtual void beAttack(int number, QString& str)
     {
-        str += Get_NAME() + " 承受 " + QString::number(number) + " 傷害" + "\n";
-        HP -= number;
+        int hurt;
+        if (number > DEF)
+            hurt = number - DEF;
+        else
+            hurt = 0;
+
+        str += Get_NAME() + " 承受 " + QString::number(hurt) + " 傷害" + "\n";
+        HP -= hurt;
         if (HP < 0)
             HP = 0;
     }
     virtual void beHealingHP(int number, QString& str)
     {
-        str += Get_NAME() + " 生命完全回復!!\n";
+        str += Get_NAME() + " HP回復" + QString::number(number) + "\n";
         HP += number;
         if (HP > HPMAX)
             HP = HPMAX;
     }
     virtual void beHealingMP(int number, QString& str)
     {
-        str += Get_NAME() + " 魔力完全回復!!\n";
+        str += Get_NAME() + " MP回復" + QString::number(number) + "\n";
         MP += number;
         if (MP > MPMAX)
             MP = MPMAX;

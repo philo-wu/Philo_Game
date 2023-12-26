@@ -5,18 +5,23 @@
         "Permissions": "member",
         "Player": {
             "ATK": 4,
-            "DEF": 4,
-            "EXP": 56,
-            "HP": 110,
+            "Backpack": [
+                2,
+                0,
+                0
+            ],
+            "DEF": 5,
+            "EXP": 63,
+            "HP": 107,
             "HPMAX": 130,
             "LV": 4,
-            "MP": 115,
-            "MPMAX": 115,
-            "Money": 56,
+            "MP": 135,
+            "MPMAX": 130,
+            "Money": 42,
             "NAME": "222",
             "Position": {
                 "X": 9,
-                "Y": 2
+                "Y": 5
             },
             "UID": 1,
             "playstate": 0
@@ -28,8 +33,16 @@
         "Permissions": "member",
         "Player": {
             "ATK": 1,
+            "Backpack": [
+            ],
             "DEF": 1,
             "EXP": 0,
+            "Equipment": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0
+            },
             "HP": 100,
             "HPMAX": 100,
             "LV": 1,
@@ -42,6 +55,37 @@
                 "Y": 2
             },
             "UID": 2,
+            "playstate": 0
+        }
+    },
+    {
+        "Account": "3335",
+        "Pass": "3",
+        "Permissions": "member",
+        "Player": {
+            "ATK": 1,
+            "Backpack": [
+            ],
+            "DEF": 1,
+            "EXP": 0,
+            "Equipment": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0
+            },
+            "HP": 100,
+            "HPMAX": 100,
+            "LV": 1,
+            "MP": 100,
+            "MPMAX": 100,
+            "Money": 0,
+            "NAME": "3335",
+            "Position": {
+                "X": 9,
+                "Y": 2
+            },
+            "UID": 4,
             "playstate": 0
         }
     }

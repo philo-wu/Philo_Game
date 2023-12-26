@@ -20,8 +20,10 @@ enum StoreID
 	Store_Potion
 };
 
-//以下為將每張地圖視為單獨個體來實做
 
+
+//以下為將每張地圖視為單獨個體來實做
+/*
 class Scene
 {
 public:
@@ -54,3 +56,4 @@ public:
 private:
 	QList<Monster> Monsters;
 };
+*/

@@ -165,6 +165,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="Item_Equipment.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Item_Potion.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="Map_Scenes.h" />
     <ClInclude Include="Role.h" />

@@ -54,8 +54,6 @@ void TCP_Server::update()
 {
     // 更新在線時間
     foreach(User p_user, UM->Get_Users()) {
-        qDebug() << " 帳戶 : " << (p_user.m_Account);
-        qDebug() << " timeout : " << QString::number(p_user.m_Player->Get_playstate());
 
         if (p_user.m_setting.m_LoginSec!=-1)
         {
@@ -161,6 +159,17 @@ void TCP_Server::SavePlayer(User& user)
             Player["UID"] = user.m_Player->Get_UID();
             Player["Money"] = user.m_Player->Get_Money();
             Player["playstate"] = user.m_Player->Get_playstate();
+            QJsonObject Equipment;
+            Equipment[QString::number(Part_Weapon)] = 0;
+            Equipment[QString::number(Part_Helmet)] = 0;
+            Equipment[QString::number(Part_Armor)] = 0;
+            Equipment[QString::number(Part_Shoe)] = 0;
+            QJsonArray Backpack;
+            for each (int itemid in user.m_Player->Backpack)
+            {
+                Backpack.append(itemid);
+            }
+            Player["Backpack"] = Backpack;
 
             QJsonObject Position;
             Position["X"] = user.m_Player->Get_Position().x();
@@ -237,6 +246,14 @@ void TCP_Server::SingUp(QString fileName, QJsonDocument& jsonDocument,MassageDat
         Player["UID"] = MUD->UID_Table.GetPlayUID();
         Player["Money"] = 0;
         Player["playstate"] = Player_Idle;
+        QJsonObject Equipment;
+        Equipment[QString::number(Part_Weapon)] = 0;
+        Equipment[QString::number(Part_Helmet)] = 0;
+        Equipment[QString::number(Part_Armor)] = 0;
+        Equipment[QString::number(Part_Shoe)] = 0;
+        Player["Equipment"] = Equipment;
+        QJsonArray Backpack;
+        Player["Backpack"] = Backpack;
         QJsonObject Position;
         Position["X"] = 9;
         Position["Y"] = 2;
@@ -511,6 +528,7 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
                 p_setting.m_LoginSec = 0;
                 UM->User_UpdateConnection(p_user, p_setting);
                 MUD->player_login(p_user.m_Player);
+                MUD->player_update(p_user.m_Player);
 
                 UserTotal += 1;
                 ui->LE_Servar_UserTotal->setText(QString::number(UserTotal));
@@ -630,10 +648,10 @@ void TCP_Server::Send_RoleInfo(QTcpSocket* socket, MyPacket Packet)
     RoleInfo["NAME"] = p_user.m_Player->Get_NAME();
     RoleInfo["HP"] = QString::number(p_user.m_Player->Get_HP());
     RoleInfo["MP"] = QString::number(p_user.m_Player->Get_MP());
-    RoleInfo["HPMAX"] = QString::number(p_user.m_Player->Get_HPMAX());
-    RoleInfo["MPMAX"] = QString::number(p_user.m_Player->Get_MPMAX());
-    RoleInfo["ATK"] = QString::number(p_user.m_Player->Get_ATK());
-    RoleInfo["DEF"] = QString::number(p_user.m_Player->Get_DEF());
+    RoleInfo["HPMAX"] = QString::number(p_user.m_Player->total_HPMAX);
+    RoleInfo["MPMAX"] = QString::number(p_user.m_Player->total_MPMAX);
+    RoleInfo["ATK"] = QString::number(p_user.m_Player->total_ATK);
+    RoleInfo["DEF"] = QString::number(p_user.m_Player->total_DEF);
     RoleInfo["LV"] = QString::number(p_user.m_Player->Get_LV());
     RoleInfo["EXP"] = QString::number(p_user.m_Player->Get_EXP());
     RoleInfo["Money"] = QString::number(p_user.m_Player->Get_Money());

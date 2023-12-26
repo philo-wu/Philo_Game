@@ -12,6 +12,7 @@
     <ClInclude Include="Role_Player.h" />
     <ClInclude Include="Role_Monster.h" />
     <ClInclude Include="Item.h" />
+    <ClInclude Include="Item_Potion.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="標頭檔案">

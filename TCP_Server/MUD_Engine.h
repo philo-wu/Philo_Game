@@ -2,10 +2,7 @@
 #include "Common.h"
 #include "MapManager.h"
 
-#define PLAYER_UID_START	1
-#define PLAYER_UID_END	    10000
-#define MONSTER_UID_START	10001
-#define MONSTER_UID_END		20000
+
 
 class UIDTable
 {
@@ -47,72 +44,7 @@ private:
     int Play_UID;
     int Monster_UID;
 };
-class MonsterTable
-{
-public:
-    void Get_Monster(MonsterID ID, Monster& p_monster)
-    {
-        p_monster = MonsterTable[ID];
-    }
-    void parseTable(QString fileName)   
-    {
-        QString appDir = QCoreApplication::applicationDirPath();
-        QString filePath = appDir + fileName;
-        QJsonDocument jsonDocument = Common::readJsonFile(filePath);
-        if (jsonDocument.isArray()) {
-            // 取得 JSON 陣列
-            QJsonArray jsonArray = jsonDocument.array();
-            // 在這裡進行讀取和修改操作
-            for (int row = 0; row < jsonArray.size(); ++row) {
-                QJsonObject jsonObject = jsonArray[row].toObject();
 
-                // 讀取資料
-                MonsterID ID = static_cast<MonsterID>(jsonObject["MonsterID"].toInt());
-                Monster p_monster;
-                p_monster.Monster_Create(jsonObject["Monster"].toObject());
-
-                MonsterTable[ID] = p_monster;
-            }
-        }
-
-    }
-private:
-    QMap<MonsterID, Monster> MonsterTable;
-
-
-};
-class ExperienceTable
-{
-public:
-    // 獲取特定等級的經驗值
-    int GetEXP(int level)
-    {
-        auto it = experienceTable.find(level);
-        if (it != experienceTable.end())
-        {
-            return it.value();
-        }
-        // 如果等級不存在，返回一個適當的預設值（這裡返回0）
-        return 0;
-    }
-    void parseTable(QString fileName)
-    {
-        QString appDir = QCoreApplication::applicationDirPath();
-        QString filePath = appDir + fileName;
-        QJsonObject jsonObject = Common::readJsonFile(filePath).object();
-
-        for (auto it = jsonObject.begin(); it != jsonObject.end(); ++it)
-        {
-            int level = it.key().toInt();
-            int experience = it.value().toInt();
-            experienceTable[level] = experience;
-        }
-    }
-private:
-    QMap<int, int> experienceTable;
-
-
-};
 
 
 
@@ -120,17 +52,25 @@ class MUD_Engine
 {
 public:
 	MUD_Engine();
+    // 將玩家放入場景地圖
     void player_login(Player* player);
+    // 將玩家移出場景地圖
     void player_logout(Player* player);
+    // 計算玩家數值
+    void player_update(Player* player);
 
+    //主要玩家控制邏輯
 	void play(MassageData& p_massagedata,Player* player,int& Minorcommand);
+    //顯示當前指令相關資訊
 	void Scenes_Info(MassageData& p_massagedata,Player* player, int& Minorcommand);
     UIDTable UID_Table;                 //UID序號表
 
 private:
-	ExperienceTable EXP_Table;          //玩家升級表
-	MonsterTable Mon_Table;             //怪物EXP與Money表
-
+	ExperienceTable EXP_Table;          //玩家經驗表
+	MonsterTable    Mon_Table;          //怪物表
+    EquipmentTable  EQ_Table;           //裝備表
+    PotionTable     Pot_Table;          //藥劑表
+    MapManager      Map;                //地圖      
 
 	QMap<int, Role*> Role_Map;    //儲存所有角色 <UID,Role>
 
@@ -140,13 +80,19 @@ private:
     //生成怪物
 	void Spawn_Monsters(MonsterID MID,QPoint pos);
 
-	MapManager Map;
 	void idle(MassageData& p_massagedata,QString& str , Player* player, int Minorcommand);
 	void Move(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
 	void Observe(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
 	void Attack(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
-	void UseItem(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
-	void UseEQ(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+	void Backpack(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+    void UseItem(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+    void DropItem(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
 	void Store(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+    void Shopping(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+
+    void Show_Equipment(Player* m_player, QString& str);
+    void Show_Backpack(Player* m_player, QString& str);
+    void Buy_Item(int ItemID, Player* m_player, QString& str);
+
 
 };

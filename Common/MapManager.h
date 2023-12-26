@@ -37,7 +37,7 @@ public:
         };
         Weapon_points.append(QPoint(9, 8));
         Armor_points.append(QPoint(5, 5));
-        Potion_points.append(QPoint(2, 9));
+        Potion_points.append(QPoint(9, 2));
     }
 
 
