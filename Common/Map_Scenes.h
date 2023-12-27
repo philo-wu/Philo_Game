@@ -17,7 +17,8 @@ enum StoreID
 {
 	Store_Weapon,
 	Store_Armor ,
-	Store_Potion
+	Store_Potion,
+	Store_Sell
 };
 
 

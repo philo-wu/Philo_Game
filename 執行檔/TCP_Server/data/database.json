@@ -6,22 +6,25 @@
         "Player": {
             "ATK": 4,
             "Backpack": [
-                2,
-                0,
-                0
             ],
-            "DEF": 5,
-            "EXP": 63,
-            "HP": 107,
+            "DEF": 4,
+            "EXP": 77,
+            "Equipment": {
+                "0": 0,
+                "1": 2,
+                "2": 3,
+                "3": 4
+            },
+            "HP": 145,
             "HPMAX": 130,
             "LV": 4,
             "MP": 135,
             "MPMAX": 130,
-            "Money": 42,
+            "Money": 57,
             "NAME": "222",
             "Position": {
-                "X": 9,
-                "Y": 5
+                "X": 6,
+                "Y": 6
             },
             "UID": 1,
             "playstate": 0

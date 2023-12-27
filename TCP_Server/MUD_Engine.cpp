@@ -89,6 +89,7 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			str += "2.打開背包\n";
 			//str += "3.使用裝備\n";
 			str += "3.去商店\n";
+			str += "4.休息\n";
 		}
 		else if (Map.getSceneID(player->Get_Position())!= Village)
 		{
@@ -223,8 +224,9 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 		{
 			str += QString::number(i++) + ".藥水店\n";
 			player->Add_SightRole(Store_Potion);
-
 		}
+		str += QString::number(i++) + ".出售背包物品\n";
+		player->Add_SightRole(Store_Sell);
 		break;
 	}
 	case Player_Shopping: {
@@ -248,6 +250,28 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 		}
 		break;
 	}
+	case Player_Selling: {
+		str = "想要販賣甚麼\n";
+		str += "0.取消\n";
+		int i = 1;
+		for each (int itemid in player->Backpack)
+		{
+			if (itemid >= EQUIPMENT_UID_START && itemid <= EQUIPMENT_UID_END)
+			{
+				Item_Equipment EQ;
+				EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
+				str += QString::number(i++) + "." + EQ.Get_NAME() + "\n";
+
+			}
+			else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
+			{
+				Item_Potion Pot;
+				Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
+				str += QString::number(i++) + "." + Pot.Get_NAME() + "\n";
+			}
+		}
+		break;
+	}
 	default:
 		p_massagedata.m_errorcode = Errorcode_GAME_UNKNOWCOMMAND;
 		break;
@@ -260,9 +284,7 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcommand)
 {
 	QString str ;
-	//str += "歡迎來到勇者鬥惡龍\n";
-	//str += "qwer";
-	str += "\n";
+	//str += "\n";
 
 	switch (player->Get_playstate())
 	{
@@ -313,6 +335,11 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 	case Player_Shopping: {
 		str += "==購物中==\n";
 		Shopping(p_massagedata, str, player, Minorcommand);
+		break;
+	}
+	case Player_Selling: {
+		str += "==販賣東西==\n";
+		Selling(p_massagedata, str, player, Minorcommand);
 		break;
 	}
 	default:
@@ -375,6 +402,7 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 {
 	if (Map.getSceneID(player->Get_Position()) == Village)
 	{
+		// 安全區域
 		switch (Minorcommand)
 		{
 		case 0: {
@@ -393,14 +421,15 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
-		//case 3: {
-		//	player->Set_playstate(Player_UseEQ);
-
-		//	p_massagedata.m_errorcode = Errorcode_OK;
-		//	break;
-		//}
 		case 3: {
 			player->Set_playstate(Player_GoStore);
+
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		case 4: {
+			str += "在村莊中休息\n";
+			player->Rest(str);
 
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
@@ -419,6 +448,7 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 	}
 	else
 	{
+		// 危險區域
 		switch (Minorcommand)
 		{
 		case 0: {
@@ -533,7 +563,7 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 	int random = std::rand() % 10;    
 	if (random > 4 && Map.GetUIDList(player->Get_Position()).size() < 2)
 	{
-		std::srand(static_cast<unsigned int>(std::time(nullptr)+717)); //17為隨機質數
+		std::srand(static_cast<unsigned int>(std::time(nullptr)+817)); //817為隨機質數
 		random = std::rand() % 10;
 		switch (Map.getSceneID(nextpos))
 		{
@@ -667,9 +697,41 @@ void MUD_Engine::Attack(MassageData& p_massagedata, QString& str, Player* player
 			if (mon->Get_HP() <= 0)
 			{
 				str += mon->Get_NAME() + " 死亡\n";
+
+
+				std::srand(static_cast<unsigned int>(std::time(nullptr)));
+				int random = std::rand() % 100 +1;
+				if (random >= mon->Get_DropChance()) {
+					//掉落物品
+					str += mon->Get_NAME() + "掉落了東西\n";
+					std::srand(static_cast<unsigned int>(std::time(nullptr) + 817));
+					random = std::rand() % 100 + 1;
+					for (auto item : mon->Get_DropList()) {
+						int itemid = item.first;
+						int probability = item.second;
+						if (random <= probability) {
+							if (itemid >= EQUIPMENT_UID_START && itemid <= EQUIPMENT_UID_END)
+							{
+								Item_Equipment EQ;
+								EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
+								player->Backpack_Put(EQ.Get_ItemID(), str);
+								str += EQ.Get_NAME() + "\n"; //接續Backpack_Put文字
+							}
+							else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
+							{
+								Item_Potion Pot;
+								Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
+								player->Backpack_Put(Pot.Get_ItemID(), str);
+								str += Pot.Get_NAME() + "\n"; //接續Backpack_Put文字
+							}
+							break;
+						}
+						random -= probability;
+					}
+				}
 				//怪物死掉
 				player->Add_EXP(mon->Get_EXP(), str);
-				player->Add_Money(mon->Get_Money(), str);
+				player->Add_Money(mon->Get_Money()	, str);
 				player->Check_LVUP(EXP_Table.GetEXP(player->Get_LV()), str);
 			}
 			else
@@ -757,11 +819,13 @@ void MUD_Engine::UseItem(MassageData& p_massagedata, QString& str, Player* playe
 			Item_Equipment old_EQ;
 			EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(player->Get_EQ(part)), old_EQ);
 			str += " 脫下了 " + old_EQ.Get_NAME() + "\n";
-			player->Item_Put(old_EQ.Get_ItemID(), str);
-			str += old_EQ.Get_NAME() + "\n"; //接續Item_Put文字
+			player->Backpack_Put(old_EQ.Get_ItemID(), str);
+			str += old_EQ.Get_NAME() + "\n"; //接續Backpack_Put文字
 			player->Set_EQ(part, Eq_Null);
+
 			str += " 穿戴了 " + EQ.Get_NAME() + "\n";
 			player->Set_EQ(part, static_cast<Item_EquipmentID>(EQ.Get_ItemID()));
+			player->Backpack_Remove(Minorcommand - 1);
 
 			player->Set_playstate(Player_Backpack);
 			player->Clear_SightRole();
@@ -775,6 +839,7 @@ void MUD_Engine::UseItem(MassageData& p_massagedata, QString& str, Player* playe
 			Item_Potion Pot;
 			Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
 			str += " 使用了 "+ Pot.Get_NAME() + "\n";
+			player->Backpack_Remove(Minorcommand - 1);
 			switch (Pot.Get_Effect())
 			{
 			case PotionEffect_heal:
@@ -900,7 +965,10 @@ void MUD_Engine::Store(MassageData& p_massagedata, QString& str, Player* player,
 			player->Add_SightRole(M_Healing_Potion);
 			player->Set_playstate(Player_Shopping);
 			p_massagedata.m_errorcode = Errorcode_OK;
-	
+			break;
+		case Store_Sell:
+			player->Set_playstate(Player_Selling);
+			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		default:
 			p_massagedata.m_errorcode = Errorcode_GAME_UNKNOWCOMMAND;
@@ -944,6 +1012,37 @@ void MUD_Engine::Shopping(MassageData& p_massagedata, QString& str, Player* play
 	else
 	{
 		player->Set_playstate(Player_Idle);
+		player->Clear_SightRole();
+		p_massagedata.m_errorcode = Errorcode_OK;
+	}
+}
+void MUD_Engine::Selling(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand)
+{
+	if (Minorcommand > player->Backpack.size())
+	{
+		if (player->Backpack.size() == 0)
+		{
+			player->Set_playstate(Player_Idle);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			return;
+		}
+
+		player->Set_playstate(Player_Selling);
+		str += "沒有這個物品\n";
+		p_massagedata.m_errorcode = Errorcode_OK;
+		return;
+	}
+
+	if (Minorcommand != 0)
+	{
+		int itemid = player->Backpack.at(Minorcommand - 1);
+		Sell_Item(Minorcommand - 1, player, str);
+		p_massagedata.m_errorcode = Errorcode_OK;
+
+	}
+	else
+	{
+		player->Set_playstate(Player_GoStore);
 		player->Clear_SightRole();
 		p_massagedata.m_errorcode = Errorcode_OK;
 	}
@@ -1029,9 +1128,9 @@ void MUD_Engine::Buy_Item(int ItemID, Player* m_player, QString& str)
 		EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(ItemID), EQ);
 		if (m_player->Cost_Money(EQ.Get_Money(), str))
 		{
-			//str += "購買 : "+ EQ.Get_NAME() +"";
-			m_player->Item_Put(EQ.Get_ItemID(), str);
-			str += EQ.Get_NAME() + "\n"; //接續Item_Put文字
+			//str += "購買 : "+ EQ.Get_NAME() +"\n";
+			m_player->Backpack_Put(EQ.Get_ItemID(), str);
+			str += EQ.Get_NAME() + "\n"; //接續Backpack_Put文字
 		}
 	}
 	else if (ItemID >= POTION_UID_START && ItemID <= POTION_UID_END)
@@ -1041,9 +1140,42 @@ void MUD_Engine::Buy_Item(int ItemID, Player* m_player, QString& str)
 		if (m_player->Cost_Money(Pot.Get_Money(), str))
 		{
 			//str += "購買 : " + Pot.Get_NAME() + "\n";
-			m_player->Item_Put(Pot.Get_ItemID(), str);
-			str += Pot.Get_NAME() + "\n"; //接續Item_Put文字
+			m_player->Backpack_Put(Pot.Get_ItemID(), str);
+			str += Pot.Get_NAME() + "\n"; //接續Backpack_Put文字
 
+		}
+	}
+}
+void MUD_Engine::Sell_Item(int index, Player * m_player, QString & str)
+{
+	int itemid = m_player->Backpack.at(index);
+	if (itemid >= EQUIPMENT_UID_START && itemid <= EQUIPMENT_UID_END)
+	{
+		Item_Equipment EQ;
+		EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
+		if (m_player->Backpack_Remove(index))
+		{
+			str += " 販賣了 " + EQ.Get_NAME() + "\n";
+			m_player->Add_Money(EQ.Get_Money() / 2, str);
+		}
+		else
+		{
+			str += " 販賣失敗\n";
+		}
+		
+	}
+	else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
+	{
+		Item_Potion Pot;
+		Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
+		if (m_player->Backpack_Remove(index))
+		{
+			str += " 販賣了 " + Pot.Get_NAME() + "\n";
+			m_player->Add_Money(Pot.Get_Money() / 2, str);
+		}
+		else
+		{
+			str += " 販賣失敗\n";
 		}
 	}
 }

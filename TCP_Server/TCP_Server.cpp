@@ -160,10 +160,11 @@ void TCP_Server::SavePlayer(User& user)
             Player["Money"] = user.m_Player->Get_Money();
             Player["playstate"] = user.m_Player->Get_playstate();
             QJsonObject Equipment;
-            Equipment[QString::number(Part_Weapon)] = 0;
-            Equipment[QString::number(Part_Helmet)] = 0;
-            Equipment[QString::number(Part_Armor)] = 0;
-            Equipment[QString::number(Part_Shoe)] = 0;
+            Equipment[QString::number(Part_Weapon)] = user.m_Player->Eqs_Using[Part_Weapon];
+            Equipment[QString::number(Part_Helmet)] = user.m_Player->Eqs_Using[Part_Helmet];
+            Equipment[QString::number(Part_Armor)] = user.m_Player->Eqs_Using[Part_Armor];
+            Equipment[QString::number(Part_Shoe)] = user.m_Player->Eqs_Using[Part_Shoe];
+            Player["Equipment"] = Equipment;
             QJsonArray Backpack;
             for each (int itemid in user.m_Player->Backpack)
             {
@@ -614,26 +615,26 @@ void TCP_Server::Send_MudGame(QTcpSocket* socket, MyPacket Packet)
     //若有玩家指令才執行
     if (Command != -1)
     {
-        qDebug() << " play : " << QString::number(p_user.m_Player->Get_playstate());
+        //qDebug() << " play : " << QString::number(p_user.m_Player->Get_playstate());
         MassageData p_massagedata1;
         MUD->play(p_massagedata1, p_user.m_Player, Command);
-        qDebug() << " played : " << QString::number(p_user.m_Player->Get_playstate());
+        //qDebug() << " played : " << QString::number(p_user.m_Player->Get_playstate());
         QByteArray Bytes1;
         Bytes1 = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata1).toQByteArray();
         ET->addEvent(socket, Bytes1);
         UM->User_Add(p_user); //更新熱資料
-        qDebug() << " Save : " << QString::number(p_user.m_Player->Get_playstate());
+        //qDebug() << " Save : " << QString::number(p_user.m_Player->Get_playstate());
 
         SavePlayer(p_user); //更新DataBase
         Send_RoleInfo(socket, Packet);
-        qDebug() << " Saved : " << QString::number(p_user.m_Player->Get_playstate());
+        //qDebug() << " Saved : " << QString::number(p_user.m_Player->Get_playstate());
 
     }
     //發送場景訊息
     MassageData p_massagedata;
-    qDebug() << " Scenes_Info : " << QString::number(p_user.m_Player->Get_playstate());
+    //qDebug() << " Scenes_Info : " << QString::number(p_user.m_Player->Get_playstate());
     MUD->Scenes_Info(p_massagedata,p_user.m_Player, Command);
-    qDebug() << " Scenes_Infoed : " << QString::number(p_user.m_Player->Get_playstate());
+    //qDebug() << " Scenes_Infoed : " << QString::number(p_user.m_Player->Get_playstate());
 
     QByteArray Bytes;
     Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata).toQByteArray();
@@ -660,7 +661,7 @@ void TCP_Server::Send_RoleInfo(QTcpSocket* socket, MyPacket Packet)
     //Position["X"] = QString::number(p_user.m_Player->Get_Position().x());
     //Position["Y"] = QString::number(p_user.m_Player->Get_Position().y());
     //RoleInfo["Position"] = Position;
-
+    // 不直接顯示裝備資訊
     MassageData p_massagedata;
     p_massagedata.m_Data["ServerName"] = Server_Name;
     p_massagedata.m_Data["RoleInfo"] = RoleInfo;

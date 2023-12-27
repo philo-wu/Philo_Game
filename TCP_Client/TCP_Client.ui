@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>404</height>
+    <width>840</width>
+    <height>473</height>
    </rect>
   </property>
   <property name="palette">
@@ -579,6 +579,11 @@ color: rgb(255, 255, 255);</string>
           </disabled>
          </palette>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>
@@ -648,6 +653,25 @@ color: rgb(255, 255, 255);</string>
         </property>
         <property name="text">
          <string>😀</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Clear</string>
         </property>
        </widget>
       </item>

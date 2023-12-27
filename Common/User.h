@@ -85,9 +85,9 @@ public:
             position);
         QJsonObject Equipment = Json_Player["Equipment"].toObject();
         m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Weapon)].toInt()));
-        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Helmet)].toInt()));
-        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Armor)].toInt()));
-        m_Player->Set_EQ(Part_Weapon, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Shoe)].toInt()));
+        m_Player->Set_EQ(Part_Helmet, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Helmet)].toInt()));
+        m_Player->Set_EQ(Part_Armor, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Armor)].toInt()));
+        m_Player->Set_EQ(Part_Shoe, static_cast<Item_EquipmentID>(Equipment[QString::number(Part_Shoe)].toInt()));
         QJsonArray m_Backpack = Json_Player["Backpack"].toArray();
         for (int i = 0; i < m_Backpack.size(); ++i)
         {

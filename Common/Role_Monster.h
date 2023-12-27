@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Role.h"
 enum MonsterID
 {
@@ -37,7 +37,7 @@ public:
         Set_Role(Json_Mon["NAME"].toString(),
             Json_Mon["HP"].toInt(),
             Json_Mon["HP"].toInt(),
-            0,
+            0, //æ€ªç‰©ç›®å‰ç„¡é­”åŠ›
             0,
             Json_Mon["ATK"].toInt(),
             Json_Mon["DEF"].toInt(),
@@ -46,10 +46,48 @@ public:
             Json_Mon["Money"].toInt(),
             0,
             pos);
+        Set_IsBoss(Json_Mon["IsBoss"].toInt());
+        Set_DropChance(Json_Mon["total_DropChance"].toInt());
+        QJsonArray dropListArray = Json_Mon["DropList"].toArray();
+        DropList.clear();
+        for (const QJsonValue& dropItemValue : dropListArray) {
+            QJsonObject dropItem = dropItemValue.toObject();
+            DropList_Add(dropItem["ItemID"].toInt(), dropItem["Probability"].toInt());
+        }
+    }
+    void Set_IsBoss(bool bol)
+    {
+        IsBoss = bol;
+    }
+
+    void Set_DropChance(int number)
+    {
+        total_DropChance = number;
+    }
+    bool Get_IsBoss()
+    {
+        return IsBoss;
+    }
+    int Get_DropChance()
+    {
+        return total_DropChance;
+    }
+    void DropList_Add(int ItemID, int DropChance)
+    {
+        DropList.append(qMakePair(ItemID, DropChance));
+    }
+    void DropList_Clear()
+    {
+        DropList.clear();
+    }
+    QList<QPair<int, int>> Get_DropList()
+    {
+        return DropList;
     }
 protected:
-    bool IsBoss;
-    QList<Item> Eq_Drop;
+    bool IsBoss =false;
+    QList<QPair<int,int>> DropList;
+    int total_DropChance; //å…¨éƒ¨æ‰è½æ©Ÿç‡ 100ç‚º100% 0ç‚º0%
 };
 
 class MonsterTable
@@ -63,7 +101,7 @@ public:
     {
         QString appDir = QCoreApplication::applicationDirPath();
         QString filePath = appDir + fileName;
-        // Åª¨ú JSON ÀÉ®×
+        // è®€å– JSON æª”æ¡ˆ
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(nullptr, "Error", "Failed to open file for reading!");
@@ -73,13 +111,13 @@ public:
         QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonData);
 
         if (jsonDocument.isArray()) {
-            // ¨ú±o JSON °}¦C
+            // å–å¾— JSON é™£åˆ—
             QJsonArray jsonArray = jsonDocument.array();
-            // ¦b³o¸Ì¶i¦æÅª¨ú©M­×§ï¾Ş§@
+            // åœ¨é€™è£¡é€²è¡Œè®€å–å’Œä¿®æ”¹æ“ä½œ
             for (int row = 0; row < jsonArray.size(); ++row) {
                 QJsonObject jsonObject = jsonArray[row].toObject();
 
-                // Åª¨ú¸ê®Æ
+                // è®€å–è³‡æ–™
                 MonsterID ID = static_cast<MonsterID>(jsonObject["MonsterID"].toInt());
                 Monster p_monster;
                 p_monster.Monster_Create(jsonObject["Monster"].toObject());

@@ -9,7 +9,12 @@
             "HP": 5,
             "LV": 4,
             "Money": 1,
-            "NAME": "史萊姆"
+            "NAME": "史萊姆" , 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 100}
+            ],
+            "total_DropChance" : 10
         }
     },
     {
@@ -21,7 +26,12 @@
             "HP": 100,
             "LV": 2,
             "Money": 3,
-            "NAME": "狼"
+            "NAME": "狼", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 100}
+            ],
+            "total_DropChance" : 30
         }
     },
     {
@@ -33,7 +43,13 @@
             "HP": 100,
             "LV": 3,
             "Money": 5,
-            "NAME": "哥布林"
+            "NAME": "哥布林", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 90},
+                {"ItemID": 10002, "Probability": 10}
+            ],
+            "total_DropChance" : 50
         }
     },
     {
@@ -45,7 +61,16 @@
             "HP": 20,
             "LV": 4,
             "Money": 8,
-            "NAME": "森林史萊姆"
+            "NAME": "森林史萊姆", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 80},
+                {"ItemID": 9, "Probability": 3},
+                {"ItemID": 10, "Probability": 7},
+                {"ItemID": 11, "Probability": 3},
+                {"ItemID": 12, "Probability": 7}
+            ],
+            "total_DropChance" : 10
         }
     },
     {
@@ -57,7 +82,16 @@
             "HP": 25,
             "LV": 5,
             "Money": 10,
-            "NAME": "森林狼"
+            "NAME": "森林狼", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 70},
+                {"ItemID": 9, "Probability": 6},
+                {"ItemID": 10, "Probability": 9},
+                {"ItemID": 11, "Probability": 6},
+                {"ItemID": 12, "Probability": 9}
+            ],
+            "total_DropChance" : 30
         }
     },
     {
@@ -69,7 +103,18 @@
             "HP": 30,
             "LV": 6,
             "Money": 15,
-            "NAME": "森林哥布林"
+            "NAME": "森林哥布林", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10001, "Probability": 40},
+                {"ItemID": 10001, "Probability": 20},
+                {"ItemID": 9, "Probability": 7},
+                {"ItemID": 10, "Probability": 13},
+                {"ItemID": 11, "Probability": 7},
+                {"ItemID": 12, "Probability": 13}
+
+            ],
+            "total_DropChance" : 50
         }
     },
     {
@@ -81,7 +126,16 @@
             "HP": 50,
             "LV": 7,
             "Money": 22,
-            "NAME": "廢墟史萊姆"
+            "NAME": "廢墟史萊姆", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10002, "Probability": 80},
+                {"ItemID": 13, "Probability": 3},
+                {"ItemID": 14, "Probability": 7},
+                {"ItemID": 15, "Probability": 3},
+                {"ItemID": 16, "Probability": 7}
+            ],
+            "total_DropChance" : 10
         }
     },
     {
@@ -93,7 +147,16 @@
             "HP": 60,
             "LV": 8,
             "Money": 30,
-            "NAME": "廢墟狼"
+            "NAME": "廢墟狼", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10002, "Probability": 70},
+                {"ItemID": 13, "Probability": 6},
+                {"ItemID": 14, "Probability": 9},
+                {"ItemID": 15, "Probability": 6},
+                {"ItemID": 16, "Probability": 9}
+            ],
+            "total_DropChance" : 30
         }
     },
     {
@@ -105,7 +168,16 @@
             "HP": 70,
             "LV": 9,
             "Money": 38,
-            "NAME": "廢墟哥布林"
+            "NAME": "廢墟哥布林", 
+            "IsBoss" : 0,
+            "DropList" : [
+                {"ItemID": 10002, "Probability": 60},
+                {"ItemID": 13, "Probability": 7},
+                {"ItemID": 14, "Probability": 13},
+                {"ItemID": 15, "Probability": 7},
+                {"ItemID": 16, "Probability": 13}
+            ],
+            "total_DropChance" : 50
         }
     },
     {
@@ -117,7 +189,12 @@
             "HP": 200,
             "LV": 10,
             "Money": 100,
-            "NAME": "惡龍"
+            "NAME": "惡龍", 
+            "IsBoss" : 1,
+            "DropList" : [
+                {"ItemID": 10002, "Probability": 100}
+            ],
+            "total_DropChance" : 100
         }
     }
 ]

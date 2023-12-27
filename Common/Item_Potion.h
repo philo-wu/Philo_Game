@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include "Item.h"
 enum Item_PotionEffect
 {
     PotionEffect_heal,
-    PotionEffect_hurt //¼ÈµL¨Ï¥Î
+    PotionEffect_hurt //æš«ç„¡ä½¿ç”¨
 };
 enum Item_PotionID
 {
@@ -47,10 +47,10 @@ public:
         switch (Effect)
         {
         case PotionEffect_heal:
-            str += "Effect : ªvÀø\n";
+            str += "Effect : æ²»ç™‚\n";
             break;
         case PotionEffect_hurt:
-            str += "Effect : ¶Ë®`\n";
+            str += "Effect : å‚·å®³\n";
             break;
         default:
             break;
@@ -71,7 +71,7 @@ public:
     {
         QString appDir = QCoreApplication::applicationDirPath();
         QString filePath = appDir + fileName;
-        // Åª¨ú JSON ÀÉ®×
+        // è®€å– JSON æª”æ¡ˆ
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox::critical(nullptr, "Error", "Failed to open file for reading!");
@@ -81,13 +81,13 @@ public:
         QJsonDocument jsonDocument = QJsonDocument::fromJson(jsonData);
 
         if (jsonDocument.isArray()) {
-            // ¨ú±o JSON °}¦C
+            // å–å¾— JSON é™£åˆ—
             QJsonArray jsonArray = jsonDocument.array();
-            // ¦b³o¸Ì¶i¦æÅª¨ú©M­×§ï¾Ş§@
+            // åœ¨é€™è£¡é€²è¡Œè®€å–å’Œä¿®æ”¹æ“ä½œ
             for (int row = 0; row < jsonArray.size(); ++row) {
                 QJsonObject jsonObject = jsonArray[row].toObject();
 
-                // Åª¨ú¸ê®Æ
+                // è®€å–è³‡æ–™
                 Item_PotionID ID = static_cast<Item_PotionID>(jsonObject["PotionID"].toInt());
                 Item_Potion p_equipment;
                 p_equipment.Potion_Create(jsonObject["Potion"].toObject());

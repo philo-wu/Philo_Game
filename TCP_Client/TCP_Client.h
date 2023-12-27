@@ -55,6 +55,8 @@ private slots:
     void on_Btn_Emoji_clicked();
     void on_catchFace(int row , int column, int page);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::TCP_ClientClass* ui;
     //Dialog_Login Dlg_Login;

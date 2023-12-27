@@ -1,22 +1,22 @@
 
 [
     {
-        "EquipmentID": 0,
-        "Item": {
+        "PotionID": 10001,
+        "Potion": {
             "ItemID": 10001,
-            "HP": 0,
-            "MP": 0,
+            "Value": 5,
             "Money": 10,
+            "Effect": 0,
             "NAME": "小紅藥"
         }
     },
     {
-        "EquipmentID": 1,
-        "Item": {
+        "PotionID": 10002,
+        "Potion": {
             "ItemID": 10002,
-            "HP": 0,
-            "MP": 0,
+            "Value": 10,
             "Money": 30,
+            "Effect": 0,
             "NAME": "中紅藥"
         }
     }

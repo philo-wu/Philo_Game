@@ -15,7 +15,8 @@ enum MUN_Command
     Player_UseItem,	//使用道具
     Player_DropItem,//丟棄道具
     Player_GoStore, //商店
-    Player_Shopping 
+    Player_Shopping, //購物
+    Player_Selling
 };
 class Player : public Role
 {
@@ -100,8 +101,13 @@ public:
         playstate = p_playstate;
     }
 
-    bool Item_Put(int itemID ,QString& str)
+    bool Backpack_Put(int itemID ,QString& str)
     {
+        if (itemID == 0)
+        {
+            str += "未知物品無法獲得";
+            return false;
+        }
         if (Backpack.size() + 1 < BACKPACK_MAX)
         {
             str += Get_NAME() + " 獲得了物品";
@@ -118,7 +124,7 @@ public:
 
     bool Backpack_Remove(int index)
     {
-        if (index - 1 >= 0 && index - 1 < Backpack.size()) 
+        if (index >= 0 && index - 1 < Backpack.size()) 
         {
             Backpack.remove(index);
             return true;
@@ -189,8 +195,8 @@ public:
     }
     void Rest(QString& str)
     {
-        beHealingHP(HPMAX, str);
-        beHealingMP(MPMAX, str);
+        beHealingHP(total_HPMAX, str);
+        beHealingMP(total_MPMAX, str);
     }
 };
 

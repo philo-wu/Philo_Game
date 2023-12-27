@@ -12,13 +12,14 @@ TCP_Client::TCP_Client(QWidget *parent):
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&TCP_Client::update));
     ui->tableWidget_User->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
-    ui->tableWidget_User->setRowCount(0);
+    ui->tableWidget_User->setRowCount(8);
     ui->Btn_Emoji->hide();
 
     Diglog_Login();
 
     Connect_init();
     face = new Dialog_face(this);
+    face->hide();
     connect(face, SIGNAL(catchFace(int, int, int)), this, SLOT(on_catchFace(int, int, int)));
 
 }
@@ -156,6 +157,14 @@ void TCP_Client::on_Btn_Emoji_clicked()
     else
         face->hide();
 }
+
+void TCP_Client::on_pushButton_clicked()
+{
+    ui->TB_Chat->clear();
+}
+
+
+
 void TCP_Client::on_catchFace(int row, int column, int page)
 {
     // @表情符號
@@ -237,7 +246,7 @@ void TCP_Client::Receive_RoleInfo(MyPacket packet)
 {
     if (packet.body.massageData.m_errorcode == Errorcode_OK) {
         QJsonObject RoleInfo = packet.body.massageData.m_Data["RoleInfo"].toObject();
-        ui->tableWidget_User->setRowCount(10);
+        //ui->tableWidget_User->setRowCount(8);
         QString str;
         int row = 0;
         QTableWidgetItem* Item = new QTableWidgetItem("NAME : ");
@@ -360,4 +369,5 @@ void TCP_Client::Send_RoleInfo()
     Send_Packet(Bytes);
 
 }
+
 
