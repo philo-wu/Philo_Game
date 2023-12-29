@@ -25,7 +25,7 @@ public:
     User Local_User;
     QTcpSocket* m_socket;      
     QTimer* timer;
-
+    bool Can_move;
     void update();
 
     // 本地指令
@@ -42,7 +42,7 @@ public:
     void Send_Packet(QByteArray& Packet);
     void Send_Chat();
     void Send_LoginInit();
-    void Send_MudGame();
+    void Send_MudGame(QString str);
     void Send_MudGame_GetScenes();
     void Send_RoleInfo();
 
@@ -67,6 +67,48 @@ protected:
         // 檢查是否按下 Enter 鍵
         if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
             on_Btn_Send_clicked();
+        }
+        else if (event->key() == Qt::Key_1) {
+            Send_MudGame("1");
+        }
+        else if (event->key() == Qt::Key_2) {
+            Send_MudGame("2");
+        }
+        else if (event->key() == Qt::Key_3) {
+            Send_MudGame("3");
+        }
+        else if (event->key() == Qt::Key_4) {
+            Send_MudGame("4");
+        }
+        else if (event->key() == Qt::Key_5) {
+            Send_MudGame("5");
+        }
+        else if (event->key() == Qt::Key_6) {
+            Send_MudGame("6");
+        }
+        else if (event->key() == Qt::Key_7) {
+            Send_MudGame("7");
+        }
+        else if (event->key() == Qt::Key_8) {
+            Send_MudGame("8");
+        }
+        else if (event->key() == Qt::Key_9) {
+            Send_MudGame("9");
+        }
+        else if (event->key() == Qt::Key_0) {
+            Send_MudGame("0");
+        }
+        else if (event->key() == Qt::Key_W && Can_move){
+            Send_MudGame("101");
+        }
+        else if (event->key() == Qt::Key_S && Can_move){
+            Send_MudGame("102");
+        }
+        else if (event->key() == Qt::Key_A && Can_move){
+            Send_MudGame("103");
+        }
+        else if (event->key() == Qt::Key_D && Can_move){
+            Send_MudGame("104");
         }
         else {
             QWidget::keyPressEvent(event);

@@ -91,6 +91,8 @@ private:
     void Shopping(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
     void Selling(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
 
+    void Show_Path(QPoint pos, QString& str);
+    void Show_Player(Player* m_player, QString& str);
     void Show_Equipment(Player* m_player, QString& str);
     void Show_Backpack(Player* m_player, QString& str);
     void Buy_Item(int ItemID, Player* m_player, QString& str);

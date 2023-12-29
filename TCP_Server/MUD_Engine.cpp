@@ -42,42 +42,46 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 	QString str;
 	switch (player->Get_playstate())
 	{
+		p_massagedata.m_Data["Can_move"] = false;
 	case Player_Idle: {
+		p_massagedata.m_Data["Can_move"] = true;
 		switch (Map.getSceneID(player->Get_Position()))
 		{
 		case Impassable: {
-			str = "不應該位於當前地點\n";
+			str = "不應該位於當前地點";
 			break;
 		}
 		case Village: {
 			str += "==小鎮==\n";
-			str += "一個寧靜的小鎮,有許多房子和人\n";
+			str += "一個寧靜的小鎮,有許多房子和人,";
 			break;
 		}
 		case Way: {
 			str += "==道路==\n";
-			str += "一個平坦的道路,旁邊似乎有甚麼東西\n";
+			str += "一個平坦的道路,旁邊似乎有甚麼東西,";
 			break;
 		}
 		case Forest: {
 			str += "==森林==\n";
-			str += "一個幽暗的森林,看不到太遠的地方\n";
+			str += "一個幽暗的森林,看不到太遠的地方,";
 			break;
 		}
 		case Ruins: {
 			str += "==廢墟==\n";
-			str += "一個殘破的廢墟,之前有許多房子和人\n";
+			str += "一個殘破的廢墟,之前有許多房子和人,";
 			break;
 		}
 		case RuinsBoss: {
 			str += "==廢墟Boss==\n";
-			str += "前方就是惡龍所在的地方,準備好挑戰了嗎\n";
+			str += "前方就是惡龍所在的地方,準備好挑戰了嗎,";
 			break;
 		}
 		default:
 			p_massagedata.m_errorcode = Errorcode_GAME_UNKNOWCOMMAND;
 			break;
 		}
+		Show_Path(player->Get_Position(),str);
+
 		if (Map.getSceneID(player->Get_Position()) == Impassable)
 		{
 
@@ -85,38 +89,43 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 		else if (Map.getSceneID(player->Get_Position()) == Village)
 		{
 			//安全區域
-			str += "1.移動\n";
-			str += "2.打開背包\n";
-			//str += "3.使用裝備\n";
-			str += "3.去商店\n";
-			str += "4.休息\n";
+			str += "1.移動說明";
+			str += "2.打開背包";
+			str += "3.去商店";
+			str += "4.休息";
+			str += "5.角色資訊\n";
 		}
 		else if (Map.getSceneID(player->Get_Position())!= Village)
 		{
 			//危險區域
-			if (Map.GetUIDList(player->Get_Position()).size()>1)
-				str += "!!!這裡似乎有東西在動!!!\n";
-			str += "1.移動\n";
-			str += "2.觀察\n";
-			str += "3.攻擊\n";
-			str += "4.打開背包\n";
+			if (Map.GetUIDList(player->Get_Position()).size() > 1)
+			{
+				str += "<font color=\"yellow\">!!!這裡似乎有東西在動!!!</font>\n";
+
+			}
+			str += "1.移動說明";
+			str += "2.觀察";
+			str += "3.攻擊";
+			str += "4.打開背包";
+			str += "5.角色資訊\n";
 			//str += "5.使用裝備\n";
 
 		}
 		break;
 	}
-	case Player_Move: {
-		str = "想要往哪裡移動\n";
-		str += "0.取消\n";
-		str += "1.上\n";
-		str += "2.下\n";
-		str += "3.左\n";
-		str += "4.右\n";
-		break;
-	}
+	//case Player_Move: {
+	//	str = "想要往哪裡移動";
+	//	Show_Path(player->Get_Position(), str);
+	//	str += "0.取消 ";
+	//	str += "w.上 ";
+	//	str += "s.下 ";
+	//	str += "a.左 ";
+	//	str += "d.右\n";
+	//	break;
+	//}
 	case Player_Observe: {
 		str = "想要觀察誰\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int UID in Map.GetUIDList(player->Get_Position()))
 		{
@@ -126,15 +135,16 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			Monster * mon = dynamic_cast<Monster*>(role);
 			if (mon)
 			{
-				str += QString::number(i++) + "." + mon->Get_NAME() + "\n";
+				str += QString::number(i++) + "." + mon->Get_NAME();
 				player->Add_SightRole(UID);
 			}
 		}
+		str += "\n";
 		break;
 	}
 	case Player_Attack: {
 		str = "想要攻擊誰\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int UID in Map.GetUIDList(player->Get_Position()))
 		{
@@ -144,24 +154,25 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			Monster* mon = dynamic_cast<Monster*>(role);
 			if (mon)
 			{
-				str += QString::number(i++) + "." + mon->Get_NAME() + "\n";
+				str += QString::number(i++) + "." + mon->Get_NAME();
 				player->Add_SightRole(UID);
 			}
 		}
+		str += "\n";
 		break;
 	}
 	case Player_Backpack: {
 		str = "想要做甚麼\n";
-		str += "0.取消\n";
-		str += "1.背包清單\n";
-		str += "2.身上裝備\n";
-		str += "3.使用物品\n";
+		str += "0.取消";
+		str += "1.背包清單";
+		str += "2.身上裝備";
+		str += "3.使用物品";
 		str += "4.丟棄物品\n";
 		break;
 	}
 	case Player_UseItem: {
 		str = "想要使用甚麼\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int itemid in player->Backpack)
 		{
@@ -169,21 +180,23 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			{
 				Item_Equipment EQ;
 				EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
-				str += QString::number(i++) + "." + EQ.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + EQ.Get_NAME() ;
 
 			}
 			else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
 			{
 				Item_Potion Pot;
 				Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
-				str += QString::number(i++) + "." + Pot.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + Pot.Get_NAME();
 			}
 		}
+		str += "\n";
 		break;
 	}
+					   
 	case Player_DropItem: {
 		str = "想要丟棄甚麼\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int itemid in player->Backpack)
 		{
@@ -191,38 +204,39 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			{
 				Item_Equipment EQ;
 				EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
-				str += QString::number(i++) + "." + EQ.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + EQ.Get_NAME();
 
 			}
 			else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
 			{
 				Item_Potion Pot;
 				Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
-				str += QString::number(i++) + "." + Pot.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + Pot.Get_NAME();
 			}
 		}
+		str += "\n";
 		break;
 	}
 	case Player_GoStore: {
 		str = "要去哪間商店\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 
 		if (Map.is_Store(Store_Weapon, player->Get_Position()))
 		{
-			str += QString::number(i++) + ".武器店\n";
+			str += QString::number(i++) + ".武器店";
 			player->Add_SightRole(Store_Weapon);
 
 		}
 		if (Map.is_Store(Store_Armor, player->Get_Position()))
 		{
-			str += QString::number(i++) + ".防具店\n";
+			str += QString::number(i++) + ".防具店";
 			player->Add_SightRole(Store_Armor);
 
 		}
 		if (Map.is_Store(Store_Potion, player->Get_Position()))
 		{
-			str += QString::number(i++) + ".藥水店\n";
+			str += QString::number(i++) + ".藥水店";
 			player->Add_SightRole(Store_Potion);
 		}
 		str += QString::number(i++) + ".出售背包物品\n";
@@ -231,7 +245,7 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 	}
 	case Player_Shopping: {
 		str = "想要買甚麼\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int itemid in player->Get_SightRole() )
 		{
@@ -239,20 +253,21 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			{
 				Item_Equipment EQ;
 				EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
-				str += QString::number(i++) + "." + EQ.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + EQ.Get_NAME() + "";
 			}
 			else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
 			{
 				Item_Potion Pot;
 				Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
-				str += QString::number(i++) + "." + Pot.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + Pot.Get_NAME() + "";
 			}
 		}
+		str += "\n";
 		break;
 	}
 	case Player_Selling: {
 		str = "想要販賣甚麼\n";
-		str += "0.取消\n";
+		str += "0.取消";
 		int i = 1;
 		for each (int itemid in player->Backpack)
 		{
@@ -260,16 +275,17 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			{
 				Item_Equipment EQ;
 				EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
-				str += QString::number(i++) + "." + EQ.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + EQ.Get_NAME();
 
 			}
 			else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
 			{
 				Item_Potion Pot;
 				Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
-				str += QString::number(i++) + "." + Pot.Get_NAME() + "\n";
+				str += QString::number(i++) + "." + Pot.Get_NAME();
 			}
 		}
+		str += "\n";
 		break;
 	}
 	default:
@@ -288,15 +304,17 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 
 	switch (player->Get_playstate())
 	{
+		p_massagedata.m_Data["Can_move"] = false;
 	case Player_Idle: {
 		idle(p_massagedata, str, player, Minorcommand);
+		p_massagedata.m_Data["Can_move"] = true; //只有Idle可以移動
 		break;
 	}
-	case Player_Move: {
-		str += "==移動==\n";
-		Move(p_massagedata, str, player, Minorcommand);
-		break;
-	}
+	//case Player_Move: {
+	//	str += "==移動==\n";
+	//	Move(p_massagedata, str, player, Minorcommand);
+	//	break;
+	//}
 	case Player_Observe: {
 		str += "==觀察==\n";
 		Observe(p_massagedata, str, player, Minorcommand);
@@ -411,7 +429,9 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			break;
 		}
 		case 1: {
-			player->Set_playstate(Player_Move);
+			str += "直接使用WASD移動\n";
+			//player->Set_playstate(Player_Move);
+			player->Set_playstate(Player_Idle);
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
@@ -434,11 +454,31 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
-		case 11: {
+		case 5: {
+			Show_Player(player, str);
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
-
+		case 101: {
+			Move(p_massagedata, str, player, 1);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		case 102: {
+			Move(p_massagedata, str, player, 2);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}		
+		case 103: {
+			Move(p_massagedata, str, player, 3);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}		
+		case 104: {
+			Move(p_massagedata, str, player, 4);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
 		default: {
 			//str += "錯誤指令\n";
 			p_massagedata.m_errorcode = Errorcode_OK;
@@ -457,7 +497,9 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			break;
 		}
 		case 1: {
-			player->Set_playstate(Player_Move);
+			str += "直接使用WASD移動\n";
+			//player->Set_playstate(Player_Move);
+			player->Set_playstate(Player_Idle);
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
@@ -479,13 +521,34 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
+		case 5: {
+			Show_Player(player, str);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
 		//case 5: {
 		//	player->Set_playstate(Player_UseEQ);
 
 		//	p_massagedata.m_errorcode = Errorcode_OK;
 		//	break;
 		//}
-		case 11: {
+		case 101: {
+			Move(p_massagedata, str, player, 1);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		case 102: {
+			Move(p_massagedata, str, player, 2);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		case 103: {
+			Move(p_massagedata, str, player, 3);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		case 104: {
+			Move(p_massagedata, str, player, 4);
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
@@ -508,12 +571,15 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 	{
 	case 0: {
 		p_massagedata.m_errorcode = Errorcode_OK;
+		player->Set_playstate(Player_Idle);
+
 		break;
 	}
 	case 1: {
 		nextpos = QPoint(pos.x(), pos.y() - 1);
 
 		p_massagedata.m_errorcode = Errorcode_OK;
+		player->Set_playstate(Player_Idle);
 
 		break;
 	}
@@ -521,6 +587,7 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 		nextpos = QPoint(pos.x(), pos.y() + 1);
 
 		p_massagedata.m_errorcode = Errorcode_OK;
+		player->Set_playstate(Player_Idle);
 
 		break;
 	}
@@ -528,6 +595,7 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 		nextpos = QPoint(pos.x() - 1, pos.y());
 
 		p_massagedata.m_errorcode = Errorcode_OK;
+		player->Set_playstate(Player_Idle);
 
 		break;
 	}
@@ -556,7 +624,9 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 		player->Set_Position(nextpos);
 	}
 	else
-		str += "前方似乎無法通過 \n";
+	{
+		str += "<font color=\"red\">前方似乎無法通過</font>\n";
+	}
 
 	//生成怪物
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
@@ -620,7 +690,6 @@ void MUD_Engine::Move(MassageData& p_massagedata, QString& str, Player* player, 
 		}
 	}
 
-	player->Set_playstate(Player_Idle);
 }
 void MUD_Engine::Observe(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand)
 {
@@ -1050,6 +1119,31 @@ void MUD_Engine::Selling(MassageData& p_massagedata, QString& str, Player* playe
 
 
 // Item相關文字說明,因需配合串表,故無法直接寫在Player
+void MUD_Engine::Show_Path(QPoint pos, QString& str)
+{
+	str += "可以通往";
+	if (Map.getSceneID(QPoint(pos.x(), pos.y() + 1)))
+		str += "↓";
+	if (Map.getSceneID(QPoint(pos.x(), pos.y() - 1)))
+		str += "↑";
+	if (Map.getSceneID(QPoint(pos.x() - 1, pos.y())))
+		str += "←";
+	if (Map.getSceneID(QPoint(pos.x() + 1, pos.y())))
+		str += "→";
+	str += "\n";
+}
+void MUD_Engine::Show_Player(Player* m_player, QString& str)
+{
+	str += m_player->Get_NAME() + " 角色資訊:\n";
+	str += "NAME  : "	+ m_player->Get_NAME() + "\n";
+	str += "HP    : "	+ QString::number(m_player->Get_HP())	+ "/" + QString::number(m_player->total_HPMAX) + "\n";
+	str += "MP    : "	+ QString::number(m_player->Get_MP())	+ "/" + QString::number(m_player->total_MPMAX) + "\n";
+	str += "ATK   : "	+ QString::number(m_player->total_ATK)	+ "\n";
+	str += "DEF   : "	+ QString::number(m_player->total_DEF)	+ "\n";
+	str += "LV    : "	+ QString::number(m_player->Get_LV())	+ "\n";
+	str += "EXP   : "	+ QString::number(m_player->Get_EXP())	+ "\n";
+	str += "Money : "	+ QString::number(m_player->Get_Money())+ "\n";
+}
 void MUD_Engine::Show_Equipment(Player * m_player, QString & str)
 {
 	str += m_player->Get_NAME() + " 使用中裝備:\n";

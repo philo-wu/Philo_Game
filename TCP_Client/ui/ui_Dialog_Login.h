@@ -129,6 +129,7 @@ public:
         Btn_Login->setGeometry(QRect(90, 150, 410, 30));
         Btn_Login->setMinimumSize(QSize(410, 30));
         Btn_Login->setMaximumSize(QSize(410, 16777215));
+        Btn_Login->setFocusPolicy(Qt::NoFocus);
         Btn_Setting = new QPushButton(page);
         Btn_Setting->setObjectName(QString::fromUtf8("Btn_Setting"));
         Btn_Setting->setGeometry(QRect(520, 190, 70, 25));
@@ -164,6 +165,7 @@ public:
         lineEdit_Account = new QLineEdit(layoutWidget);
         lineEdit_Account->setObjectName(QString::fromUtf8("lineEdit_Account"));
         lineEdit_Account->setMinimumSize(QSize(250, 0));
+        lineEdit_Account->setFocusPolicy(Qt::ClickFocus);
 
         horizontalLayout_8->addWidget(lineEdit_Account);
 

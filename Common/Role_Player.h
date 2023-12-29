@@ -8,7 +8,7 @@
 enum MUN_Command
 {
     Player_Idle,	//閒置
-    Player_Move,	//玩家移動
+    //Player_Move,	//玩家移動
     Player_Observe,	//玩家戰鬥
     Player_Attack,	//玩家攻擊
     Player_Backpack,//背包
@@ -68,7 +68,7 @@ public:
         if (number > total_DEF)
             hurt = number - total_DEF;
         else
-            hurt = 0;
+            hurt = 1;
 
         str += Get_NAME() + " 承受 " + QString::number(hurt) + " 傷害" + "\n";
         HP -= hurt;

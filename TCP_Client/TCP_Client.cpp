@@ -1,6 +1,7 @@
 ﻿#include "TCP_Client.h"
 #include "Dialog_Login.h"
-const QByteArray MyPacket::PACKET_SEPARATOR = "\/\/";
+//const QByteArray MyPacket::PACKET_SEPARATOR = QByteArray("\x01\x02\x03", 3);
+const QByteArray MyPacket::PACKET_SEPARATOR = "#";
 
 TCP_Client::TCP_Client(QWidget *parent): 
     QMainWindow(parent),
@@ -14,7 +15,10 @@ TCP_Client::TCP_Client(QWidget *parent):
     ui->tableWidget_User->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
     ui->tableWidget_User->setRowCount(8);
     ui->Btn_Emoji->hide();
-
+    ui->label_7->hide();
+    ui->tableWidget_User->hide();
+    ui->lineEdit->hide();
+    ui->Btn_Send->hide();
     Diglog_Login();
 
     Connect_init();
@@ -62,7 +66,7 @@ void TCP_Client::Diglog_Login()
         connect(m_socket, SIGNAL(stateChanged(QAbstractSocket::SocketState)), this, SLOT(socketStateChanged(QAbstractSocket::SocketState)));
         timer->start(1000);
         //Client_to_Server(MAIN_C_S_LOGININIT); //聊天室才用此指令
-        Client_to_Server(MAIN_C_S_ROLEINFO);
+        //Client_to_Server(MAIN_C_S_ROLEINFO);
         Send_MudGame_GetScenes();
         });
     this->close();
@@ -85,7 +89,8 @@ void TCP_Client::Client_to_Server(Command command)
     }
         break;
     case MAIN_C_S_GAMEING: {
-        Send_MudGame();
+        QString str = ui->lineEdit->text();
+        Send_MudGame(str);
     }
         break;
     case MAIN_C_S_ROLEINFO: {
@@ -111,7 +116,7 @@ void TCP_Client::Server_to_Client()
             switch (Packet.getCommand()) {
             case MAIN_S_C_CHAT: {
                 Receive_Chat(Packet);
-                break;
+                   break;
             }
             case MAIN_S_C_LOGININIT: {
                 Receive_LoginInit(Packet);
@@ -141,7 +146,13 @@ void TCP_Client::on_Btn_Signout_clicked()
 }
 void TCP_Client::on_Btn_Send_clicked()
 {
-
+    QString str = ui->lineEdit->text();
+    uint number = str.toUInt();
+    if (number < 0 || number > 9)
+    {
+        QMessageBox::critical(nullptr, "輸入錯誤", "請輸入0-9");
+        return;
+    }
     //Client_to_Server(MAIN_C_S_CHAT);  //聊天室使用
     Client_to_Server(MAIN_C_S_GAMEING); 
     ui->lineEdit->clear();
@@ -157,7 +168,6 @@ void TCP_Client::on_Btn_Emoji_clicked()
     else
         face->hide();
 }
-
 void TCP_Client::on_pushButton_clicked()
 {
     ui->TB_Chat->clear();
@@ -228,14 +238,17 @@ void TCP_Client::Receive_MudGame(MyPacket packet)
         //QString Account = packet.body.massageData.m_Account;
         QString currentDateTimeString = packet.body.massageData.m_Time.toString("hh:mm:ss");
         QString str;
+        QJsonObject json = packet.body.massageData.m_Data;
         if (packet.body.massageData.m_Data["ScenesInfo"].toString() != "")
-            str = " <" + currentDateTimeString + "> : \n" + packet.body.massageData.m_Data["ScenesInfo"].toString() + "";
+            str = " &lt;" + currentDateTimeString + "&gt; : " + packet.body.massageData.m_Data["ScenesInfo"].toString() + "";
         if (packet.body.massageData.m_Data["GameText"].toString() != "")
             str = packet.body.massageData.m_Data["GameText"].toString() + "";
+        str.replace("\n", "<br>");  // 將換行符號轉換為 HTML 的換行標籤
         if(str !="")
-            ui->TB_Chat->setText(ui->TB_Chat->toPlainText() + str);
+            ui->TB_Chat->setText(ui->TB_Chat->toHtml() + str);
         QScrollBar* scrollbar = ui->TB_Chat->verticalScrollBar();
         scrollbar->setValue(scrollbar->maximum());
+        Can_move = packet.body.massageData.m_Data["Can_move"].toBool();
     }
     else
     {
@@ -322,16 +335,9 @@ void TCP_Client::Send_LoginInit()
     Bytes = MyPacket(m_Setting.Version, "MAIN_C_S_LOGININIT", MAIN_C_S_LOGININIT, p_massagedata).toQByteArray();
     Send_Packet(Bytes);
 }
-void TCP_Client::Send_MudGame()
+void TCP_Client::Send_MudGame(QString str)
 {
-    QString str = ui->lineEdit->text();
     if (str == "") return;
-    uint number = str.toUInt();
-    if (number < 0 || number > 9)
-    {
-        QMessageBox::critical(nullptr, "輸入錯誤", "請輸入0-9");
-        return;
-    }
 
     MassageData p_massagedata;
     p_massagedata.m_Account = Local_User.m_Account;

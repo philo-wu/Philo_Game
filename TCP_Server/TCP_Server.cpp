@@ -1,5 +1,6 @@
 ﻿#include "TCP_Server.h"
-const QByteArray MyPacket::PACKET_SEPARATOR = "\/\/";
+//const QByteArray MyPacket::PACKET_SEPARATOR = QByteArray("\x01\x02\x03", 3);
+const QByteArray MyPacket::PACKET_SEPARATOR = "#";
 
 TCP_Server::TCP_Server(QWidget *parent): 
     QMainWindow(parent),
@@ -615,26 +616,20 @@ void TCP_Server::Send_MudGame(QTcpSocket* socket, MyPacket Packet)
     //若有玩家指令才執行
     if (Command != -1)
     {
-        //qDebug() << " play : " << QString::number(p_user.m_Player->Get_playstate());
         MassageData p_massagedata1;
         MUD->play(p_massagedata1, p_user.m_Player, Command);
-        //qDebug() << " played : " << QString::number(p_user.m_Player->Get_playstate());
         QByteArray Bytes1;
         Bytes1 = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata1).toQByteArray();
         ET->addEvent(socket, Bytes1);
         UM->User_Add(p_user); //更新熱資料
-        //qDebug() << " Save : " << QString::number(p_user.m_Player->Get_playstate());
 
         SavePlayer(p_user); //更新DataBase
-        Send_RoleInfo(socket, Packet);
-        //qDebug() << " Saved : " << QString::number(p_user.m_Player->Get_playstate());
+        //Send_RoleInfo(socket, Packet);
 
     }
     //發送場景訊息
     MassageData p_massagedata;
-    //qDebug() << " Scenes_Info : " << QString::number(p_user.m_Player->Get_playstate());
     MUD->Scenes_Info(p_massagedata,p_user.m_Player, Command);
-    //qDebug() << " Scenes_Infoed : " << QString::number(p_user.m_Player->Get_playstate());
 
     QByteArray Bytes;
     Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata).toQByteArray();

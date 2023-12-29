@@ -62,7 +62,7 @@ public:
         if (number > DEF)
             hurt = number - DEF;
         else
-            hurt = 0;
+            hurt = 1;
 
         str += Get_NAME() + " 承受 " + QString::number(hurt) + " 傷害" + "\n";
         HP -= hurt;
