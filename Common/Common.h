@@ -178,7 +178,24 @@ public:
             return false;
         }
     }
-
+    bool User_find(int UID, User& p_User) {
+        int index = -1;
+        for (int i = 0; i < m_Users.size(); ++i) {
+            if (m_Users.at(i).m_Player->Get_UID() == UID) {
+                index = i;
+                break;
+            }
+        }
+        if (index != -1) {
+            p_User = m_Users.at(index);
+            return true;
+        }
+        else {
+            qDebug() << "User not found in the list.";
+            p_User = User();
+            return false;
+        }
+    }
     bool User_UpdateConnection(User& p_User,ConnectionSetting p_setting) {
         int index = m_Users.indexOf(p_User);
         if (index != -1) {

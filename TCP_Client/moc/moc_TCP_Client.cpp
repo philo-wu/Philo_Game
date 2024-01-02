@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_TCP_Client_t {
     QByteArrayData data[17];
-    char stringdata0[231];
+    char stringdata0[230];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -40,23 +40,24 @@ QT_MOC_LITERAL(4, 46, 7), // "Command"
 QT_MOC_LITERAL(5, 54, 7), // "command"
 QT_MOC_LITERAL(6, 62, 22), // "on_Btn_Signout_clicked"
 QT_MOC_LITERAL(7, 85, 19), // "on_Btn_Send_clicked"
-QT_MOC_LITERAL(8, 105, 18), // "socketStateChanged"
-QT_MOC_LITERAL(9, 124, 28), // "QAbstractSocket::SocketState"
-QT_MOC_LITERAL(10, 153, 5), // "state"
-QT_MOC_LITERAL(11, 159, 20), // "on_Btn_Emoji_clicked"
-QT_MOC_LITERAL(12, 180, 12), // "on_catchFace"
-QT_MOC_LITERAL(13, 193, 3), // "row"
-QT_MOC_LITERAL(14, 197, 6), // "column"
-QT_MOC_LITERAL(15, 204, 4), // "page"
-QT_MOC_LITERAL(16, 209, 21) // "on_pushButton_clicked"
+QT_MOC_LITERAL(8, 105, 20), // "on_Btn_Emoji_clicked"
+QT_MOC_LITERAL(9, 126, 20), // "on_Btn_Clear_clicked"
+QT_MOC_LITERAL(10, 147, 12), // "on_catchFace"
+QT_MOC_LITERAL(11, 160, 3), // "row"
+QT_MOC_LITERAL(12, 164, 6), // "column"
+QT_MOC_LITERAL(13, 171, 4), // "page"
+QT_MOC_LITERAL(14, 176, 18), // "socketStateChanged"
+QT_MOC_LITERAL(15, 195, 28), // "QAbstractSocket::SocketState"
+QT_MOC_LITERAL(16, 224, 5) // "state"
 
     },
     "TCP_Client\0Server_to_Client\0\0"
     "Client_to_Server\0Command\0command\0"
     "on_Btn_Signout_clicked\0on_Btn_Send_clicked\0"
+    "on_Btn_Emoji_clicked\0on_Btn_Clear_clicked\0"
+    "on_catchFace\0row\0column\0page\0"
     "socketStateChanged\0QAbstractSocket::SocketState\0"
-    "state\0on_Btn_Emoji_clicked\0on_catchFace\0"
-    "row\0column\0page\0on_pushButton_clicked"
+    "state"
 };
 #undef QT_MOC_LITERAL
 
@@ -78,20 +79,20 @@ static const uint qt_meta_data_TCP_Client[] = {
        3,    1,   55,    2, 0x08 /* Private */,
        6,    0,   58,    2, 0x08 /* Private */,
        7,    0,   59,    2, 0x08 /* Private */,
-       8,    1,   60,    2, 0x08 /* Private */,
-      11,    0,   63,    2, 0x08 /* Private */,
-      12,    3,   64,    2, 0x08 /* Private */,
-      16,    0,   71,    2, 0x08 /* Private */,
+       8,    0,   60,    2, 0x08 /* Private */,
+       9,    0,   61,    2, 0x08 /* Private */,
+      10,    3,   62,    2, 0x08 /* Private */,
+      14,    1,   69,    2, 0x08 /* Private */,
 
  // slots: parameters
     QMetaType::Void,
     QMetaType::Void, 0x80000000 | 4,    5,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 9,   10,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int,   13,   14,   15,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int, QMetaType::Int, QMetaType::Int,   11,   12,   13,
+    QMetaType::Void, 0x80000000 | 15,   16,
 
        0        // eod
 };
@@ -106,16 +107,16 @@ void TCP_Client::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 1: _t->Client_to_Server((*reinterpret_cast< Command(*)>(_a[1]))); break;
         case 2: _t->on_Btn_Signout_clicked(); break;
         case 3: _t->on_Btn_Send_clicked(); break;
-        case 4: _t->socketStateChanged((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
-        case 5: _t->on_Btn_Emoji_clicked(); break;
+        case 4: _t->on_Btn_Emoji_clicked(); break;
+        case 5: _t->on_Btn_Clear_clicked(); break;
         case 6: _t->on_catchFace((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2])),(*reinterpret_cast< int(*)>(_a[3]))); break;
-        case 7: _t->on_pushButton_clicked(); break;
+        case 7: _t->socketStateChanged((*reinterpret_cast< QAbstractSocket::SocketState(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 4:
+        case 7:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:

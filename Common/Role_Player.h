@@ -5,18 +5,26 @@
 #define BACKPACK_MAX 9
 
 
-enum MUN_Command
+enum MUD_Command
 {
-    Player_Idle,	//閒置
-    //Player_Move,	//玩家移動
-    Player_Observe,	//玩家戰鬥
-    Player_Attack,	//玩家攻擊
-    Player_Backpack,//背包
-    Player_UseItem,	//使用道具
-    Player_DropItem,//丟棄道具
-    Player_GoStore, //商店
-    Player_Shopping, //購物
+    Player_Idle,	    //閒置
+    //Player_Move,	    //玩家移動
+    Player_Observe,	    //玩家戰鬥
+    Player_Attack,	    //玩家尋找攻擊目標
+    Player_Battle,	    //玩家戰鬥中
+
+    Player_Backpack,    //背包
+    Player_UseItem,	    //使用道具
+    Player_DropItem,    //丟棄道具
+    Player_GoStore,     //商店
+    Player_Shopping,    //購物
     Player_Selling
+};
+enum Battle_Command
+{
+    Battle_Attack,
+    Battle_Item,
+    Battle_Run
 };
 class Player : public Role
 {
@@ -44,16 +52,21 @@ public:
         return Sight_Role;
     }
 protected:
-    //int UID;
     QList<int> Sight_Role;
-    MUN_Command playstate;
-
+    MUD_Command playstate;
+    Battle_Command BattleState = Battle_Attack;
 public:
     int total_ATK;
     int total_DEF;
     int total_HPMAX;
     int total_MPMAX;
 
+    void Set_BattleState(Battle_Command number) {
+        BattleState = number;
+    }
+    Battle_Command Get_BattleState() {
+        return BattleState;
+    }
     void Attack(Role* r, QString& str) override
     {
         if (r->Get_HP() > 0)
@@ -94,11 +107,17 @@ public:
     QVector<int> Backpack;
     // int Backpack_MAX ; //統一上限BACKPACK_MAX 目前不支援擴充容量
 
-    MUN_Command Get_playstate(){
+    MUD_Command Get_playstate(){
         return playstate;
     }
-    void Set_playstate(MUN_Command p_playstate) {
-        playstate = p_playstate;
+    void Set_playstate(MUD_Command p_playstate) {
+        //if(playstate != Player_Battle) //戰鬥無法切換狀態
+            playstate = p_playstate;
+    }
+    void Bettle_end()
+    {
+        if (playstate == Player_Battle) //戰鬥結束
+            playstate = Player_Idle;
     }
 
     bool Backpack_Put(int itemID ,QString& str)
@@ -154,6 +173,21 @@ public:
     {
         str += Get_NAME() + " 獲得" + QString::number(p_Money) + " 元\n";
         Money += p_Money;
+    }
+    void Lose_EXP(int p_EXP, QString& str)
+    {
+        str += Get_NAME() + " 失去" + QString::number(p_EXP) + "EXP\n";
+        EXP -= p_EXP;
+        if (EXP < 0)
+            EXP = 0;
+
+    }
+    void Lose_Money(int p_Money, QString& str)
+    {
+        str += Get_NAME() + " 失去" + QString::number(p_Money) + " 元\n";
+        Money -= p_Money;
+        if (Money < 0)
+            Money = 0;
     }
     bool Cost_Money(int p_Money, QString& str)
     {

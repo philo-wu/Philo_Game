@@ -51,11 +51,12 @@ private slots:
     void Client_to_Server(Command command);
     void on_Btn_Signout_clicked();
     void on_Btn_Send_clicked();
-    void socketStateChanged(QAbstractSocket::SocketState state);
     void on_Btn_Emoji_clicked();
+    void on_Btn_Clear_clicked();
     void on_catchFace(int row , int column, int page);
 
-    void on_pushButton_clicked();
+    void socketStateChanged(QAbstractSocket::SocketState state);
+
 
 private:
     Ui::TCP_ClientClass* ui;

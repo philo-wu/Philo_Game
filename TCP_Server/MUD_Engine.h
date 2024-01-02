@@ -2,6 +2,9 @@
 #include "Common.h"
 #include "MapManager.h"
 
+#include <QTimer>
+
+
 
 
 class UIDTable
@@ -46,6 +49,18 @@ private:
 };
 
 
+class BattleRoom {
+public:
+    BattleRoom(int player_UID, int monster_UID)
+    {
+        Player_UID = player_UID;
+        Monster_UID = monster_UID;
+    }
+    int round = 1;
+    int Player_UID;
+    int Monster_UID;
+    bool is_run = false;
+};
 
 
 class MUD_Engine
@@ -64,6 +79,9 @@ public:
     //顯示當前指令相關資訊
 	void Scenes_Info(MassageData& p_massagedata,Player* player, int& Minorcommand);
     UIDTable UID_Table;                 //UID序號表
+    QList<BattleRoom> BattleRoom_List;  //戰鬥中的角色 <Player_UID,Monster_UID>  //
+    void auto_Battling(MassageData& p_massagedata, BattleRoom& room);
+
 
 private:
 	ExperienceTable EXP_Table;          //玩家經驗表
@@ -72,13 +90,17 @@ private:
     PotionTable     Pot_Table;          //藥劑表
     MapManager      Map;                //地圖      
 
-	QMap<int, Role*> Role_Map;    //儲存所有角色 <UID,Role>
+	QMap<int, Role*> Role_Map;          //儲存所有角色 <UID,Role>
+
 
     Role* Get_Role(int UID);
     void Die_Role(int UID);
 
+    //加入戰鬥房間
+    void Spawn_BattleRoom(int player_UID, int monster_UID);
     //生成怪物
 	void Spawn_Monsters(MonsterID MID,QPoint pos);
+
 
 	void idle(MassageData& p_massagedata,QString& str , Player* player, int Minorcommand);
 	void Move(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
@@ -90,6 +112,7 @@ private:
 	void Store(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
     void Shopping(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
     void Selling(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
+    void Battling(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand);
 
     void Show_Path(QPoint pos, QString& str);
     void Show_Player(Player* m_player, QString& str);

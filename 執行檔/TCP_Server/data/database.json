@@ -4,30 +4,34 @@
         "Pass": "222",
         "Permissions": "member",
         "Player": {
-            "ATK": 4,
+            "ATK": 5,
             "Backpack": [
+                10001,
+                10001,
+                10001,
+                10001
             ],
-            "DEF": 4,
-            "EXP": 77,
+            "DEF": 5,
+            "EXP": 124,
             "Equipment": {
                 "0": 0,
                 "1": 2,
                 "2": 3,
                 "3": 4
             },
-            "HP": 145,
-            "HPMAX": 130,
-            "LV": 4,
+            "HP": 138,
+            "HPMAX": 140,
+            "LV": 5,
             "MP": 135,
-            "MPMAX": 130,
-            "Money": 57,
+            "MPMAX": 135,
+            "Money": 70,
             "NAME": "222",
             "Position": {
-                "X": 6,
-                "Y": 6
+                "X": 2,
+                "Y": 7
             },
             "UID": 1,
-            "playstate": 0
+            "playstate": 3
         }
     },
     {

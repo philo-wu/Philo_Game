@@ -168,9 +168,11 @@ void TCP_Client::on_Btn_Emoji_clicked()
     else
         face->hide();
 }
-void TCP_Client::on_pushButton_clicked()
+void TCP_Client::on_Btn_Clear_clicked()
 {
     ui->TB_Chat->clear();
+    Send_MudGame_GetScenes();
+
 }
 
 

@@ -62,7 +62,7 @@ public:
     QTableWidget *tableWidget_User;
     QHBoxLayout *horizontalLayout_2;
     QPushButton *Btn_Emoji;
-    QPushButton *pushButton;
+    QPushButton *Btn_Clear;
     QSpacerItem *horizontalSpacer_2;
     QHBoxLayout *horizontalLayout;
     QLineEdit *lineEdit;
@@ -381,16 +381,16 @@ public:
 
         horizontalLayout_2->addWidget(Btn_Emoji);
 
-        pushButton = new QPushButton(mainWidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        Btn_Clear = new QPushButton(mainWidget);
+        Btn_Clear->setObjectName(QString::fromUtf8("Btn_Clear"));
         QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
-        pushButton->setSizePolicy(sizePolicy1);
-        pushButton->setMaximumSize(QSize(40, 16777215));
+        sizePolicy1.setHeightForWidth(Btn_Clear->sizePolicy().hasHeightForWidth());
+        Btn_Clear->setSizePolicy(sizePolicy1);
+        Btn_Clear->setMaximumSize(QSize(40, 16777215));
 
-        horizontalLayout_2->addWidget(pushButton);
+        horizontalLayout_2->addWidget(Btn_Clear);
 
         horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -447,7 +447,7 @@ public:
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget_User->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QCoreApplication::translate("TCP_ClientClass", "\346\225\270\345\200\274", nullptr));
         Btn_Emoji->setText(QCoreApplication::translate("TCP_ClientClass", "\360\237\230\200", nullptr));
-        pushButton->setText(QCoreApplication::translate("TCP_ClientClass", "Clear", nullptr));
+        Btn_Clear->setText(QCoreApplication::translate("TCP_ClientClass", "Clear", nullptr));
         lineEdit->setText(QString());
         Btn_Send->setText(QCoreApplication::translate("TCP_ClientClass", "\347\231\274\351\200\201", nullptr));
     } // retranslateUi

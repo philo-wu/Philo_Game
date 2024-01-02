@@ -7,32 +7,17 @@
 #include <QNetworkInterface>
 
 #include <QDateTime>
-#include <QTimer>
 #include <QSettings>
 
 #include "EventManager.h"
 #include "./ui/ui_TCP_Server.h"
 #include "Common.h"
 #include "MUD_Engine.h"
+
 enum ServerState {
     SERVER_START,                  // 成功
     SERVER_STOP
 };
-
-//class TcpServerHelper : public QTcpServer
-//{
-//    Q_OBJECT
-//public:
-//    explicit TcpServerHelper(QObject* parent = nullptr) : QTcpServer(parent) {}
-//protected:
-//    //重写incomingConnection,用于多线程通讯，子线程中不能使用主线程中创建的套接字对象
-//    void incomingConnection(qintptr socketDescriptor)
-//    {
-//        emit newSockDescriptor(socketDescriptor);
-//    }
-//signals:
-//    void newSockDescriptor(qintptr _sock);
-//};
 
 class TCP_Server : public QMainWindow
 {
@@ -44,7 +29,9 @@ public:
 
     QTcpServer* m_server;
     QTimer* timer;
-    QList<QTcpSocket*> m_sockets;   
+    QTimer* MUD_timer;
+
+    //QList<QTcpSocket*> m_sockets;   
     DeviceSetting m_Setting;
     QString Server_Name;
 
@@ -55,6 +42,7 @@ public:
     int Server_State = SERVER_STOP;
     CSS m_CSS;
     void update();
+    void update_MUD();
 
     void Load_Setting();
     void Save_Setting();
@@ -78,6 +66,7 @@ public:
     void Send_Singup(QTcpSocket* socket , MyPacket Packet);
     void Send_LoginInit(QTcpSocket* socket);
     void Send_MudGame(QTcpSocket* socket, MyPacket Packet);
+    void Send_MudGame_Battle(QTcpSocket* socket, MassageData p_massagedata);
     void Send_RoleInfo(QTcpSocket* socket, MyPacket Packet);
 
 public slots:

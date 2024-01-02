@@ -7,6 +7,7 @@ MUD_Engine::MUD_Engine()
 	Pot_Table.parseTable("/data/Item_Potion.json");
 	EQ_Table.parseTable("/data/Item_Equipment.json");
 }
+
 void MUD_Engine::player_login(Player* player)
 {
 	Map.AddUID(player->Get_Position(), player->Get_UID());
@@ -36,6 +37,113 @@ void MUD_Engine::player_update(Player* player)
 	}
 }
 
+void MUD_Engine::auto_Battling(MassageData& p_massagedata, BattleRoom& room)
+{
+	QString str;
+	str += "第" + QString::number(room.round++) + "回合\n";
+	p_massagedata.m_errorcode = Errorcode_OK;
+	Role* player_role = Get_Role(room.Player_UID);
+	Player* player = dynamic_cast<Player*>(player_role);
+	if (player->Get_playstate() != Player_Battle)
+		return; //未處於戰鬥中須做更多狀況排除
+	//return;
+	Role* mon_role = Get_Role(room.Monster_UID);
+	Monster* mon = dynamic_cast<Monster*>(mon_role);
+	if (player && mon)
+	{
+		switch (player->Get_BattleState())
+		{
+		case Battle_Attack:
+			player->Attack(mon, str);
+			break;
+		case Battle_Item:
+
+			break;
+		case Battle_Run:
+		{
+			std::srand(static_cast<unsigned int>(std::time(nullptr)));
+			int random = std::rand() % 2;
+			if (random == 1)
+			{
+				//逃跑成功
+				str += "<font color=\"yellow\">逃跑成功\</font>\n";
+				player->Bettle_end();
+			}
+			else
+			{
+				str += "<font color=\"red\">逃跑失敗\</font>\n";
+			}
+
+			break;
+		}
+		default:
+			break;
+		}
+		if (mon->Get_HP() <= 0)
+		{
+			//怪物死掉
+			str += mon->Get_NAME() + " 死亡\n";
+			std::srand(static_cast<unsigned int>(std::time(nullptr)));
+			int random = std::rand() % 100 + 1;
+			if (random >= mon->Get_DropChance()) {
+				//掉落物品
+				str += mon->Get_NAME() + "掉落了東西\n";
+				std::srand(static_cast<unsigned int>(std::time(nullptr) + 817));
+				random = std::rand() % 100 + 1;
+				for (auto item : mon->Get_DropList()) {
+					int itemid = item.first;
+					int probability = item.second;
+					if (random <= probability) {
+						if (itemid >= EQUIPMENT_UID_START && itemid <= EQUIPMENT_UID_END)
+						{
+							Item_Equipment EQ;
+							EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
+							player->Backpack_Put(EQ.Get_ItemID(), str);
+							str += EQ.Get_NAME() + "\n"; //接續Backpack_Put文字
+						}
+						else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
+						{
+							Item_Potion Pot;
+							Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
+							player->Backpack_Put(Pot.Get_ItemID(), str);
+							str += Pot.Get_NAME() + "\n"; //接續Backpack_Put文字
+						}
+						break;
+					}
+					random -= probability;
+				}
+			}
+			player->Add_EXP(mon->Get_EXP(), str);
+			player->Add_Money(mon->Get_Money(), str);
+			player->Check_LVUP(EXP_Table.GetEXP(player->Get_LV()), str);
+			player->Bettle_end();
+
+		}
+		else
+		{
+			mon->Attack(player, str);
+			if (player->Get_HP() <= 0)
+			{
+				//玩家死亡
+				str += "<font color=\"red\">你死了!!!!\</font>\n";
+				QPoint resetpog = QPoint(6, 6);
+				player->Set_Position(resetpog);
+				player->Lose_EXP(EXP_Table.GetEXP(player->Get_LV()) / 10, str);
+				player->Lose_Money(player->Get_Money(), str);
+				player->Bettle_end();
+			}
+		}
+		if (mon->Get_HP() <= 0) //最後才刪除怪物
+		{
+			Die_Role(mon->Get_UID());
+			player->Bettle_end();
+		}
+
+		
+	}
+	p_massagedata.m_Data["GameText"] = str;
+
+}
 
 void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Minorcommand)
 {
@@ -159,6 +267,25 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 			}
 		}
 		str += "\n";
+		break;
+	}
+	case Player_Battle: {
+		str = "想要做甚麼\n";
+		switch (player->Get_BattleState())
+		{
+		case Battle_Attack:
+			str += "1.逃跑";
+			break;
+		case Battle_Item:
+			break;
+		case Battle_Run:
+		{
+			str += "1.取消逃跑";
+			break;
+		}
+		default:
+			break;
+		}
 		break;
 	}
 	case Player_Backpack: {
@@ -300,7 +427,6 @@ void MUD_Engine::Scenes_Info(MassageData& p_massagedata,Player* player, int& Min
 void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcommand)
 {
 	QString str ;
-	//str += "\n";
 
 	switch (player->Get_playstate())
 	{
@@ -360,6 +486,11 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 		Selling(p_massagedata, str, player, Minorcommand);
 		break;
 	}
+	case Player_Battle: {
+		str += "==戰鬥中==\n";
+		Battling(p_massagedata, str, player, Minorcommand);
+		break;
+	}
 	default:
 		p_massagedata.m_errorcode = Errorcode_GAME_UNKNOWCOMMAND;
 		break;
@@ -369,7 +500,18 @@ void MUD_Engine::play(MassageData& p_massagedata,Player* player,int& Minorcomman
 	player_update(player);
 }
 
-		
+void MUD_Engine::Spawn_BattleRoom(int player_UID, int monster_UID)
+{
+	Role* role = Get_Role(monster_UID);
+	Monster* mon = dynamic_cast<Monster*>(role);
+	if (mon)
+	{
+		BattleRoom room = BattleRoom(player_UID, monster_UID);
+		BattleRoom_List.append(room);
+	}
+
+
+}
 void MUD_Engine::Spawn_Monsters(MonsterID MID, QPoint pos)
 {
 	Monster* Mons = new Monster;
@@ -526,12 +668,6 @@ void MUD_Engine::idle(MassageData& p_massagedata, QString& str, Player* player, 
 			p_massagedata.m_errorcode = Errorcode_OK;
 			break;
 		}
-		//case 5: {
-		//	player->Set_playstate(Player_UseEQ);
-
-		//	p_massagedata.m_errorcode = Errorcode_OK;
-		//	break;
-		//}
 		case 101: {
 			Move(p_massagedata, str, player, 1);
 			p_massagedata.m_errorcode = Errorcode_OK;
@@ -751,69 +887,11 @@ void MUD_Engine::Attack(MassageData& p_massagedata, QString& str, Player* player
 	}
 	if (Minorcommand != 0)
 	{
-		int UID = player->Get_SightRole().at(Minorcommand - 1);
-		Role* role = Get_Role(UID);
-		Monster* mon = dynamic_cast<Monster*>(role);
-		if (mon)
-		{
-
-
-			player->Set_playstate(Player_Attack);
-
-			player->Attack(mon, str);
-
-			p_massagedata.m_errorcode = Errorcode_OK;
-			if (mon->Get_HP() <= 0)
-			{
-				str += mon->Get_NAME() + " 死亡\n";
-
-
-				std::srand(static_cast<unsigned int>(std::time(nullptr)));
-				int random = std::rand() % 100 +1;
-				if (random >= mon->Get_DropChance()) {
-					//掉落物品
-					str += mon->Get_NAME() + "掉落了東西\n";
-					std::srand(static_cast<unsigned int>(std::time(nullptr) + 817));
-					random = std::rand() % 100 + 1;
-					for (auto item : mon->Get_DropList()) {
-						int itemid = item.first;
-						int probability = item.second;
-						if (random <= probability) {
-							if (itemid >= EQUIPMENT_UID_START && itemid <= EQUIPMENT_UID_END)
-							{
-								Item_Equipment EQ;
-								EQ_Table.Get_Equipment(static_cast<Item_EquipmentID>(itemid), EQ);
-								player->Backpack_Put(EQ.Get_ItemID(), str);
-								str += EQ.Get_NAME() + "\n"; //接續Backpack_Put文字
-							}
-							else if (itemid >= POTION_UID_START && itemid <= POTION_UID_END)
-							{
-								Item_Potion Pot;
-								Pot_Table.Get_Potion(static_cast<Item_PotionID>(itemid), Pot);
-								player->Backpack_Put(Pot.Get_ItemID(), str);
-								str += Pot.Get_NAME() + "\n"; //接續Backpack_Put文字
-							}
-							break;
-						}
-						random -= probability;
-					}
-				}
-				//怪物死掉
-				player->Add_EXP(mon->Get_EXP(), str);
-				player->Add_Money(mon->Get_Money()	, str);
-				player->Check_LVUP(EXP_Table.GetEXP(player->Get_LV()), str);
-			}
-			else
-			{
-				mon->Attack(player, str);
-			}
-			if (mon->Get_HP() <= 0) //最後才刪除怪物
-				Die_Role(mon->Get_UID());
-		}
-		else
-		{
-			p_massagedata.m_errorcode = Errorcode_GAME_UNKNOWCOMMAND;
-		}
+		player->Set_BattleState(Battle_Attack);
+		player->Set_playstate(Player_Battle);
+		int mon_UID = player->Get_SightRole().at(Minorcommand - 1);
+		Spawn_BattleRoom(player->Get_UID(), mon_UID);
+		p_massagedata.m_errorcode = Errorcode_OK;
 	}
 	else
 	{
@@ -1115,6 +1193,48 @@ void MUD_Engine::Selling(MassageData& p_massagedata, QString& str, Player* playe
 		player->Clear_SightRole();
 		p_massagedata.m_errorcode = Errorcode_OK;
 	}
+}
+void MUD_Engine::Battling(MassageData& p_massagedata, QString& str, Player* player, int Minorcommand)
+{
+	switch (player->Get_BattleState())
+	{
+	case Battle_Attack:
+		switch (Minorcommand)
+		{
+		case 1: {
+			player->Set_BattleState(Battle_Run);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		default: {
+			//str += "錯誤指令\n";
+			p_massagedata.m_errorcode = Errorcode_OK;
+		}
+			   break;
+		}		break;
+	case Battle_Item:
+		break;
+	case Battle_Run:
+	{
+		switch (Minorcommand)
+		{
+		case 1: {
+			player->Set_BattleState(Battle_Attack);
+			p_massagedata.m_errorcode = Errorcode_OK;
+			break;
+		}
+		default: {
+			//str += "錯誤指令\n";
+			p_massagedata.m_errorcode = Errorcode_OK;
+		}
+			   break;
+		}
+		break;
+	}
+	default:
+		break;
+	}
+
 }
 
 

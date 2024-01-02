@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QTextCodec>
+#include <QtNetwork/QTcpSocket>
 
 #include "framework.h"
 #include "Role_Player.h"
@@ -54,13 +55,22 @@ public:
     }
     ~User()
     {
-
     }
     QString	m_Account;
     //QString	m_Pass; //密碼不應該被握住
     QString	m_Permissions;
     ConnectionSetting m_setting;
     Player* m_Player;
+    QTcpSocket* m_Socket;
+
+    void Set_Socket(QTcpSocket* p_socket)
+    {
+        m_Socket = p_socket;
+    }
+    QTcpSocket* Get_Socket()
+    {
+        return m_Socket;
+    }
     bool operator==(const User& other) const {
         return m_Account == other.m_Account;
     }
@@ -93,7 +103,7 @@ public:
         {
             m_Player->Backpack.append(m_Backpack[i].toInt());
         }
-        m_Player->Set_playstate(static_cast<MUN_Command>(Json_Player["playstate"].toInt()));
+        m_Player->Set_playstate(static_cast<MUD_Command>(Json_Player["playstate"].toInt()));
     }
     bool isOnline() {
         return Online;

@@ -14,6 +14,10 @@ TCP_Server::TCP_Server(QWidget *parent):
     connect(timer, &QTimer::timeout, this, QOverload<>::of(&TCP_Server::update));
     timer->start(1000);
 
+    MUD_timer = new QTimer(this);
+    connect(MUD_timer, &QTimer::timeout, this, QOverload<>::of(&TCP_Server::update_MUD));
+    MUD_timer->start(3000); //3秒進行一次戰鬥
+
     ui->tableWidget_log->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     ui->tableWidget_log->setRowCount(0);
     LoadDataBase("/data/database.json" , Account_DataBase);
@@ -68,6 +72,37 @@ void TCP_Server::update()
         ui->LE_Servar_Sec->setText(QString::number(m_Setting.m_LoginSec));
     }
     updateUserList();
+}
+void TCP_Server::update_MUD()
+{
+    for (auto& room : MUD->BattleRoom_List) 
+    {
+        MassageData p_massagedata;
+        MUD->auto_Battling(p_massagedata, const_cast<BattleRoom&>(room));
+
+        User p_user;
+        if (UM->User_find(room.Player_UID, p_user))
+        {
+            QByteArray Bytes;
+            Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata).toQByteArray();
+            Send_MudGame_Battle(p_user.Get_Socket(), p_massagedata);
+        }
+        MassageData p_massagedata_1;
+        int Command;
+        MUD->Scenes_Info(p_massagedata_1, p_user.m_Player, Command);
+
+        QByteArray Bytes;
+        Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata_1).toQByteArray();
+
+        ET->addEvent(p_user.Get_Socket(), Bytes);
+        if (p_user.m_Player->Get_playstate() == Player_Idle)
+        {
+            MUD->BattleRoom_List.erase(std::remove_if(MUD->BattleRoom_List.begin(), MUD->BattleRoom_List.end(),
+                [&](const BattleRoom& r) { return &r == &room; }), MUD->BattleRoom_List.end());
+
+        }
+        
+    }
 }
 
 void TCP_Server::Load_Setting()
@@ -379,7 +414,7 @@ void TCP_Server::updateUserList()
 void TCP_Server::slot_newConnection()
 {
     QTcpSocket* socket = m_server->nextPendingConnection();
-    m_sockets.push_back(socket);
+    //m_sockets.push_back(socket);
 
     connect(socket, SIGNAL(readyRead()), this, SLOT(Client_to_Server()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(slot_disConnected()));
@@ -399,6 +434,7 @@ void TCP_Server::slot_disConnected()
         User p_user;
         UM->User_find(ipv4String, socket->peerPort(), p_user);
         p_user.SetOnline(0);
+        p_user.Set_Socket(NULL);
         p_user.m_setting.Reset();
         UM->User_Add(p_user);
         MUD->player_logout(p_user.m_Player);
@@ -406,10 +442,8 @@ void TCP_Server::slot_disConnected()
         UserTotal -= 1;
         ui->LE_Servar_UserTotal->setText(QString::number(UserTotal));
         Log("玩家登出 Account: " + p_user.m_Account);
-
-        m_sockets.removeOne(socket);
+        //m_sockets.removeOne(socket);
         socket->deleteLater();  // 在下一次事件迴圈中刪除套接字
-
     }
 }
 
@@ -499,7 +533,6 @@ void TCP_Server::Server_to_Client(Command command , QTcpSocket* socket , MyPacke
         Send_RoleInfo(socket, Packet);
     }
         break;
-
     default:
         break;
     }
@@ -523,6 +556,7 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
                 ipv4HostAddress.setAddress(ipv4Address);
                 QString ipv4String = ipv4HostAddress.toString();
                 p_user.SetOnline(1);
+                p_user.Set_Socket(socket);
 
                 p_setting.m_IP = ipv4String;
                 p_setting.m_Port = socket->peerPort();
@@ -535,6 +569,7 @@ void TCP_Server::Send_Login(QTcpSocket* socket , MyPacket Packet)
                 UserTotal += 1;
                 ui->LE_Servar_UserTotal->setText(QString::number(UserTotal));
                 Log("玩家登入 Account: " + p_user.m_Account);
+
             }
         }
         else
@@ -563,13 +598,19 @@ void TCP_Server::Send_Chat(QTcpSocket* socket , MyPacket Packet)
     QByteArray Bytes;
     Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_CHAT", MAIN_S_C_CHAT, p_massagedata).toQByteArray();
 
-    for (int i = 0; i < m_sockets.size(); i++)
-    {
+    //for (int i = 0; i < m_sockets.size(); i++)
+    //{
         //socket->write(Common::Encryption_byXOR(Bytes, XOR_KEY));
         //QMetaObject::invokeMethod(eventManager, "addEvent", Qt::QueuedConnection,
         //    Q_ARG(QByteArray, Bytes), Q_ARG(QTcpSocket*, socket));
-        ET->addEvent(m_sockets[i], Bytes);
+        //ET->addEvent(m_sockets[i], Bytes);
+    //}
+
+    foreach(User p_user, UM->Get_Users()) {
+        if (p_user.isOnline())
+            ET->addEvent(p_user.Get_Socket(), Bytes);
     }
+
 }
 void TCP_Server::Send_Singup(QTcpSocket* socket , MyPacket Packet)
 {
@@ -634,6 +675,12 @@ void TCP_Server::Send_MudGame(QTcpSocket* socket, MyPacket Packet)
     QByteArray Bytes;
     Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata).toQByteArray();
 
+    ET->addEvent(socket, Bytes);
+}
+void TCP_Server::Send_MudGame_Battle(QTcpSocket* socket, MassageData p_massagedata)
+{
+    QByteArray Bytes;
+    Bytes = MyPacket(m_Setting.Version, "MAIN_S_C_GAMEING", MAIN_S_C_GAMEING, p_massagedata).toQByteArray();
     ET->addEvent(socket, Bytes);
 }
 void TCP_Server::Send_RoleInfo(QTcpSocket* socket, MyPacket Packet)
