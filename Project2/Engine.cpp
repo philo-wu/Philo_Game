@@ -2,11 +2,8 @@
 #include "Engine.h"
 
 
-Engine::Engine(Common* pcommon , HWND p_hwnd) : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pWhiteBrush(NULL)
+Engine::Engine(Common* pcommon , HWND p_hwnd) : m_pDirect2dFactory(NULL), m_pRenderTarget(NULL), m_pBrush(NULL)
 {
-    //snake = new Snake();
-    //food = new Food();
-    //food->Reset(snake , isFoodOnBorderChecked );
 
     common = pcommon;
     m_hwnd = p_hwnd;
@@ -18,12 +15,12 @@ Engine::Engine(Common* pcommon , HWND p_hwnd) : m_pDirect2dFactory(NULL), m_pRen
                             m_pRenderTarget,
                             m_pDWriteFactory,
                             m_pTextFormat,
-                            m_pWhiteBrush);
+                            m_pBrush);
     common->SM = new ScoreManager();
     common->ESM = new EngineStateManager();
     updata_Json();
     common->BM->init(m_hwnd);
-
+    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
     // init map
     common->SM->Bet_call_map.clear();
     for (int i = 0; i < CELL_TOTAL; ++i) {
@@ -52,7 +49,18 @@ Engine::~Engine()
 {
     SafeRelease(&m_pDirect2dFactory);
     SafeRelease(&m_pRenderTarget);
-    SafeRelease(&m_pWhiteBrush);
+    SafeRelease(&m_pDWriteFactory);
+    SafeRelease(&m_pTextFormat);
+    SafeRelease(&m_pBrush); //所有brush都要釋放
+
+    delete common->BM;
+    delete common->SM;
+    delete common->ESM;
+
+    delete m_area_Bet;
+    delete m_area_Function;
+    delete m_area_Game;
+
 }
 
 HRESULT Engine::InitializeD2D()
@@ -87,16 +95,7 @@ HRESULT Engine::InitializeD2D()
     //m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
     m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING); //靠右
     m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-    m_pRenderTarget->CreateSolidColorBrush(
-        D2D1::ColorF(D2D1::ColorF::White),
-        &m_pWhiteBrush
-    );
-
-
-
-
-
-    
+    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White),&m_pBrush);
     return S_OK;
 }
 
@@ -319,7 +318,7 @@ void Engine::Logic()
 HRESULT Engine::Draw()
 {
 
-    auto frameStart = std::chrono::steady_clock::now();
+    //auto frameStart = std::chrono::steady_clock::now();
 
     // This is the drawing method of the engine.
     // It simply draws all the elements in the game using Direct2D
@@ -332,8 +331,8 @@ HRESULT Engine::Draw()
 
     //繪製圍牆
     //D2D1_RECT_F bound_rectangle = D2D1::RectF(1.0f, 1.0f, SCREEN_WIDTH - 3, SCREEN_HEIGHT - 3);
-    ID2D1SolidColorBrush* pBlackBrush;
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBlackBrush);
+    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Blue));
+
     //m_pRenderTarget->DrawRectangle(&bound_rectangle, pBlackBrush, 7.0f);
 
     D2D1_RECT_F destinationRect = D2D1::RectF(
@@ -347,33 +346,33 @@ HRESULT Engine::Draw()
 
 
 
-    D2D1_RECT_F rectangle4 = D2D1::RectF(1, 1, SCREEN_WIDTH, 50 - 3);
-    ID2D1SolidColorBrush* pBrush;
+    //D2D1_RECT_F rectangle4 = D2D1::RectF(1, 1, SCREEN_WIDTH, 50 - 3);
     WCHAR scoreStr[64];
-    //m_pRenderTarget->FillRectangle(&rectangle4, pBrush);
+    //m_pRenderTarget->FillRectangle(&rectangle4, m_pBrush);
     //swprintf_s(scoreStr, L"狀態::%d                                              ", common->ESM->state);
     //m_pRenderTarget->DrawText(
     //    scoreStr,
     //    48,
     //    m_pTextFormat,
     //    rectangle4,
-    //    pBrush
+    //    m_pBrush
     //);
     // Draw score
     D2D1_RECT_F win_rectangle     = D2D1::RectF(SCREEN_WIDTH / 3  -110 , 85, SCREEN_WIDTH / 3  +110, 140);
     D2D1_RECT_F credits_rectangle = D2D1::RectF(SCREEN_WIDTH / 3*2-110 , 85, SCREEN_WIDTH / 3*2+110, 140);
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
-    m_pRenderTarget->FillRectangle(&win_rectangle, pBrush);
-    m_pRenderTarget->FillRectangle(&credits_rectangle, pBrush);
+    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
 
-    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+    m_pRenderTarget->FillRectangle(&win_rectangle, m_pBrush);
+    m_pRenderTarget->FillRectangle(&credits_rectangle, m_pBrush);
+
+    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
     swprintf_s(scoreStr, L"BONUS/WIN 贏得分數 \n %d                                         ", common->SM->GetWinScore());
     m_pRenderTarget->DrawText(
         scoreStr,
         48,
         m_pTextFormat,
         win_rectangle,
-        pBrush
+        m_pBrush
     );
     swprintf_s(scoreStr, L"CREDITS 目前總分數 \n   %d                                      ", common->SM->GetScore());
     m_pRenderTarget->DrawText(
@@ -381,7 +380,7 @@ HRESULT Engine::Draw()
         48,
         m_pTextFormat,
         credits_rectangle,
-        pBrush
+        m_pBrush
     );
 
     // 遊戲區域

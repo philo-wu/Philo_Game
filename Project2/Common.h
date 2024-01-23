@@ -538,14 +538,14 @@ public:
     ID2D1HwndRenderTarget* p_pRenderTarget,
     IDWriteFactory* p_pDWriteFactory,
     IDWriteTextFormat* p_pTextFormat,
-    ID2D1SolidColorBrush* p_pWhiteBrush
+    ID2D1SolidColorBrush* p_pBrush
     ) {
         common = pcommon;
         m_pDirect2dFactory = p_pDirect2dFactory;
         m_pRenderTarget = p_pRenderTarget;
         m_pDWriteFactory = p_pDWriteFactory;
         m_pTextFormat = p_pTextFormat;
-        m_pWhiteBrush = p_pWhiteBrush;
+        m_pBrush = p_pBrush;
 
         for (int i = 0; i < 8; ++i) {
             ID2D1Bitmap* Bitmap = nullptr;
@@ -560,7 +560,7 @@ public:
     ID2D1HwndRenderTarget* m_pRenderTarget;
     IDWriteFactory* m_pDWriteFactory;
     IDWriteTextFormat* m_pTextFormat;
-    ID2D1SolidColorBrush* m_pWhiteBrush;
+    ID2D1SolidColorBrush* m_pBrush;
 
     int position[24];
     std::map<int, std::string> png_map;  //紀錄圖片路徑  <號碼,路徑>

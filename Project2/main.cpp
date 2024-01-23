@@ -92,7 +92,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
         }
         time_start = time_end;
     }
-    
+    delete common;
+    delete engine;
+
     // 將WM_QUIT訊息的這一部分傳回給Windows
     return msg.wParam;
 }

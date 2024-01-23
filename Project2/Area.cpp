@@ -3,7 +3,6 @@
 void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
 
     D2D1_RECT_F Rect;
-    ID2D1SolidColorBrush* pBrush;
     // 將原本給的originalRect範圍縮小
     float shrinkAmount = 10.0f;
     Rect.left = originalRect.left + shrinkAmount;
@@ -53,7 +52,7 @@ void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
         Rect.bottom = originalRect.bottom + shrinkAmount;
 
         WCHAR scoreStr[64];
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
         m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
         swprintf_s(scoreStr, L"ONCE\nMORE                      ");
         m_pRenderTarget->DrawText(
@@ -61,7 +60,7 @@ void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
             26,
             m_pTextFormat,
             Rect,
-            pBrush
+            m_pBrush
         );
     }
                             break;
@@ -72,7 +71,7 @@ void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
         Rect.bottom = originalRect.bottom + shrinkAmount;
 
         WCHAR scoreStr[64];
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Blue));
         m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
         swprintf_s(scoreStr, L"ONCE\nMORE                      ");
         m_pRenderTarget->DrawText(
@@ -80,7 +79,7 @@ void Area::Draw_Cell(int number, D2D1_RECT_F originalRect) {
             26,
             m_pTextFormat,
             Rect,
-            pBrush
+            m_pBrush
         );
     }
                              break;

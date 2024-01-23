@@ -6,19 +6,17 @@
 class Area_Function : public Area
 {
 public:
-	Area_Function(Common* pcommon) : Area(pcommon) { ; }
+    Area_Function(Common* pcommon) : Area(pcommon) { ; }
 
 	void Draw(int x, int y, int width, int height) override {
-
         D2D1_RECT_F function_rectangle = D2D1::RectF(x, y, x + width * BET_TOTAL, y + height); // BET_TOTAL為還原width
-        ID2D1SolidColorBrush* pBrush;
-        ID2D1SolidColorBrush* p_Pen_Brush;
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &p_Pen_Brush);
+
         WCHAR scoreStr[64];
         m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
 
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
-        m_pRenderTarget->FillRectangle(&function_rectangle, pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+
+        m_pRenderTarget->FillRectangle(&function_rectangle, m_pBrush);
 
         for (int i = 0; i < BET_TOTAL; ++i) {
             D2D1_RECT_F bet_rectangle = D2D1::RectF(x + width * i, y, x + width * (i + 1), y + height * 0.5);
@@ -26,38 +24,42 @@ public:
             D2D1_RECT_F Add_1_rectangle = D2D1::RectF(x + width * i, y, x + width * (i + 0.5), y + height * 0.25);
             D2D1_RECT_F Add_10_rectangle = D2D1::RectF(x + width * (i + 0.5), y, x + width * (i + 1), y + height * 0.25);
 
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
-            m_pRenderTarget->DrawRectangle(&bet_rectangle, pBrush, 4.0f);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+
+            m_pRenderTarget->DrawRectangle(&bet_rectangle, m_pBrush, 4.0f);
 
             if (ESM->bet_settling || ESM->compare_settling || common->SM->GetWinScore() > 0)
             {
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
-                m_pRenderTarget->FillRectangle(&bet_rectangle, pBrush);
+                m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+
+                m_pRenderTarget->FillRectangle(&bet_rectangle, m_pBrush);
             }
             else {
                 if (isLight(common->ESM->Clear_Light_map, i)) 
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
                 else
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
-                m_pRenderTarget->FillRectangle(&Clear_rectangle, pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+
+                m_pRenderTarget->FillRectangle(&Clear_rectangle, m_pBrush);
 
                 if (isLight(common->ESM->One_Light_map, i))
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
                 else
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
-                m_pRenderTarget->FillRectangle(&Add_1_rectangle, pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+                m_pRenderTarget->FillRectangle(&Add_1_rectangle, m_pBrush);
 
                 if (isLight(common->ESM->Ten_Light_map, i))
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
                 else
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
-                m_pRenderTarget->FillRectangle(&Add_10_rectangle, pBrush);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+                m_pRenderTarget->FillRectangle(&Add_10_rectangle, m_pBrush);
             }
 
 
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
-            m_pRenderTarget->DrawRectangle(&Add_1_rectangle, pBrush, 2.0f);
-            m_pRenderTarget->DrawRectangle(&Add_10_rectangle, pBrush, 2.0f);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+
+            m_pRenderTarget->DrawRectangle(&Add_1_rectangle, m_pBrush, 2.0f);
+            m_pRenderTarget->DrawRectangle(&Add_10_rectangle, m_pBrush, 2.0f);
 
             swprintf_s(scoreStr, L"1                                                  ");
             m_pRenderTarget->DrawText(
@@ -65,7 +67,7 @@ public:
                 30,
                 m_pTextFormat,
                 Add_1_rectangle,
-                p_Pen_Brush
+                m_pBrush
             );
             swprintf_s(scoreStr, L"10                                                  ");
             m_pRenderTarget->DrawText(
@@ -73,7 +75,7 @@ public:
                 30,
                 m_pTextFormat,
                 Add_10_rectangle,
-                p_Pen_Brush
+                m_pBrush
             );
             swprintf_s(scoreStr, L"CLEAR                                                  ");
             m_pRenderTarget->DrawText(
@@ -81,7 +83,7 @@ public:
                 30,
                 m_pTextFormat,
                 Clear_rectangle,
-                p_Pen_Brush
+                m_pBrush
             );
         }
 
@@ -99,88 +101,93 @@ public:
 
         //繪製綠色按鈕
         if (ESM->state != STATE_IDLE)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
         else
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
-        m_pRenderTarget->FillRectangle(&exit_rectangle, pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
+        m_pRenderTarget->FillRectangle(&exit_rectangle, m_pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
         swprintf_s(scoreStr, L"離開遊戲\nEXIT                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             exit_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
         if (ESM->state != STATE_IDLE)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
         else
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
-        m_pRenderTarget->FillRectangle(&start_rectangle, pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
+        m_pRenderTarget->FillRectangle(&start_rectangle, m_pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
         swprintf_s(scoreStr, L"開始\nSTART                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             start_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
 
         //繪製黃色按鈕
         if (ESM->state != STATE_BET_SETTLING &&
             ESM->state != STATE_COMPARE_SETTLING)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
         else
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
-        m_pRenderTarget->FillRectangle(&small_rectangle, pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
+        m_pRenderTarget->FillRectangle(&small_rectangle, m_pBrush);
+        m_pRenderTarget->FillRectangle(&big_rectangle, m_pBrush);
+
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
         swprintf_s(scoreStr, L"小\nSMALL                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             small_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
-
-        m_pRenderTarget->FillRectangle(&big_rectangle, pBrush);
         swprintf_s(scoreStr, L"大\nBIG                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             big_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
 
 
         //繪製紅色按鈕
         if (ESM->state != STATE_BET_SETTLING &&
             ESM->state != STATE_COMPARE_SETTLING)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
         else
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
-        m_pRenderTarget->FillRectangle(&score_rectangle, pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
+        m_pRenderTarget->FillRectangle(&score_rectangle, m_pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
         swprintf_s(scoreStr, L"得分\nSCORE                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             score_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
         if (ESM->autoing)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightYellow), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::LightYellow));
         else if (ESM->state != STATE_IDLE)
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Gray), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
         else
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
-        m_pRenderTarget->FillRectangle(&auto_rectangle, pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
+        m_pRenderTarget->FillRectangle(&auto_rectangle, m_pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
         swprintf_s(scoreStr, L"自動\nAUTO                                                  ");
         m_pRenderTarget->DrawText(
             scoreStr,
             30,
             m_pTextFormat,
             auto_rectangle,
-            p_Pen_Brush
+            m_pBrush
         );
     }
 

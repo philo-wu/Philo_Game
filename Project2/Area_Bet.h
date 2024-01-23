@@ -10,23 +10,25 @@ public:
 
 
 	void Draw(int x, int y, int width, int height) override {
-        ID2D1SolidColorBrush* pBrush;
+        //ID2D1SolidColorBrush* m_pBrush;
 
         D2D1_RECT_F bet_rectangle = D2D1::RectF(x, y, x + width * BET_TOTAL, y + 200);
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
-        m_pRenderTarget->FillRectangle(&bet_rectangle, pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
+        m_pRenderTarget->FillRectangle(&bet_rectangle, m_pBrush);
 
         for (int i = 0; i < BET_TOTAL; ++i) { //下注區域為BET_TOTAL種選項
             //頂部分數
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkGreen), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkGreen));
+
             D2D1_RECT_F grid_top_rectangle = D2D1::RectF(x + width * (i), y,
                 x + width * (i + 1), y + 50);
-            m_pRenderTarget->FillRectangle(&grid_top_rectangle, pBrush);
+            m_pRenderTarget->FillRectangle(&grid_top_rectangle, m_pBrush);
             grid_top_rectangle = D2D1::RectF(x + width * (i), y + 10,
                 x + width * (i + 1), y + 50);
             WCHAR scoreStr[64];
             int m_score = common->SM->Get_CellScore(i);
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+
             m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
             swprintf_s(scoreStr, L"%d                                                  ", m_score);
             m_pRenderTarget->DrawText(
@@ -34,15 +36,17 @@ public:
                 30,
                 m_pTextFormat,
                 grid_top_rectangle,
-                pBrush
+                m_pBrush
             );
 
             //下注數
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f)), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f));
+
             D2D1_RECT_F grid_bottom_rectangle = D2D1::RectF(x + width * (i), y + 50,
                 x + width * (i + 1), y + 124);
-            m_pRenderTarget->FillRectangle(&grid_bottom_rectangle, pBrush);
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightPink), &pBrush);
+            m_pRenderTarget->FillRectangle(&grid_bottom_rectangle, m_pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::LightPink));
+
             int bet = common->SM->Bet_call_map[i];
             swprintf_s(scoreStr, L"%d                                                  ", bet);
             m_pRenderTarget->DrawText(
@@ -50,38 +54,40 @@ public:
                 38,
                 m_pTextFormat,
                 grid_bottom_rectangle,
-                pBrush
+                m_pBrush
             );
             //圖片
             D2D1_RECT_F grid_png_rectangle = D2D1::RectF(x + width * (i), y + 124,
                 x + width * (i + 1), y + 200);
 
             if (isLight(i))
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
             else
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
-            m_pRenderTarget->FillRectangle(&grid_png_rectangle, pBrush);
+                m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+
+            m_pRenderTarget->FillRectangle(&grid_png_rectangle, m_pBrush);
             Draw_Cell(i, grid_png_rectangle);
 
 
             //分界線
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Green), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
+
             D2D1_RECT_F grid_rectangle = D2D1::RectF(x + width * (i + 1) - 1, y,
                 x + width * (i + 1), y + 200);
             if (i != BET_TOTAL - 1)
-                m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
+                m_pRenderTarget->FillRectangle(&grid_rectangle, m_pBrush);
 
             if (isLight(i)) {
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+                m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
                 m_pRenderTarget->FillEllipse(
                     D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + 8), LIGHT_SIZE, LIGHT_SIZE),
-                    pBrush);
+                    m_pBrush);
             }
             else {
-                m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+                m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkRed));
                 m_pRenderTarget->FillEllipse(
                     D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + 8), LIGHT_SIZE, LIGHT_SIZE),
-                    pBrush);
+                    m_pBrush);
             }
         }
     }

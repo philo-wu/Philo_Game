@@ -8,19 +8,21 @@ public:
 
 
 	void Draw(int x, int y, int width, int height) override {
-        ID2D1SolidColorBrush* pBrush;
+        //ID2D1SolidColorBrush* m_pBrush;
 
         D2D1_RECT_F game_rectangle = D2D1::RectF(x + width * 1, y + height * 1, x + width * 6, y + height * 6);
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
-        //m_pRenderTarget->FillRectangle(&game_rectangle, pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
+        //m_pRenderTarget->FillRectangle(&game_rectangle, m_pBrush);
         ///正中間背景
         m_pRenderTarget->DrawBitmap(BM->Mid_BackgroundBitmap, game_rectangle);
         // 比大小區域
         D2D1_RECT_F game_guess_rectangle = D2D1::RectF(x + width * 3, y + height * 4.5, x + width * 4, y + height * 5);
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f)), &pBrush);
-        m_pRenderTarget->FillRectangle(&game_guess_rectangle, pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(55.0f / 255.0f, 22.0f / 205, 20.0f / 255.0f, 1.0f));
+
+        m_pRenderTarget->FillRectangle(&game_guess_rectangle, m_pBrush);
         WCHAR scoreStr[64];
-        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightPink), &pBrush);
+        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::LightPink));
+
         m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER); //置中
         swprintf_s(scoreStr, L"%d                                                  ", common->ESM->Comparenumber);
         m_pRenderTarget->DrawText(
@@ -28,31 +30,31 @@ public:
             30,
             m_pTextFormat,
             game_guess_rectangle,
-            pBrush
+            m_pBrush
         );
         if (isLight(common->ESM->Compare_Light_map, 0)) { //TODO 判斷大小燈亮
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
-                pBrush);
+                m_pBrush);
         }
         else {
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkRed));
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 2.75, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
-                pBrush);
+                m_pBrush);
         }
         if (isLight(common->ESM->Compare_Light_map, 1)) { //TODO 判斷大小燈亮
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 4.25, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
-                pBrush);
+                m_pBrush);
         }
         else {
-            m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+            m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkRed));
             m_pRenderTarget->FillEllipse(
                 D2D1::Ellipse(D2D1::Point2F(x + width * 4.25, y + height * 4.75), LIGHT_SIZE, LIGHT_SIZE),
-                pBrush);
+                m_pBrush);
         }
 
 
@@ -170,29 +172,29 @@ public:
 
                     //底色
                     if (isLight(common->ESM->Game_Light_map, light_number)) {
-                        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Yellow), &pBrush);
+                        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Yellow));
                     }
                     else {
-                        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &pBrush);
+                        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::White));
                     }
-                    m_pRenderTarget->FillRectangle(&grid_rectangle, pBrush);
+                    m_pRenderTarget->FillRectangle(&grid_rectangle, m_pBrush);
                     //黑色框線
-                    m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &pBrush);
-                    m_pRenderTarget->DrawRectangle(&grid_rectangle, pBrush, 2.0f);
+                    m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+                    m_pRenderTarget->DrawRectangle(&grid_rectangle, m_pBrush, 2.0f);
 
                     //圖片
                     Draw_Cell(common->BM->Get_CellNumber(light_number), grid_rectangle);
 
                     //燈號
                     if (isLight(common->ESM->Game_Light_map, light_number)) {
-                        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &pBrush);
+                        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::Red));
                     }
                     else {
-                        m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkRed), &pBrush);
+                        m_pBrush->SetColor(D2D1::ColorF(D2D1::ColorF::DarkRed));
                     }
                     m_pRenderTarget->FillEllipse(
                         D2D1::Ellipse(D2D1::Point2F(x + width * (i + 0.5), y + height * (j + 1) - 8), LIGHT_SIZE, LIGHT_SIZE),
-                        pBrush);
+                        m_pBrush);
                 }
             }
         }
